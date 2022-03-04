@@ -34,7 +34,7 @@ class HomeScreen extends StatelessWidget {
       ),
       body: Center(
         child: Container(
-          child: Text('Home Screen'),
+          child: Text('Pagina Principal'),
         ),
       ),
     );
