@@ -6,6 +6,7 @@ class AppTheme {
   static final ThemeData lightTheme = ThemeData.light().copyWith(
       inputDecorationTheme: InputDecorationTheme(
           iconColor: primary,
+          floatingLabelStyle: TextStyle(color: primary),
           enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: primary),
               borderRadius: BorderRadius.circular(10)),

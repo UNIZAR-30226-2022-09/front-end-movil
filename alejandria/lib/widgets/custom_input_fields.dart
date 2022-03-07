@@ -25,8 +25,7 @@ class CustomInputField extends StatelessWidget {
         keyboardType: keyboardType,
         decoration: InputDecoration(
             prefixIcon: Icon(icon),
-            focusedBorder: InputBorder.none,
-            border: InputBorder.none,
-            hintText: placeholder));
+            hintText: placeholder,
+            labelText: placeholder));
   }
 }

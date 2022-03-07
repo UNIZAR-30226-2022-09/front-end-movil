@@ -15,7 +15,6 @@ class LoginScreen extends StatelessWidget {
     Object? parametro = ModalRoute.of(context)!.settings.arguments;
 
     bool showLogin = parametro == null ? false : true;
-    print(showLogin);
 
     return Scaffold(
         body: Container(
@@ -99,7 +98,10 @@ class __FormState extends State<_Form> {
                   'Iniciar Sesión',
                   style: TextStyle(color: Colors.white),
                 )),
-            onPressed: () {},
+            onPressed: () {
+              //TODO: comprobar que el login es correcto
+              Navigator.pushReplacementNamed(context, 'home');
+            },
           )
         ]));
   }
