@@ -105,7 +105,10 @@ class __FormState extends State<_Form> {
                   'Crear Cuenta',
                   style: TextStyle(color: Colors.white),
                 )),
-            onPressed: () {},
+            onPressed: () {
+              //TOODO: comprar que la creación de cuenta es correcta
+              Navigator.pushReplacementNamed(context, 'editProfile');
+            },
           )
         ]));
   }

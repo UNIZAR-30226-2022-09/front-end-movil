@@ -6,12 +6,13 @@ class AppTheme {
   static final ThemeData lightTheme = ThemeData.light().copyWith(
       inputDecorationTheme: InputDecorationTheme(
           iconColor: primary,
-          floatingLabelStyle: TextStyle(color: primary),
+          floatingLabelStyle: TextStyle(
+              color: primary, fontSize: 20, fontWeight: FontWeight.w400),
           enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: primary),
               borderRadius: BorderRadius.circular(10)),
           focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.black),
+              borderSide: BorderSide(color: primary),
               borderRadius: BorderRadius.circular(10)),
           focusedErrorBorder: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.red),
@@ -20,5 +21,11 @@ class AppTheme {
               borderSide: BorderSide(color: primary),
               borderRadius: BorderRadius.circular(10)),
           filled: true,
-          fillColor: Colors.white54));
+          fillColor: Colors.white54),
+      //AppBar
+      appBarTheme: AppBarTheme(
+          elevation: 0,
+          backgroundColor: Colors.white12,
+          centerTitle: true,
+          iconTheme: IconThemeData(color: primary)));
 }

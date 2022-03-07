@@ -1,3 +1,5 @@
+import 'package:alejandria/themes/app_theme.dart';
+import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -7,30 +9,21 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
         title: Text('ALEJANDRÍA',
             style: TextStyle(
                 fontFamily: 'Amazing Grotesc Ultra',
                 fontSize: 30,
-                color: Color.fromRGBO(68, 114, 88, 1))),
+                color: AppTheme.primary)),
         actions: [
           IconButton(
               onPressed: () {},
               icon: Icon(
                 Icons.chat_bubble_outline_rounded,
-                color: Color.fromRGBO(68, 114, 88, 1),
+                color: AppTheme.primary,
                 size: 30,
               ))
         ],
-        backgroundColor: Colors.white12,
-        bottom: PreferredSize(
-          child: Container(
-            color: Color.fromRGBO(68, 114, 88, 1),
-            width: double.infinity,
-            height: 0.5,
-          ),
-          preferredSize: Size.fromHeight(0),
-        ), //Color.fromRGBO(68, 114, 88, 1),
+        bottom: BottomLineAppBar(), //Color.fromRGBO(68, 114, 88, 1),
       ),
       body: Center(
         child: Container(
