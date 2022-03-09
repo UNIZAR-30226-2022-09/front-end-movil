@@ -4,8 +4,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class Tematica {
   final IconData icon;
   final String name;
+  bool isSelected;
 
-  Tematica(this.icon, this.name);
+  Tematica(this.icon, this.name, {this.isSelected = false});
 
   static List<Tematica> tematicas = [
     Tematica(FontAwesomeIcons.ruler, 'Matemáticas'),

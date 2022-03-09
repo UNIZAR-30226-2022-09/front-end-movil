@@ -39,6 +39,16 @@ class EditProfileScreen extends StatelessWidget {
                 SizedBox(
                   height: 10,
                 ),
+                Text(
+                  'Temáticas de interes',
+                  style: TextStyle(
+                      color: AppTheme.primary,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w500),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
                 _Tematicas(),
               ],
             ),
@@ -118,23 +128,36 @@ class _ProfileFormState extends State<_ProfileForm> {
   }
 }
 
-class _Tematicas extends StatelessWidget {
+class _Tematicas extends StatefulWidget {
   const _Tematicas({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<_Tematicas> createState() => _TematicasState();
+}
+
+class _TematicasState extends State<_Tematicas> {
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          'Temáticas de interes',
-          style: TextStyle(
-              color: AppTheme.primary,
-              fontSize: 17,
-              fontWeight: FontWeight.w500),
-        ),
-      ],
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      width: double.infinity,
+      height: 200,
+      child: GridView.builder(
+          shrinkWrap: true,
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 100.0,
+            mainAxisSpacing: 10.0,
+            crossAxisSpacing: 10.0,
+          ),
+          itemCount: 10,
+          itemBuilder: (BuildContext context, int index) {
+            return tematicaWidget(
+                icon: Tematica.tematicas[index].icon,
+                name: Tematica.tematicas[index].name,
+                isSelected: Tematica.tematicas[index].isSelected);
+          }),
     );
   }
 }
