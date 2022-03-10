@@ -10,12 +10,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Material App',
         debugShowCheckedModeBanner: false,
-        initialRoute: 'editProfile',
+        initialRoute: 'tabs',
         routes: {
           'home': (_) => HomeScreen(),
           'login': (_) => LoginScreen(),
           'register': (_) => RegisterScreen(),
           'editProfile': (_) => EditProfileScreen(),
+          'tabs': (_) => TabsScreen()
         },
         theme: AppTheme.lightTheme);
   }

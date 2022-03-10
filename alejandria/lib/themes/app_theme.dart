@@ -27,5 +27,13 @@ class AppTheme {
           elevation: 0,
           backgroundColor: Colors.white12,
           centerTitle: true,
-          iconTheme: IconThemeData(color: primary)));
+          iconTheme: IconThemeData(color: primary)),
+      //Bottom Navigation Bar
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          selectedItemColor: primary,
+          unselectedItemColor: Colors.black54,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          elevation: 0,
+          type: BottomNavigationBarType.fixed));
 }
