@@ -14,7 +14,10 @@ class EditProfileScreen extends StatelessWidget {
           bottom: BottomLineAppBar(),
           actions: [
             TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  //TOODO: guardar los valores
+                  Navigator.pushReplacementNamed(context, 'tabs');
+                },
                 child: Text('Listo',
                     style: TextStyle(color: AppTheme.primary, fontSize: 16)))
           ],
@@ -143,8 +146,8 @@ class _TematicasState extends State<_Tematicas> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10),
       width: double.infinity,
-      height: 200,
       child: GridView.builder(
+          physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
             maxCrossAxisExtent: 100.0,

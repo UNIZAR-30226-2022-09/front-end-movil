@@ -100,7 +100,7 @@ class __FormState extends State<_Form> {
                 )),
             onPressed: () {
               //TODO: comprobar que el login es correcto
-              Navigator.pushReplacementNamed(context, 'home');
+              Navigator.pushReplacementNamed(context, 'tabs');
             },
           )
         ]));
