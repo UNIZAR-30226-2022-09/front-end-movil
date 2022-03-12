@@ -1,4 +1,5 @@
 import 'package:alejandria/themes/app_theme.dart';
+import 'package:alejandria/widgets/article_cover.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -26,16 +27,15 @@ class UserScreen extends StatelessWidget {
         ],
         bottom: BottomLineAppBar(), //Color.fromRGBO(68, 114, 88, 1),
       ),
-      body: _UpperContent(),
+      body: SingleChildScrollView(
+          child: Column(
+        children: [_UpperContent(), _Posts()],
+      )),
     );
   }
 }
 
 class _UpperContent extends StatelessWidget {
-  const _UpperContent({
-    Key? key,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -87,33 +87,8 @@ class _UpperContent extends StatelessWidget {
             onPressed: () {
               Navigator.restorablePushNamed(context, 'editProfile');
             }),
-      ),
-      _TabBar(),
+      )
     ]);
-  }
-}
-
-class _TabBar extends StatelessWidget {
-  const _TabBar({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-        length: 2,
-        child: TabBar(
-          unselectedLabelColor: Colors.grey,
-          labelColor: AppTheme.primary,
-          indicatorColor: AppTheme.primary,
-          tabs: [
-            Tab(
-                icon: Icon(
-              Icons.space_dashboard_outlined,
-            )),
-            Tab(icon: Icon(Icons.thumb_up_outlined)),
-          ],
-        ));
   }
 }
 
@@ -177,6 +152,67 @@ class _numbers extends StatelessWidget {
           height: 5,
         ),
         Text(msg)
+      ],
+    );
+  }
+}
+
+class _Posts extends StatefulWidget {
+  @override
+  State<_Posts> createState() => _PostsState();
+}
+
+class _PostsState extends State<_Posts> with TickerProviderStateMixin {
+  @override
+  Widget build(BuildContext context) {
+    TabController _tabController = TabController(length: 2, vsync: this);
+    return Column(
+      children: [
+        Container(
+          width: double.infinity,
+          child: TabBar(
+            controller: _tabController,
+            unselectedLabelColor: Colors.grey,
+            labelColor: AppTheme.primary,
+            indicatorColor: AppTheme.primary,
+            tabs: [
+              Tab(
+                  icon: Icon(
+                Icons.space_dashboard_outlined,
+              )),
+              Tab(icon: Icon(Icons.thumb_up_outlined)),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 5,
+        ),
+        Container(
+          width: double.infinity,
+          //Luego sustituir 5 y 10, por itemCoount/2 e itemCount
+          height: _tabController.index == 0
+              ? MediaQuery.of(context).size.width * 0.7 * 5
+              : 152 * 10,
+          child: TabBarView(controller: _tabController, children: [
+            GridView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: MediaQuery.of(context).size.width * 0.5,
+                mainAxisExtent: MediaQuery.of(context).size.width * 0.7,
+              ),
+              itemCount: 10,
+              itemBuilder: (BuildContext context, int indx) {
+                return ArticleCover();
+              },
+            ),
+            ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: 10,
+                itemBuilder: (BuildContext context, int indx) {
+                  return recommendation();
+                }),
+          ]),
+        ),
       ],
     );
   }

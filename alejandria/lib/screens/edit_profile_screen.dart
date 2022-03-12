@@ -16,7 +16,8 @@ class EditProfileScreen extends StatelessWidget {
             TextButton(
                 onPressed: () {
                   //TOODO: guardar los valores
-                  Navigator.pushReplacementNamed(context, 'tabs');
+                  Navigator.popUntil(context, (route) => false);
+                  Navigator.pushNamed(context, 'tabs');
                 },
                 child: Text('Listo',
                     style: TextStyle(color: AppTheme.primary, fontSize: 16)))
