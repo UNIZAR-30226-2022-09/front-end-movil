@@ -17,7 +17,7 @@ class Logo extends StatelessWidget {
                   style: TextStyle(
                       fontSize: 40,
                       fontFamily: 'Amazing Grotesc Ultra',
-                      color: AppTheme.primary))
+                      color: AppTheme.intro))
             ],
           )),
     );

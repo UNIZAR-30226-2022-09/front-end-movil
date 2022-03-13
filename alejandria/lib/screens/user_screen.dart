@@ -1,7 +1,10 @@
+import 'package:alejandria/provider/theme_provider.dart';
+import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:alejandria/widgets/article_cover.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class UserScreen extends StatelessWidget {
@@ -16,21 +19,96 @@ class UserScreen extends StatelessWidget {
                 fontSize: 25,
                 fontWeight: FontWeight.w600,
                 color: AppTheme.primary)),
-        actions: [
-          IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.menu,
-                color: AppTheme.primary,
-                size: 30,
-              ))
-        ],
         bottom: BottomLineAppBar(), //Color.fromRGBO(68, 114, 88, 1),
       ),
+      endDrawer: _MyDrawer(),
       body: SingleChildScrollView(
           child: Column(
         children: [_UpperContent(), _Posts()],
       )),
+    );
+  }
+}
+
+class _MyDrawer extends StatelessWidget {
+  const _MyDrawer({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+        child: Column(
+      //physics: NeverScrollableScrollPhysics(),
+      children: [
+        SizedBox(
+          height: 50,
+        ),
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+              border: Border(
+                  top: BorderSide(color: AppTheme.primary.withOpacity(0.5)),
+                  bottom:
+                      BorderSide(color: AppTheme.primary.withOpacity(0.5)))),
+          child: ListTile(
+            leading: Icon(Icons.save, color: AppTheme.primary),
+            title: const Text('Publicaciones guardadas'),
+          ),
+        ),
+        _DarkMode(),
+        Expanded(child: Container()),
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+              border: Border(
+                  top: BorderSide(color: AppTheme.primary.withOpacity(0.5)),
+                  bottom:
+                      BorderSide(color: AppTheme.primary.withOpacity(0.5)))),
+          child: ListTile(
+            leading: const Icon(
+              Icons.power_settings_new_rounded,
+              color: Colors.red,
+            ),
+            title: const Text('Cerrar Sesión',
+                style: TextStyle(color: Colors.red)),
+          ),
+        )
+      ],
+    ));
+  }
+}
+
+class _DarkMode extends StatefulWidget {
+  const _DarkMode({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<_DarkMode> createState() => _DarkModeState();
+}
+
+class _DarkModeState extends State<_DarkMode> {
+  //bool isDarkmode = false;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(left: 6),
+      width: double.infinity,
+      decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(color: AppTheme.primary.withOpacity(0.5)))),
+      child: SwitchListTile.adaptive(
+        title: const Text('Modo oscuro'),
+        value: Preferences.isDarkMode,
+        onChanged: (value) {
+          Preferences.isDarkMode = value;
+          final themeProvider =
+              Provider.of<ThemeProvider>(context, listen: false);
+          value ? themeProvider.setDarkMode() : themeProvider.setLightMode();
+          setState(() {});
+        },
+      ),
     );
   }
 }
@@ -65,7 +143,10 @@ class _UpperContent extends StatelessWidget {
               'https://github.com/UNIZAR-30226-2022-09/front-end-movil',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: Colors.blue[900]),
+              style: TextStyle(
+                  color: Preferences.isDarkMode
+                      ? Colors.blue[200]
+                      : Colors.blue[900]),
             ),
             onTap: () async {
               launch("https://github.com/UNIZAR-30226-2022-09/front-end-movil");

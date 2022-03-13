@@ -37,7 +37,7 @@ class Labels extends StatelessWidget {
           },
           child: Text(abajo,
               style: TextStyle(
-                  color: AppTheme.primary,
+                  color: AppTheme.intro,
                   fontSize: 18,
                   fontWeight: FontWeight.bold)),
         )

@@ -1,4 +1,5 @@
 import 'package:alejandria/models/tematica_model.dart';
+import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,10 @@ class EditProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Crear Perfil', style: TextStyle(color: Colors.black)),
+          title: Text('Editar Perfil',
+              style: TextStyle(
+                  color:
+                      Preferences.isDarkMode ? Colors.white70 : Colors.black)),
           bottom: BottomLineAppBar(),
           actions: [
             TextButton(
@@ -30,7 +34,7 @@ class EditProfileScreen extends StatelessWidget {
                 SizedBox(
                   height: 20,
                 ),
-                _ProfiilePicture(),
+                _ProfilePicture(),
                 SizedBox(
                   height: 15,
                 ),
@@ -61,8 +65,8 @@ class EditProfileScreen extends StatelessWidget {
   }
 }
 
-class _ProfiilePicture extends StatelessWidget {
-  const _ProfiilePicture({
+class _ProfilePicture extends StatelessWidget {
+  const _ProfilePicture({
     Key? key,
   }) : super(key: key);
 
@@ -72,7 +76,8 @@ class _ProfiilePicture extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 55,
-          backgroundColor: Colors.grey[300],
+          backgroundColor:
+              Preferences.isDarkMode ? Colors.grey[400] : Colors.grey[300],
           //TODO: si tiene imagen sustituir el child por un NetworkImage
           child: Icon(Icons.add, size: 50, color: AppTheme.primary),
         ),

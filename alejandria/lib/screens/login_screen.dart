@@ -1,9 +1,7 @@
 import 'package:alejandria/themes/app_theme.dart';
-import 'package:alejandria/widgets/labels.dart';
 import 'package:flutter/material.dart';
 
 import 'package:alejandria/widgets/widgets.dart';
-import 'package:alejandria/widgets/custom_input_fields.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({
@@ -69,10 +67,12 @@ class __FormState extends State<_Form> {
         padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Column(children: [
           CustomInputField(
-              icon: Icons.perm_identity_rounded,
-              placeholder: 'nombre de usuario o correo',
-              keyboardType: TextInputType.emailAddress,
-              textController: emailCtrl),
+            icon: Icons.perm_identity_rounded,
+            placeholder: 'nombre de usuario o correo',
+            keyboardType: TextInputType.emailAddress,
+            textController: emailCtrl,
+            isIntro: true,
+          ),
           SizedBox(
             height: 20,
           ),
@@ -82,6 +82,7 @@ class __FormState extends State<_Form> {
             textController: passCtrl,
             keyboardType: TextInputType.text,
             isPassword: true,
+            isIntro: true,
           ),
           SizedBox(
             height: 20,
@@ -91,7 +92,7 @@ class __FormState extends State<_Form> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             disabledColor: Colors.grey,
             elevation: 0,
-            color: AppTheme.primary,
+            color: AppTheme.intro,
             child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 child: Text(

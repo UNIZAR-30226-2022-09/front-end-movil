@@ -54,18 +54,22 @@ class _MainContent extends StatelessWidget {
                       children: [
                         Text('Bienvenido a ',
                             style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w400)),
+                                fontSize: 20,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black)),
                         Text('ALEJANDRÍA',
                             style: TextStyle(
                                 fontFamily: 'Amazing Grotesc Ultra',
                                 fontSize: 20,
-                                color: AppTheme.primary))
+                                color: AppTheme.intro))
                       ],
                     ),
                     SizedBox(height: 5),
                     Text('La red social del conocimiento',
                         style: TextStyle(
-                            fontSize: 19, fontWeight: FontWeight.w400)),
+                            fontSize: 19,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black87)),
                     SizedBox(height: 30),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -75,15 +79,15 @@ class _MainContent extends StatelessWidget {
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
-                            fontStyle: FontStyle.italic),
+                            fontStyle: FontStyle.italic,
+                            color: Colors.black),
                       ),
                     )
                   ],
                 )),
           ),
           Expanded(child: Container()),
-          const Icon(Icons.keyboard_arrow_down,
-              size: 120, color: AppTheme.primary)
+          Icon(Icons.keyboard_arrow_down, size: 120, color: AppTheme.intro)
         ],
       ),
     );

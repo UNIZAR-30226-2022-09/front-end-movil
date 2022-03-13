@@ -1,3 +1,4 @@
+import 'package:alejandria/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class CustomInputField extends StatelessWidget {
@@ -7,6 +8,7 @@ class CustomInputField extends StatelessWidget {
   final TextInputType keyboardType;
   final bool isPassword;
   final int maxlines;
+  final bool isIntro;
 
   const CustomInputField(
       {Key? key,
@@ -15,7 +17,8 @@ class CustomInputField extends StatelessWidget {
       required this.textController,
       this.keyboardType = TextInputType.text,
       this.isPassword = false,
-      this.maxlines = 1})
+      this.maxlines = 1,
+      this.isIntro = false})
       : super(key: key);
 
   @override
@@ -26,9 +29,28 @@ class CustomInputField extends StatelessWidget {
         obscureText: isPassword,
         keyboardType: keyboardType,
         maxLines: maxlines,
-        decoration: InputDecoration(
-            prefixIcon: Icon(icon),
-            hintText: placeholder,
-            labelText: placeholder));
+        decoration: isIntro
+            ? InputDecoration(
+                prefixIcon: Icon(
+                  icon,
+                  color: AppTheme.intro,
+                ),
+                hintText: placeholder,
+                labelText: placeholder,
+                floatingLabelStyle: TextStyle(
+                    color: AppTheme.intro,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w400),
+                labelStyle: TextStyle(color: Colors.black54),
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppTheme.intro),
+                    borderRadius: BorderRadius.circular(10)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppTheme.intro),
+                    borderRadius: BorderRadius.circular(10)))
+            : InputDecoration(
+                prefixIcon: Icon(icon),
+                hintText: placeholder,
+                labelText: placeholder));
   }
 }
