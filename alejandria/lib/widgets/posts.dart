@@ -1,10 +1,14 @@
+import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class Article extends StatelessWidget {
-  const Article({
+class Post extends StatelessWidget {
+  final int type;
+  const Post({
     Key? key,
+    required this.type,
   }) : super(key: key);
 
   @override
@@ -13,14 +17,12 @@ class Article extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10),
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 20),
-        width: size.width * 0.95,
-        height: size.width * 1.34,
+        margin: EdgeInsets.symmetric(vertical: 10),
         decoration: _cardBorders(),
         child: Stack(
           alignment: Alignment.bottomLeft,
           children: [
-            _BackgroundImage(),
+            type == 0 ? _BackgroundImage(size) : _Recommendation(),
             Positioned(bottom: 0, right: 0, child: _Bottom()),
             Positioned(
                 top: 0, left: 0, child: _Header('@nombreDeUsuario', size)),
@@ -53,10 +55,10 @@ class _Header extends StatelessWidget {
       height: 60,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-          color: Colors.white54,
+          color: Preferences.isDarkMode ? Colors.white10 : Colors.white54,
           borderRadius: BorderRadius.only(
               bottomRight: Radius.circular(20), topLeft: Radius.circular(18)),
-          border: Border.all(color: AppTheme.primary.withOpacity(0.5))),
+          border: Border.all(color: AppTheme.primary.withOpacity(0.7))),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(children: [
@@ -115,22 +117,68 @@ class _Bottom extends StatelessWidget {
   }
 
   BoxDecoration _buildBoxDecoration() => BoxDecoration(
-      color: Colors.white54,
-      border: Border.all(color: AppTheme.primary.withOpacity(0.5)),
+      color: Preferences.isDarkMode ? Colors.white10 : Colors.white54,
+      border: Border.all(color: AppTheme.primary.withOpacity(0.7)),
       borderRadius: BorderRadius.only(
           bottomRight: Radius.circular(18), topLeft: Radius.circular(20)));
 }
 
 class _BackgroundImage extends StatelessWidget {
-  const _BackgroundImage();
+  final Size size;
+  const _BackgroundImage(this.size);
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(25),
+      borderRadius: BorderRadius.circular(20),
       child: Container(
-        width: double.infinity,
-        height: 400,
+        color: Preferences.isDarkMode ? Colors.black87 : Colors.grey[400],
+        width: size.width * 0.95,
+        height: size.width * 1.34,
+      ),
+    );
+  }
+}
+
+class _Recommendation extends StatelessWidget {
+  const _Recommendation();
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        color: Preferences.isDarkMode ? Colors.black : Colors.grey[50],
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 70),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(
+            'Título del Artículo - Autor',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Text(
+            'Nulla tempor ipsum exercitation incididunt. Qui consectetur laborum anim incididunt. Cupidatat cillum incididunt tempor ipsum enim in aute dolore Lorem. ',
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          GestureDetector(
+            child: Text(
+              'https://github.com/UNIZAR-30226-2022-09/front-end-movil',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                  color: Preferences.isDarkMode
+                      ? Colors.blue[200]
+                      : Colors.blue[900]),
+            ),
+            onTap: () async {
+              launch("https://github.com/UNIZAR-30226-2022-09/front-end-movil");
+            },
+          )
+        ]),
       ),
     );
   }
