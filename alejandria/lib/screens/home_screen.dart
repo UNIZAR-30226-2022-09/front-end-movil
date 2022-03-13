@@ -25,11 +25,7 @@ class HomeScreen extends StatelessWidget {
         ],
         bottom: BottomLineAppBar(), //Color.fromRGBO(68, 114, 88, 1),
       ),
-      body: Center(
-        child: Container(
-          child: Text('Pagina Principal'),
-        ),
-      ),
+      body: Article(),
     );
   }
 }
