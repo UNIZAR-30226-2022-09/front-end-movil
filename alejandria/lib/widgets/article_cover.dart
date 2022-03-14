@@ -6,7 +6,7 @@ class ArticleCover extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+      margin: EdgeInsets.symmetric(horizontal: 3, vertical: 3),
       decoration: BoxDecoration(
           color: Colors.grey[400], borderRadius: BorderRadius.circular(10)),
     );

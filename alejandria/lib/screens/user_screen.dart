@@ -273,14 +273,13 @@ class _PostsState extends State<_Posts> with TickerProviderStateMixin {
           //Luego sustituir 5 y 10, por itemCoount/2 e itemCount
           height: _tabController.index == 0
               ? MediaQuery.of(context).size.width * 0.7 * 5
-              : 152 * 10,
+              : 155 * 10,
           child: TabBarView(controller: _tabController, children: [
             GridView.builder(
               physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: MediaQuery.of(context).size.width * 0.5,
-                mainAxisExtent: MediaQuery.of(context).size.width * 0.7,
-              ),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisExtent: MediaQuery.of(context).size.width * 0.7),
               itemCount: 10,
               itemBuilder: (BuildContext context, int indx) {
                 return ArticleCover();
