@@ -1,3 +1,4 @@
+import 'package:alejandria/provider/tematicas_provider.dart';
 import 'package:alejandria/provider/theme_provider.dart';
 import 'package:alejandria/screens/screens.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
@@ -10,7 +11,8 @@ void main() async {
   await Preferences.init();
   return runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
-        create: (_) => ThemeProvider(isDarkmode: Preferences.isDarkMode))
+        create: (_) => ThemeProvider(isDarkmode: Preferences.isDarkMode)),
+    ChangeNotifierProvider(create: (_) => TematicasProvider()),
   ], child: MyApp()));
 }
 
