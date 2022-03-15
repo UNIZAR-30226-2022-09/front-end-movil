@@ -31,6 +31,8 @@ class MyApp extends StatelessWidget {
           'home': (_) => HomeScreen(),
           'explorer': (_) => ExplorerScreen(),
           'newPost': (_) => NewPostScreen(),
+          'newArticle': (_) => NewArticleScreen(),
+          'newRecoommendation': (_) => NewRecommendationScreen(),
           'notifications': (_) => NotificationsScreen(),
           'profile': (_) => UserScreen()
         },
