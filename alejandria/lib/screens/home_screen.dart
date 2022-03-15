@@ -28,7 +28,7 @@ class HomeScreen extends StatelessWidget {
       body: ListView.builder(
           itemCount: 10,
           itemBuilder: (BuildContext context, int index) {
-            return index % 2 == 0 ? Post(type: 0) : Post(type: 1);
+            return index % 2 == 0 ? ArticlePost() : RecommendationPost();
           }),
     );
   }

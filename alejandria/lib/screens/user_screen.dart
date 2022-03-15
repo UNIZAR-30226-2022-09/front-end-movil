@@ -289,9 +289,7 @@ class _PostsState extends State<_Posts> with TickerProviderStateMixin {
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: 10,
                 itemBuilder: (BuildContext context, int indx) {
-                  return Post(
-                    type: 1,
-                  );
+                  return RecommendationPost();
                 }),
           ]),
         ),
