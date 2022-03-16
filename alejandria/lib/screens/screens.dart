@@ -9,3 +9,4 @@ export 'package:alejandria/screens/notifications_screen.dart';
 export 'package:alejandria/screens/user_screen.dart';
 export 'package:alejandria/screens/new_post_article.dart';
 export 'package:alejandria/screens/new_post_recommendation.dart';
+export 'package:alejandria/screens/saved_posts.dart';

@@ -95,8 +95,6 @@ class _HeaderState extends State<_Header> {
 
   @override
   Widget build(BuildContext context) {
-    final double _width = 0;
-    final double _height = 0;
     final Size size = MediaQuery.of(context).size;
     return Column(
       children: [

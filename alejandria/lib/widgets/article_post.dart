@@ -90,7 +90,7 @@ class _Description extends StatelessWidget {
             'Sint qui adipisicing consequat nisi tempor in ea voluptate adipisicing labore eiusmod anim eu. Eiusmod mollit excepteur excepteur eu velit pariatur fugiat qui commodo ullamco. Occaecat Lorem tempor do laboris eu nulla occaecat culpa quis.'),
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Preferences.isDarkMode ? Colors.black87 : Colors.white,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),

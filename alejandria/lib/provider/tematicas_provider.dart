@@ -33,4 +33,9 @@ class TematicasProvider with ChangeNotifier {
     //this.getArticlesByCategory( valor );
     notifyListeners();
   }
+
+  set isSelected(int index) {
+    this.tematicas[index].isSelected = !this.tematicas[index].isSelected;
+    notifyListeners();
+  }
 }

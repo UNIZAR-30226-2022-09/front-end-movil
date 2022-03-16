@@ -34,7 +34,8 @@ class MyApp extends StatelessWidget {
           'newArticle': (_) => NewArticleScreen(),
           'newRecoommendation': (_) => NewRecommendationScreen(),
           'notifications': (_) => NotificationsScreen(),
-          'profile': (_) => UserScreen()
+          'profile': (_) => UserScreen(),
+          'savedPosts': (_) => SavedPostsScreen()
         },
         theme: Provider.of<ThemeProvider>(context).currentTheme);
   }
