@@ -19,7 +19,7 @@ class ExplorerScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Explorador',
             style: TextStyle(
-                fontSize: 25,
+                fontSize: 22,
                 fontWeight: FontWeight.w600,
                 color: AppTheme.primary)),
         actions: [

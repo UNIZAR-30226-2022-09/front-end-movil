@@ -16,7 +16,7 @@ class UserScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('user_name',
             style: TextStyle(
-                fontSize: 25,
+                fontSize: 22,
                 fontWeight: FontWeight.w600,
                 color: AppTheme.primary)),
         bottom: BottomLineAppBar(), //Color.fromRGBO(68, 114, 88, 1),
@@ -38,49 +38,59 @@ class _MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20), bottomLeft: Radius.circular(20))),
         child: Column(
-      //physics: NeverScrollableScrollPhysics(),
-      children: [
-        SizedBox(
-          height: 50,
-        ),
-        GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(context, 'savedPosts');
-          },
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-                border: Border(
-                    top: BorderSide(color: AppTheme.primary.withOpacity(0.5)),
-                    bottom:
-                        BorderSide(color: AppTheme.primary.withOpacity(0.5)))),
-            child: ListTile(
-              leading: Icon(Icons.save, color: AppTheme.primary),
-              title: const Text('Publicaciones guardadas'),
+          //physics: NeverScrollableScrollPhysics(),
+          children: [
+            SizedBox(
+              height: 50,
             ),
-          ),
-        ),
-        _DarkMode(),
-        Expanded(child: Container()),
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-              border: Border(
-                  top: BorderSide(color: AppTheme.primary.withOpacity(0.5)),
-                  bottom:
-                      BorderSide(color: AppTheme.primary.withOpacity(0.5)))),
-          child: ListTile(
-            leading: const Icon(
-              Icons.power_settings_new_rounded,
-              color: Colors.red,
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, 'savedPosts');
+              },
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    border: Border(
+                        top: BorderSide(
+                            color: AppTheme.primary.withOpacity(0.5)),
+                        bottom: BorderSide(
+                            color: AppTheme.primary.withOpacity(0.5)))),
+                child: ListTile(
+                  leading: Icon(Icons.save, color: AppTheme.primary),
+                  title: const Text('Publicaciones guardadas'),
+                ),
+              ),
             ),
-            title: const Text('Cerrar Sesión',
-                style: TextStyle(color: Colors.red)),
-          ),
-        )
-      ],
-    ));
+            _DarkMode(),
+            Expanded(child: Container()),
+            GestureDetector(
+              onTap: () {
+                Navigator.pushReplacementNamed(context, 'login');
+              },
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    border: Border(
+                        top: BorderSide(
+                            color: AppTheme.primary.withOpacity(0.5)),
+                        bottom: BorderSide(
+                            color: AppTheme.primary.withOpacity(0.5)))),
+                child: ListTile(
+                  leading: const Icon(
+                    Icons.power_settings_new_rounded,
+                    color: Colors.red,
+                  ),
+                  title: const Text('Cerrar Sesión',
+                      style: TextStyle(color: Colors.red)),
+                ),
+              ),
+            )
+          ],
+        ));
   }
 }
 
