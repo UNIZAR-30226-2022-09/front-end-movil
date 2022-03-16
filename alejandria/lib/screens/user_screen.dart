@@ -44,16 +44,21 @@ class _MyDrawer extends StatelessWidget {
         SizedBox(
           height: 50,
         ),
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-              border: Border(
-                  top: BorderSide(color: AppTheme.primary.withOpacity(0.5)),
-                  bottom:
-                      BorderSide(color: AppTheme.primary.withOpacity(0.5)))),
-          child: ListTile(
-            leading: Icon(Icons.save, color: AppTheme.primary),
-            title: const Text('Publicaciones guardadas'),
+        GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, 'savedPosts');
+          },
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+                border: Border(
+                    top: BorderSide(color: AppTheme.primary.withOpacity(0.5)),
+                    bottom:
+                        BorderSide(color: AppTheme.primary.withOpacity(0.5)))),
+            child: ListTile(
+              leading: Icon(Icons.save, color: AppTheme.primary),
+              title: const Text('Publicaciones guardadas'),
+            ),
           ),
         ),
         _DarkMode(),
