@@ -49,7 +49,9 @@ class ArticlePost extends StatelessWidget {
           border: Border.all(color: AppTheme.primary, width: 1),
           boxShadow: [
             BoxShadow(
-                color: Colors.black12, offset: Offset(0, 7), blurRadius: 10)
+                color: AppTheme.primary.withOpacity(0.3),
+                offset: Offset(0, 3),
+                blurRadius: 10)
           ]);
 }
 

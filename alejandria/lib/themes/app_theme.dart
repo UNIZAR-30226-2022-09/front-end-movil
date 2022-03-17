@@ -47,39 +47,38 @@ class AppTheme {
       ));
 
   static final ThemeData darkTheme = ThemeData.dark().copyWith(
-      inputDecorationTheme: InputDecorationTheme(
-          iconColor: dark,
-          floatingLabelStyle:
-              TextStyle(color: dark, fontSize: 20, fontWeight: FontWeight.w700),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: dark),
-              borderRadius: BorderRadius.circular(10)),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: dark),
-              borderRadius: BorderRadius.circular(10)),
-          focusedErrorBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.red),
-              borderRadius: BorderRadius.circular(10)),
-          border: OutlineInputBorder(
-              borderSide: BorderSide(color: dark),
-              borderRadius: BorderRadius.circular(10)),
-          filled: true,
-          fillColor: Colors.white24),
-      //AppBar
-      appBarTheme: AppBarTheme(
-          elevation: 0,
-          centerTitle: true,
-          iconTheme: IconThemeData(color: dark)),
-      //Bottom Navigation Bar
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          selectedItemColor: dark,
-          unselectedItemColor: Colors.white,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          elevation: 0,
-          type: BottomNavigationBarType.fixed),
-      //Checkbox
-      checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.all(dark),
-      ));
+    inputDecorationTheme: InputDecorationTheme(
+        iconColor: dark,
+        floatingLabelStyle:
+            TextStyle(color: dark, fontSize: 20, fontWeight: FontWeight.w700),
+        enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: dark),
+            borderRadius: BorderRadius.circular(10)),
+        focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: dark),
+            borderRadius: BorderRadius.circular(10)),
+        focusedErrorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red),
+            borderRadius: BorderRadius.circular(10)),
+        border: OutlineInputBorder(
+            borderSide: BorderSide(color: dark),
+            borderRadius: BorderRadius.circular(10)),
+        filled: true,
+        fillColor: Colors.white24),
+    //AppBar
+    appBarTheme: AppBarTheme(
+        elevation: 0, centerTitle: true, iconTheme: IconThemeData(color: dark)),
+    //Bottom Navigation Bar
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        selectedItemColor: dark,
+        unselectedItemColor: Colors.white,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        elevation: 0,
+        type: BottomNavigationBarType.fixed),
+    //Checkbox
+    checkboxTheme: CheckboxThemeData(
+      fillColor: MaterialStateProperty.all(dark),
+    ),
+  );
 }

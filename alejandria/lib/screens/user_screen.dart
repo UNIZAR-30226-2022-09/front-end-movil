@@ -258,15 +258,35 @@ class _Posts extends StatefulWidget {
   State<_Posts> createState() => _PostsState();
 }
 
-class _PostsState extends State<_Posts> with TickerProviderStateMixin {
+class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
+  int _SelectedTabBar = 0;
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    TabController _tabController = TabController(length: 2, vsync: this);
     return Column(
       children: [
         Container(
           width: double.infinity,
           child: TabBar(
+            onTap: (value) {
+              _SelectedTabBar = value;
+              setState(() {});
+              print(value);
+            },
             controller: _tabController,
             unselectedLabelColor: Colors.grey,
             labelColor: AppTheme.primary,
@@ -283,31 +303,57 @@ class _PostsState extends State<_Posts> with TickerProviderStateMixin {
         SizedBox(
           height: 5,
         ),
-        Container(
-          width: double.infinity,
-          //Luego sustituir 5 y 10, por itemCoount/2 e itemCount
-          height: _tabController.index == 0
-              ? MediaQuery.of(context).size.width * 0.7 * 5
-              : 155 * 10,
-          child: TabBarView(controller: _tabController, children: [
-            GridView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisExtent: MediaQuery.of(context).size.width * 0.7),
-              itemCount: 10,
-              itemBuilder: (BuildContext context, int indx) {
-                return ArticleCover();
-              },
-            ),
-            ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: 10,
-                itemBuilder: (BuildContext context, int indx) {
-                  return RecommendationPost();
-                }),
-          ]),
-        ),
+        Builder(builder: (_) {
+          return _SelectedTabBar == 0
+              ? Container(
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisExtent:
+                            MediaQuery.of(context).size.width * 0.7),
+                    itemCount: 10,
+                    itemBuilder: (BuildContext context, int indx) {
+                      return ArticleCover();
+                    },
+                  ),
+                )
+              : Container(
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: 10,
+                      itemBuilder: (BuildContext context, int indx) {
+                        return RecommendationPost();
+                      }),
+                );
+        })
+        // Container(
+        //   width: double.infinity,
+        //   //Luego sustituir 5 y 10, por itemCoount/2 e itemCount
+        //   height: _tabController.index == 0
+        //       ? MediaQuery.of(context).size.width * 0.7 * 5
+        //       : 155 * 10,
+        //   child: TabBarView(controller: _tabController, children: [
+        //     GridView.builder(
+        //       physics: NeverScrollableScrollPhysics(),
+        //       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        //           crossAxisCount: 2,
+        //           mainAxisExtent: MediaQuery.of(context).size.width * 0.7),
+        //       itemCount: 10,
+        //       itemBuilder: (BuildContext context, int indx) {
+        //         return ArticleCover();
+        //       },
+        //     ),
+        //     ListView.builder(
+        //         physics: NeverScrollableScrollPhysics(),
+        //         itemCount: 10,
+        //         itemBuilder: (BuildContext context, int indx) {
+        //           return RecommendationPost();
+        //         }),
+        //   ]),
+        // ),
       ],
     );
   }
