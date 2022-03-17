@@ -160,7 +160,7 @@ class _TematicasState extends State<_Tematicas> {
             mainAxisSpacing: 10.0,
             crossAxisSpacing: 10.0,
           ),
-          itemCount: 10,
+          itemCount: Tematica.tematicas.length,
           itemBuilder: (BuildContext context, int index) {
             return tematicaWidget(
                 icon: Tematica.tematicas[index].icon,
