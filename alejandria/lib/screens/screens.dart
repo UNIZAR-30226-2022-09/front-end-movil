@@ -1,6 +1,5 @@
 export 'package:alejandria/screens/home_screen.dart';
 export 'package:alejandria/screens/login_screen.dart';
-export 'package:alejandria/screens/register_screen.dart';
 export 'package:alejandria/screens/edit_profile_screen.dart';
 export 'package:alejandria/screens/tabs_screen.dart';
 export 'package:alejandria/screens/explorer_screen.dart';

@@ -2,17 +2,19 @@ import 'package:alejandria/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class Labels extends StatelessWidget {
-  final String ruta;
+  final int ruta;
   final String arriba;
   final String abajo;
   final bool showLogin;
+  final PageController pageController;
 
   const Labels(
       {Key? key,
       required this.ruta,
       required this.arriba,
       required this.abajo,
-      this.showLogin = false})
+      this.showLogin = false,
+      required this.pageController})
       : super(key: key);
 
   @override
@@ -30,10 +32,8 @@ class Labels extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () {
-            showLogin
-                ? Navigator.pushReplacementNamed(context, ruta,
-                    arguments: {'showLogin': true})
-                : Navigator.pushReplacementNamed(context, ruta);
+            pageController.animateToPage(ruta,
+                duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
           },
           child: Text(abajo,
               style: TextStyle(
