@@ -11,22 +11,26 @@ class AuthService extends ChangeNotifier {
 
   Future<String?> createUser(
       String nick, String e_mail, String password) async {
-    final Map<String, dynamic> authData = {
-      'nick': nick,
-      'e_mail': e_mail,
-      'password': password
-    };
-    final url = Uri.https(_baseUrl, '/register');
+    final url = Uri.http(_baseUrl, '/register');
 
-    final resp = await http.post(url, body: json.encode(authData));
+    final resp = await http.post(url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: json.encode(<String, String>{
+          'nick': nick,
+          'e_mail': e_mail,
+          'password': password
+        }));
 
     final Map<String, dynamic> decodedResp = json.decode(resp.body);
+    print(decodedResp);
 
     if (decodedResp.containsKey('token')) {
       await storage.write(key: 'token', value: decodedResp['token']);
       return null;
     } else {
-      if (decodedResp['error'].toString() == 'NICK_EXISTS') {
+      if (decodedResp['error'].toString() == 'Existe nick') {
         return 'El nombre de usuario ya existe';
       }
       return 'El correo electrónico ya existe';
@@ -34,15 +38,17 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<String?> validateUser(String e_mail, String password) async {
-    final Map<String, dynamic> authData = {
-      'e_mail': e_mail,
-      'password': password
-    };
-    final url = Uri.https(_baseUrl, '/login');
+    final url = Uri.http(_baseUrl, '/login');
 
-    final resp = await http.post(url, body: json.encode(authData));
+    final resp = await http.post(url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: json.encode(
+            <String, String>{'nickOcorreo': e_mail, 'password': password}));
 
     final Map<String, dynamic> decodedResp = json.decode(resp.body);
+    print(decodedResp);
 
     if (decodedResp.containsKey('token')) {
       await storage.write(key: 'token', value: decodedResp['token']);

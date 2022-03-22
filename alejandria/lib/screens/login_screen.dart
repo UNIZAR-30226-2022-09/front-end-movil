@@ -1,4 +1,3 @@
-import 'package:alejandria/services/auth_service.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -151,15 +150,15 @@ class __FormState extends State<_Form> {
                       loginForm.isLoading = true;
 
                       // TODO: validar si el login es correcto
-                      // final String? errorMessage = await authService
-                      //     .validateUser(loginForm.email, loginForm.password);
+                      final String? errorMessage = await authService
+                          .validateUser(loginForm.email, loginForm.password);
 
-                      // if (errorMessage == null) {
-                      Navigator.pushReplacementNamed(context, 'tabs');
-                      // } else {
-                      //   NotificationsService.showSnackbar(errorMessage);
-                      loginForm.isLoading = false;
-                      //}
+                      if (errorMessage == null) {
+                        Navigator.pushReplacementNamed(context, 'tabs');
+                      } else {
+                        NotificationsService.showSnackbar(errorMessage);
+                        loginForm.isLoading = false;
+                      }
                     },
             )
           ]),
@@ -256,7 +255,7 @@ class __FormRState extends State<_FormR> {
               keyboardType: TextInputType.text,
               isPassword: true,
               isIntro: true,
-              onChanged: (value) => regsiterForm.email = value,
+              onChanged: (value) => regsiterForm.password = value,
               validator: (value) {
                 return (value != null && value.length > 7)
                     ? null
