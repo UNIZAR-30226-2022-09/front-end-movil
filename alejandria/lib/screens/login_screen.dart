@@ -121,7 +121,7 @@ class __FormState extends State<_Form> {
               validator: (value) {
                 return value != null && value.length > 7
                     ? null
-                    : 'mínimo 8 caractéres';
+                    : 'Contraseña muy corta (mínimo 8 caracteres)';
               },
             ),
             SizedBox(
@@ -151,15 +151,15 @@ class __FormState extends State<_Form> {
                       loginForm.isLoading = true;
 
                       // TODO: validar si el login es correcto
-                      final String? errorMessage = await authService
-                          .validateUser(loginForm.email, loginForm.password);
+                      // final String? errorMessage = await authService
+                      //     .validateUser(loginForm.email, loginForm.password);
 
-                      if (errorMessage == null) {
-                        Navigator.pushReplacementNamed(context, 'home');
-                      } else {
-                        NotificationsService.showSnackbar(errorMessage);
-                        loginForm.isLoading = false;
-                      }
+                      // if (errorMessage == null) {
+                      Navigator.pushReplacementNamed(context, 'tabs');
+                      // } else {
+                      //   NotificationsService.showSnackbar(errorMessage);
+                      loginForm.isLoading = false;
+                      //}
                     },
             )
           ]),
@@ -225,7 +225,7 @@ class __FormRState extends State<_FormR> {
                 RegExp regExp = new RegExp(pattern);
                 return regExp.hasMatch(value ?? '')
                     ? null
-                    : 'Formato incorecto';
+                    : 'Formato de nombre de usuario incorrecto';
               },
             ),
             SizedBox(
@@ -244,7 +244,7 @@ class __FormRState extends State<_FormR> {
 
                 return regExp.hasMatch(value ?? '')
                     ? null
-                    : 'Formato incorecto';
+                    : 'Formato de correo electrrónico incorecto';
               },
             ),
             SizedBox(
@@ -260,7 +260,7 @@ class __FormRState extends State<_FormR> {
               validator: (value) {
                 return (value != null && value.length > 7)
                     ? null
-                    : 'La contraseña debe ser de 8 caracteres';
+                    : 'Contraseña muy corta (mínimo 8 caracteres)';
               },
             ),
             SizedBox(
