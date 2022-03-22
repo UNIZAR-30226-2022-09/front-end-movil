@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:alejandria/models/tematica_model.dart';
 import 'package:alejandria/provider/tematicas_provider.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
@@ -14,7 +12,6 @@ class ExplorerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isExpanded = false;
     return Scaffold(
       appBar: AppBar(
         title: Text('Explorador',

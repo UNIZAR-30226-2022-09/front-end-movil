@@ -1,7 +1,8 @@
 import 'package:alejandria/provider/theme_provider.dart';
+import 'package:alejandria/services/auth_service.dart';
+import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
-import 'package:alejandria/widgets/article_cover.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -69,6 +70,9 @@ class _MyDrawer extends StatelessWidget {
             Expanded(child: Container()),
             GestureDetector(
               onTap: () {
+                final authService =
+                    Provider.of<AuthService>(context, listen: false);
+                authService.logOut();
                 Navigator.pushReplacementNamed(context, 'login');
               },
               child: Container(

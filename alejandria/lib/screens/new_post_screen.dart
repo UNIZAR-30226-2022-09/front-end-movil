@@ -17,7 +17,7 @@ class NewPostScreen extends StatelessWidget {
           children: [
             Logo(),
             SizedBox(
-              height: 50,
+              height: 40,
             ),
             _Selection(
                 title: 'Nuevo artículo',
@@ -25,7 +25,7 @@ class NewPostScreen extends StatelessWidget {
                     'Comparte uno de tus trabajos con nuestra comunidad de usuarios',
                 route: 'newArticle'),
             SizedBox(
-              height: 50,
+              height: 40,
             ),
             _Selection(
                 title: 'Nueva recomendación',

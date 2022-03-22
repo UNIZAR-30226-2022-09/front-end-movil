@@ -1,5 +1,4 @@
 import 'package:alejandria/themes/app_theme.dart';
-import 'package:alejandria/widgets/bottom_line_appbar.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 

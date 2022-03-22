@@ -1,7 +1,12 @@
+import 'package:alejandria/services/auth_service.dart';
+import 'package:alejandria/services/services.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 import 'package:alejandria/widgets/widgets.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/login_form_provider.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({
@@ -19,13 +24,16 @@ class LoginScreen extends StatelessWidget {
         scrollDirection: Axis.vertical,
         children: [
           Introduction(),
-          PageView(
-            controller: _pageController,
-            physics: NeverScrollableScrollPhysics(),
-            children: [
-              _Login(pageController: _pageController),
-              _Register(pageController: _pageController)
-            ],
+          ChangeNotifierProvider(
+            create: (_) => LoginFormProvider(),
+            child: PageView(
+              controller: _pageController,
+              physics: NeverScrollableScrollPhysics(),
+              children: [
+                _Login(pageController: _pageController),
+                _Register(pageController: _pageController)
+              ],
+            ),
           )
         ],
       ),
@@ -68,53 +76,94 @@ class _Form extends StatefulWidget {
 }
 
 class __FormState extends State<_Form> {
-  final emailCtrl = TextEditingController();
-  final passCtrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final loginForm = Provider.of<LoginFormProvider>(context);
     return Container(
         margin: const EdgeInsets.only(top: 60),
         padding: const EdgeInsets.symmetric(horizontal: 30),
-        child: Column(children: [
-          CustomInputField(
-            icon: Icons.perm_identity_rounded,
-            placeholder: 'nombre de usuario o correo',
-            keyboardType: TextInputType.emailAddress,
-            textController: emailCtrl,
-            isIntro: true,
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          CustomInputField(
-            icon: Icons.lock_outline_rounded,
-            placeholder: 'contraseña',
-            textController: passCtrl,
-            keyboardType: TextInputType.text,
-            isPassword: true,
-            isIntro: true,
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          MaterialButton(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            disabledColor: Colors.grey,
-            elevation: 0,
-            color: AppTheme.intro,
-            child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                child: Text(
-                  'Iniciar Sesión',
-                  style: TextStyle(color: Colors.white),
-                )),
-            onPressed: () {
-              //TODO: comprobar que el login es correcto
-              Navigator.pushReplacementNamed(context, 'tabs');
-            },
-          )
-        ]));
+        child: Form(
+          key: loginForm.loginFormKey,
+          //autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: Column(children: [
+            CustomInputField(
+              icon: Icons.perm_identity_rounded,
+              placeholder: 'nombre de usuario o correo',
+              keyboardType: TextInputType.emailAddress,
+              isIntro: true,
+              onChanged: (value) => loginForm.email = value,
+              validator: (value) {
+                String pattern =
+                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+                String pattern2 = r'[a-z0-9._]{3,15}$';
+
+                if (value != null && value.contains('@')) {
+                  RegExp regExp = new RegExp(pattern);
+                  return regExp.hasMatch(value) ? null : 'Formato incorrecto';
+                } else {
+                  RegExp regExp = new RegExp(pattern2);
+                  return regExp.hasMatch(value ?? '')
+                      ? null
+                      : 'Formato incorrecto';
+                }
+              },
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            CustomInputField(
+              icon: Icons.lock_outline_rounded,
+              placeholder: 'contraseña',
+              keyboardType: TextInputType.text,
+              isPassword: true,
+              isIntro: true,
+              onChanged: (value) => loginForm.password = value,
+              validator: (value) {
+                return value != null && value.length > 7
+                    ? null
+                    : 'mínimo 8 caractéres';
+              },
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            MaterialButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              disabledColor: Colors.grey,
+              elevation: 0,
+              color: AppTheme.intro,
+              child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  child: Text(
+                    'Iniciar Sesión',
+                    style: TextStyle(color: Colors.white),
+                  )),
+              onPressed: loginForm.isLoading
+                  ? null
+                  : () async {
+                      FocusScope.of(context).unfocus();
+                      final authService =
+                          Provider.of<AuthService>(context, listen: false);
+
+                      if (!loginForm.isValidLoginForm()) return;
+
+                      loginForm.isLoading = true;
+
+                      // TODO: validar si el login es correcto
+                      final String? errorMessage = await authService
+                          .validateUser(loginForm.email, loginForm.password);
+
+                      if (errorMessage == null) {
+                        Navigator.pushReplacementNamed(context, 'home');
+                      } else {
+                        NotificationsService.showSnackbar(errorMessage);
+                        loginForm.isLoading = false;
+                      }
+                    },
+            )
+          ]),
+        ));
   }
 }
 
@@ -156,63 +205,104 @@ class _FormR extends StatefulWidget {
 }
 
 class __FormRState extends State<_FormR> {
-  final userCtrl = TextEditingController();
-  final emailCtrl = TextEditingController();
-  final passCtrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final regsiterForm = Provider.of<LoginFormProvider>(context);
     return Container(
         margin: const EdgeInsets.only(top: 60),
         padding: const EdgeInsets.symmetric(horizontal: 30),
-        child: Column(children: [
-          CustomInputField(
-            icon: Icons.perm_identity_rounded,
-            placeholder: 'nombre de usuario',
-            keyboardType: TextInputType.text,
-            textController: userCtrl,
-            isIntro: true,
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          CustomInputField(
-            icon: Icons.mail_outline,
-            placeholder: 'correo electrónico',
-            keyboardType: TextInputType.emailAddress,
-            textController: emailCtrl,
-            isIntro: true,
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          CustomInputField(
-            icon: Icons.lock_outline_rounded,
-            placeholder: 'contraseña',
-            textController: passCtrl,
-            keyboardType: TextInputType.text,
-            isPassword: true,
-            isIntro: true,
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          MaterialButton(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            disabledColor: Colors.grey,
-            elevation: 0,
-            color: AppTheme.intro,
-            child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                child: Text(
-                  'Crear Cuenta',
-                  style: TextStyle(color: Colors.white),
-                )),
-            onPressed: () {
-              //TOODO: comprar que la creación de cuenta es correcta
-              Navigator.pushReplacementNamed(context, 'editProfile');
-            },
-          )
-        ]));
+        child: Form(
+          key: regsiterForm.registerFormKey,
+          child: Column(children: [
+            CustomInputField(
+              icon: Icons.perm_identity_rounded,
+              placeholder: 'nombre de usuario',
+              keyboardType: TextInputType.text,
+              isIntro: true,
+              onChanged: (value) => regsiterForm.nick = value,
+              validator: (value) {
+                String pattern = r'[a-z0-9._]{3,15}$';
+                RegExp regExp = new RegExp(pattern);
+                return regExp.hasMatch(value ?? '')
+                    ? null
+                    : 'Formato incorecto';
+              },
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            CustomInputField(
+              icon: Icons.mail_outline,
+              placeholder: 'correo electrónico',
+              keyboardType: TextInputType.emailAddress,
+              isIntro: true,
+              onChanged: (value) => regsiterForm.email = value,
+              validator: (value) {
+                String pattern =
+                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+                RegExp regExp = new RegExp(pattern);
+
+                return regExp.hasMatch(value ?? '')
+                    ? null
+                    : 'Formato incorecto';
+              },
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            CustomInputField(
+              icon: Icons.lock_outline_rounded,
+              placeholder: 'contraseña',
+              keyboardType: TextInputType.text,
+              isPassword: true,
+              isIntro: true,
+              onChanged: (value) => regsiterForm.email = value,
+              validator: (value) {
+                return (value != null && value.length > 7)
+                    ? null
+                    : 'La contraseña debe ser de 8 caracteres';
+              },
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            MaterialButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              disabledColor: Colors.grey,
+              elevation: 0,
+              color: AppTheme.intro,
+              child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  child: Text(
+                    'Crear Cuenta',
+                    style: TextStyle(color: Colors.white),
+                  )),
+              onPressed: regsiterForm.isLoading
+                  ? null
+                  : () async {
+                      FocusScope.of(context).unfocus();
+                      final authService =
+                          Provider.of<AuthService>(context, listen: false);
+
+                      if (!regsiterForm.isValidRegisterForm()) return;
+
+                      regsiterForm.isLoading = true;
+
+                      final String? errorMessage = await authService.createUser(
+                          regsiterForm.nick,
+                          regsiterForm.email,
+                          regsiterForm.password);
+
+                      if (errorMessage == null) {
+                        Navigator.pushReplacementNamed(context, 'editProfile');
+                      } else {
+                        NotificationsService.showSnackbar(errorMessage);
+                        regsiterForm.isLoading = false;
+                      }
+                    },
+            )
+          ]),
+        ));
   }
 }

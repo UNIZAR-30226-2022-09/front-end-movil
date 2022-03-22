@@ -4,21 +4,25 @@ import 'package:flutter/material.dart';
 class CustomInputField extends StatelessWidget {
   final IconData icon;
   final String placeholder;
-  final TextEditingController textController;
+  final TextEditingController? textController;
   final TextInputType keyboardType;
   final bool isPassword;
   final int maxlines;
   final bool isIntro;
+  final String? Function(String?)? validator;
+  final void Function(String)? onChanged;
 
   const CustomInputField(
       {Key? key,
       required this.icon,
       required this.placeholder,
-      required this.textController,
+      this.textController,
       this.keyboardType = TextInputType.text,
       this.isPassword = false,
       this.maxlines = 1,
-      this.isIntro = false})
+      this.isIntro = false,
+      this.validator,
+      this.onChanged})
       : super(key: key);
 
   @override
@@ -29,6 +33,8 @@ class CustomInputField extends StatelessWidget {
         obscureText: isPassword,
         keyboardType: keyboardType,
         maxLines: maxlines,
+        validator: validator,
+        onChanged: onChanged,
         decoration: isIntro
             ? InputDecoration(
                 prefixIcon: Icon(
