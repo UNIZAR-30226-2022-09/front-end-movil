@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Material App',
         debugShowCheckedModeBanner: false,
-        initialRoute: 'login', //cambiar ruta ainicial a check
+        initialRoute: 'chek', //cambiar ruta ainicial a check
         routes: {
           'chek': (_) => CheckAuthScreen(),
           'login': (_) => LoginScreen(),

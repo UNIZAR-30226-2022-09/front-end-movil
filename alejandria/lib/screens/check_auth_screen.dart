@@ -32,7 +32,7 @@ class CheckAuthScreen extends StatelessWidget {
               Navigator.pushReplacement(
                   context,
                   PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => HomeScreen(),
+                      pageBuilder: (_, __, ___) => TabsScreen(),
                       transitionDuration: Duration(seconds: 0)));
             });
           }
