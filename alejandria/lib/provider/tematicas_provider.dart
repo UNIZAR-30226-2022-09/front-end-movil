@@ -6,36 +6,44 @@ class TematicasProvider with ChangeNotifier {
   String _selectedTematica = 'Preferencias';
 
   List<Tematica> tematicas = [
-    Tematica(FontAwesomeIcons.user, 'Preferencias'),
-    Tematica(FontAwesomeIcons.dna, 'Biología'),
-    Tematica(FontAwesomeIcons.ruler, 'C. Sociales'),
-    Tematica(FontAwesomeIcons.coins, 'Economía'),
-    Tematica(FontAwesomeIcons.lightbulb, 'Electrónica'),
-    Tematica(FontAwesomeIcons.language, 'Filologia'),
-    Tematica(FontAwesomeIcons.book, 'Filosofía'),
-    Tematica(FontAwesomeIcons.ruler, 'Física'),
-    Tematica(FontAwesomeIcons.accusoft, 'Geología'),
-    Tematica(FontAwesomeIcons.landmark, 'Historia'),
-    Tematica(FontAwesomeIcons.microchip, 'Informática'),
-    Tematica(FontAwesomeIcons.brain, 'Ingeniería'),
-    Tematica(FontAwesomeIcons.ruler, 'Matemáticas'),
-    Tematica(FontAwesomeIcons.ruler, 'Mecánica'),
-    Tematica(FontAwesomeIcons.stethoscope, 'Medicina'),
-    Tematica(FontAwesomeIcons.atom, 'Química'),
+    Tematica(FontAwesomeIcons.dna, 'Biología', 'Biiologia'),
+    Tematica(FontAwesomeIcons.ruler, 'C. Sociales', 'C. Sociales'),
+    Tematica(FontAwesomeIcons.coins, 'Economía', 'Economia'),
+    Tematica(FontAwesomeIcons.lightbulb, 'Electrónica', 'Electronica'),
+    Tematica(FontAwesomeIcons.language, 'Filologia', 'Filologia'),
+    Tematica(FontAwesomeIcons.book, 'Filosofía', 'Filosofia'),
+    Tematica(FontAwesomeIcons.ruler, 'Física', 'Fisica'),
+    Tematica(FontAwesomeIcons.accusoft, 'Geología', 'Geologia'),
+    Tematica(FontAwesomeIcons.landmark, 'Historia', 'Historia'),
+    Tematica(FontAwesomeIcons.microchip, 'Informática', 'Informatica'),
+    Tematica(FontAwesomeIcons.brain, 'Ingeniería', 'Ingenieria'),
+    Tematica(FontAwesomeIcons.ruler, 'Matemáticas', 'Matematicas'),
+    Tematica(FontAwesomeIcons.ruler, 'Mecánica', 'Mecanica'),
+    Tematica(FontAwesomeIcons.stethoscope, 'Medicina', 'Medicina'),
+    Tematica(FontAwesomeIcons.atom, 'Química', 'Quimica'),
   ];
 
   get selectedTemaTica => this._selectedTematica;
 
   set selectedTematica(String valor) {
     this._selectedTematica = valor;
-
-    //this._isLoading = true;
-    //this.getArticlesByCategory( valor );
     notifyListeners();
   }
 
   set isSelected(int index) {
     this.tematicas[index].isSelected = !this.tematicas[index].isSelected;
     notifyListeners();
+  }
+
+  bool checkData() {
+    tematicas.map((value) {
+      if (value.isSelected == true) return true;
+    });
+
+    return false;
+  }
+
+  void resetData() {
+    tematicas.map((value) => value.isSelected = false);
   }
 }
