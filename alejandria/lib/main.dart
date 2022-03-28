@@ -11,6 +11,7 @@ void main() async {
   await Preferences.init();
   return runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => AuthService()),
+    ChangeNotifierProvider(create: (_) => UserService()),
     ChangeNotifierProvider(
         create: (_) => ThemeProvider(isDarkmode: Preferences.isDarkMode)),
     ChangeNotifierProvider(create: (_) => TematicasProvider()),

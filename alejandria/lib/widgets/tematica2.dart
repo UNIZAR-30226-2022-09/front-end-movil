@@ -20,8 +20,6 @@ class tematicaWidget2 extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () {
-              final tematicas =
-                  Provider.of<TematicasProvider>(context, listen: false);
               // print('${ categoria.name }');
               tematicaProvider.isSelected = index;
             },

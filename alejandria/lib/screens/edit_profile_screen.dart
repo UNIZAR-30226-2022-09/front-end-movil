@@ -1,14 +1,18 @@
-import 'package:alejandria/models/tematica_model.dart';
+import 'package:alejandria/models/models.dart';
+import 'package:alejandria/provider/provider.dart';
+import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class EditProfileScreen extends StatelessWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final UserService userService = Provider.of<UserService>(context);
     return Scaffold(
         appBar: AppBar(
           title: Text('Editar Perfil',
@@ -18,7 +22,16 @@ class EditProfileScreen extends StatelessWidget {
           bottom: BottomLineAppBar(),
           actions: [
             TextButton(
-                onPressed: () {
+                onPressed: () async {
+                  final tematicas =
+                      Provider.of<TematicasProvider>(context, listen: false);
+                  if (!tematicas.checkData()) {
+                    NotificationsService.showSnackbar(
+                        'Debe elegiir al menos 1 temática');
+                    return;
+                  }
+
+                  userService.editProfile();
                   //TOODO: guardar los valores
                   Navigator.popUntil(context, (route) => false);
                   Navigator.pushNamed(context, 'tabs');
@@ -34,12 +47,12 @@ class EditProfileScreen extends StatelessWidget {
                 SizedBox(
                   height: 20,
                 ),
-                _ProfilePicture(),
+                _ProfilePicture(userService.userEdit.fotoDePerfil),
                 SizedBox(
                   height: 15,
                 ),
                 Divider(color: AppTheme.primary),
-                _ProfileForm(),
+                _ProfileForm(userService.userEdit),
                 SizedBox(
                   height: 15,
                 ),
@@ -57,7 +70,7 @@ class EditProfileScreen extends StatelessWidget {
                 SizedBox(
                   height: 15,
                 ),
-                _Tematicas(),
+                _Tematicas(userService.userEdit.tematicas),
               ],
             ),
           ),
@@ -66,21 +79,22 @@ class EditProfileScreen extends StatelessWidget {
 }
 
 class _ProfilePicture extends StatelessWidget {
-  const _ProfilePicture({
-    Key? key,
-  }) : super(key: key);
+  final String? url;
+  const _ProfilePicture(this.url);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         CircleAvatar(
-          radius: 55,
-          backgroundColor:
-              Preferences.isDarkMode ? Colors.grey[400] : Colors.grey[300],
-          //TODO: si tiene imagen sustituir el child por un NetworkImage
-          child: Icon(Icons.add, size: 50, color: AppTheme.primary),
-        ),
+            radius: 55,
+            backgroundColor:
+                Preferences.isDarkMode ? Colors.grey[400] : Colors.grey[300],
+            child: url == null
+                ? Icon(Icons.add, size: 50, color: AppTheme.primary)
+                : FadeInImage(
+                    placeholder: AssetImage('assets/icon.png'),
+                    image: NetworkImage(url!))),
         SizedBox(
           height: 5,
         ),
@@ -92,18 +106,18 @@ class _ProfilePicture extends StatelessWidget {
 }
 
 class _ProfileForm extends StatefulWidget {
-  const _ProfileForm({
-    Key? key,
-  }) : super(key: key);
+  UserModel user;
+
+  _ProfileForm(this.user);
 
   @override
-  State<_ProfileForm> createState() => _ProfileFormState();
+  State<_ProfileForm> createState() => _ProfileFormState(this.user);
 }
 
 class _ProfileFormState extends State<_ProfileForm> {
-  final nameCtrl = TextEditingController();
-  final descriptionCtrl = TextEditingController();
-  final linkCtrl = TextEditingController();
+  UserModel userEdit;
+
+  _ProfileFormState(this.userEdit);
 
   @override
   Widget build(BuildContext context) {
@@ -113,24 +127,27 @@ class _ProfileFormState extends State<_ProfileForm> {
       child: Form(
         child: Column(children: [
           CustomInputField(
-              icon: Icons.person_outline_rounded,
-              placeholder: 'Nombre',
-              textController: nameCtrl),
+            icon: Icons.person_outline_rounded,
+            placeholder: 'Nombre',
+            onChanged: (value) => userEdit.nombreDeUsuario = value,
+          ),
           SizedBox(
             height: 20,
           ),
           CustomInputField(
-              icon: Icons.description_outlined,
-              placeholder: 'Descripción',
-              maxlines: 3,
-              textController: descriptionCtrl),
+            icon: Icons.description_outlined,
+            placeholder: 'Descripción',
+            maxlines: 3,
+            onChanged: (value) => userEdit.descripcion = value,
+          ),
           SizedBox(
             height: 20,
           ),
           CustomInputField(
-              icon: Icons.link_rounded,
-              placeholder: 'link',
-              textController: linkCtrl),
+            icon: Icons.link_rounded,
+            placeholder: 'link',
+            onChanged: (value) => userEdit.link = value,
+          ),
         ]),
       ),
     );
@@ -138,17 +155,26 @@ class _ProfileFormState extends State<_ProfileForm> {
 }
 
 class _Tematicas extends StatefulWidget {
-  const _Tematicas({
-    Key? key,
-  }) : super(key: key);
+  List<String> tematicas;
+  _Tematicas(this.tematicas);
 
   @override
-  State<_Tematicas> createState() => _TematicasState();
+  State<_Tematicas> createState() => _TematicasState(tematicas);
 }
 
 class _TematicasState extends State<_Tematicas> {
+  List<String> tematicasService;
+  _TematicasState(this.tematicasService);
+
   @override
   Widget build(BuildContext context) {
+    final tematicas = Provider.of<TematicasProvider>(context).tematicas;
+
+    //inicializo el array de  tematicas
+    tematicasService.map((value) {
+      int index = tematicas.indexWhere((element) => element.dbName == value);
+      tematicas[index].isSelected = true;
+    });
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10),
       width: double.infinity,
@@ -160,12 +186,14 @@ class _TematicasState extends State<_Tematicas> {
             mainAxisSpacing: 10.0,
             crossAxisSpacing: 10.0,
           ),
-          itemCount: Tematica.tematicas.length,
+          itemCount: tematicas.length - 1,
           itemBuilder: (BuildContext context, int index) {
             return tematicaWidget(
-                icon: Tematica.tematicas[index].icon,
-                name: Tematica.tematicas[index].name,
-                isSelected: Tematica.tematicas[index].isSelected);
+              index: index + 1,
+              icon: tematicas[index + 1].icon,
+              name: tematicas[index + 1].name,
+              list: tematicasService,
+            );
           }),
     );
   }

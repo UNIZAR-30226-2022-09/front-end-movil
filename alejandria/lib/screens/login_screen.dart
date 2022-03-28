@@ -1,3 +1,4 @@
+import 'package:alejandria/models/user_model.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -294,6 +295,14 @@ class __FormRState extends State<_FormR> {
                           regsiterForm.password);
 
                       if (errorMessage == null) {
+                        final userService =
+                            Provider.of<UserService>(context, listen: false);
+                        userService.userEdit = UserModel(
+                            nick: regsiterForm.nick,
+                            tematicas: [],
+                            nposts: 0,
+                            nseguidores: 0,
+                            nsiguiendo: 0);
                         Navigator.pushReplacementNamed(context, 'editProfile');
                       } else {
                         NotificationsService.showSnackbar(errorMessage);

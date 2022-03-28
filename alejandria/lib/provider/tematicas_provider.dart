@@ -30,6 +30,10 @@ class TematicasProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  bool isSelectedTematica(int index) {
+    return tematicas[index].isSelected;
+  }
+
   set isSelected(int index) {
     this.tematicas[index].isSelected = !this.tematicas[index].isSelected;
     notifyListeners();

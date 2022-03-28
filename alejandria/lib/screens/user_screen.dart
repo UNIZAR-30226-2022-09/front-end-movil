@@ -1,5 +1,4 @@
 import 'package:alejandria/provider/theme_provider.dart';
-import 'package:alejandria/services/auth_service.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
@@ -135,42 +134,42 @@ class _DarkModeState extends State<_DarkMode> {
 class _UpperContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final userService = Provider.of<UserService>(context);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      _Photo_Followers(),
+      _Photo_Followers(userService),
 
-      //TODO: coomprobar si ha rellenado el campo "nombre"
-      Padding(
-        padding: const EdgeInsets.only(left: 15, bottom: 10),
-        child: Text(
-          'Nombre del usuario',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+      if (userService.user.nombreDeUsuario != null)
+        Padding(
+          padding: const EdgeInsets.only(left: 15, bottom: 10),
+          child: Text(
+            userService.user.nombreDeUsuario!, //
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
         ),
-      ),
 
-      ///TODO: coomprobar si ha rellenado el campo "descripción"
-      Padding(
-        padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-        child: Text(
-            'Mostrar la descripción provista por el usuario en la pantalla de "editar perfil"'),
-      ),
+      if (userService.user.descripcion != null)
+        Padding(
+          padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
+          child: Text(userService.user.descripcion!),
+        ),
 
-      //TODO: coomprobar si ha rellenado el campo "LINK"
-      Padding(
-          padding: const EdgeInsets.only(left: 15, right: 15, bottom: 5),
-          child: GestureDetector(
-            child: Text(
-              'https://github.com/UNIZAR-30226-2022-09/front-end-movil',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                  color: Preferences.isDarkMode
-                      ? Colors.blue[200]
-                      : Colors.blue[900]),
-            ),
-            onTap: () async {
-              launch("https://github.com/UNIZAR-30226-2022-09/front-end-movil");
-            },
-          )),
+      if (userService.user.link != null)
+        Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15, bottom: 5),
+            child: GestureDetector(
+              child: Text(
+                userService.user.link!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                    color: Preferences.isDarkMode
+                        ? Colors.blue[200]
+                        : Colors.blue[900]),
+              ),
+              onTap: () async {
+                launch(userService.user.link!);
+              },
+            )),
 
       //TODO: muchas cosas
       Padding(
@@ -185,6 +184,7 @@ class _UpperContent extends StatelessWidget {
               child: Text('Editar Perfil'),
             ),
             onPressed: () {
+              userService.userEdit = userService.user.copy();
               Navigator.restorablePushNamed(context, 'editProfile');
             }),
       )
@@ -193,39 +193,41 @@ class _UpperContent extends StatelessWidget {
 }
 
 class _Photo_Followers extends StatelessWidget {
-  const _Photo_Followers({
-    Key? key,
-  }) : super(key: key);
+  final UserService userService;
+  const _Photo_Followers(this.userService);
 
   @override
   Widget build(BuildContext context) {
     return Container(
         padding: EdgeInsets.all(15),
-        //color: Colors.green,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CircleAvatar(
               radius: 50,
               backgroundColor: Colors.grey[400],
-              child: Icon(
-                Icons.person,
-                size: 80,
-                color: Colors.white,
-              ),
+              child: userService.user.fotoDePerfil == null
+                  ? Icon(
+                      Icons.person,
+                      size: 80,
+                      color: Colors.white,
+                    )
+                  : FadeInImage(
+                      placeholder: AssetImage('assets/icon.png'),
+                      image: NetworkImage(userService.user.fotoDePerfil!)),
             ),
             SizedBox(
               width: 30,
             ),
-            _numbers(number: 10, msg: 'Posts'),
+            _numbers(number: userService.user.nposts, msg: 'Posts'),
             SizedBox(
               width: 15,
             ),
-            _numbers(number: 235, msg: 'Seguidores'),
+            _numbers(number: userService.user.nseguidores, msg: 'Seguidores'),
             SizedBox(
               width: 15,
             ),
-            _numbers(number: 176, msg: 'Siguiendo')
+            _numbers(number: userService.user.nsiguiendo, msg: 'Siguiendo')
           ],
         ));
   }
@@ -333,31 +335,6 @@ class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
                       }),
                 );
         })
-        // Container(
-        //   width: double.infinity,
-        //   //Luego sustituir 5 y 10, por itemCoount/2 e itemCount
-        //   height: _tabController.index == 0
-        //       ? MediaQuery.of(context).size.width * 0.7 * 5
-        //       : 155 * 10,
-        //   child: TabBarView(controller: _tabController, children: [
-        //     GridView.builder(
-        //       physics: NeverScrollableScrollPhysics(),
-        //       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        //           crossAxisCount: 2,
-        //           mainAxisExtent: MediaQuery.of(context).size.width * 0.7),
-        //       itemCount: 10,
-        //       itemBuilder: (BuildContext context, int indx) {
-        //         return ArticleCover();
-        //       },
-        //     ),
-        //     ListView.builder(
-        //         physics: NeverScrollableScrollPhysics(),
-        //         itemCount: 10,
-        //         itemBuilder: (BuildContext context, int indx) {
-        //           return RecommendationPost();
-        //         }),
-        //   ]),
-        // ),
       ],
     );
   }

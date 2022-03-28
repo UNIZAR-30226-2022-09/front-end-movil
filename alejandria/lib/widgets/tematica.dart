@@ -1,50 +1,49 @@
+import 'package:alejandria/provider/provider.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class tematicaWidget extends StatefulWidget {
+class tematicaWidget extends StatelessWidget {
+  final int index;
   final IconData icon;
   final String name;
-  bool isSelected;
-
+  List<String> list;
   tematicaWidget(
       {Key? key,
+      required this.index,
       required this.icon,
       required this.name,
-      required this.isSelected})
+      required this.list})
       : super(key: key);
 
   @override
-  State<tematicaWidget> createState() =>
-      _tematicaWidgetState(icon, name, isSelected);
-}
-
-class _tematicaWidgetState extends State<tematicaWidget> {
-  final IconData icon;
-  final String name;
-  bool isSelected;
-  _tematicaWidgetState(this.icon, this.name, this.isSelected);
-  @override
   Widget build(BuildContext context) {
+    final tematicaProvider = Provider.of<TematicasProvider>(context);
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           GestureDetector(
             onTap: () {
-              // print('${ categoria.name }');
-              isSelected = !isSelected;
-              setState(() {});
+              tematicaProvider.isSelectedTematica(index)
+                  ? list.remove(tematicaProvider.tematicas[index].dbName)
+                  : list.add(tematicaProvider.tematicas[index].dbName);
+              tematicaProvider.isSelected = index;
             },
             child: Container(
               width: 55,
               height: 55,
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isSelected ? AppTheme.primary : Colors.grey[300],
+                  color: tematicaProvider.tematicas[index].isSelected
+                      ? AppTheme.primary
+                      : Colors.grey[300],
                   border: Border()),
               child: Icon(
                 icon,
-                color: isSelected ? Colors.white : AppTheme.primary,
+                color: tematicaProvider.tematicas[index].isSelected
+                    ? Colors.white
+                    : AppTheme.primary,
               ),
             ),
           ),

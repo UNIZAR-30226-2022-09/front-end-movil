@@ -23,7 +23,7 @@ class UserModel {
   String? nombreDeUsuario;
   String? descripcion;
   String? link;
-  List<Tematica> tematicas;
+  List<String> tematicas;
   int nposts;
   int nseguidores;
   int nsiguiendo;
@@ -38,7 +38,7 @@ class UserModel {
         nombreDeUsuario: json["nombre_de_usuario"],
         descripcion: json["descripcion"],
         link: json["link"],
-        tematicas: List<Tematica>.from(json["tematicas"].map((x) => x)),
+        tematicas: List<String>.from(json["tematicas"].map((x) => x)),
         nposts: json["nposts"],
         nseguidores: json["nseguidores"],
         nsiguiendo: json["nsiguiendo"],

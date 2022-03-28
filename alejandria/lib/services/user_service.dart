@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 class UserService extends ChangeNotifier {
   final String _baseUrl = '51.255.50.207:5000';
   late UserModel user;
+  late UserModel userEdit;
 
   final storage = new FlutterSecureStorage();
 
@@ -25,7 +26,7 @@ class UserService extends ChangeNotifier {
     this.isLoading = true;
     notifyListeners();
 
-    final url = Uri.https(_baseUrl, '/user');
+    final url = Uri.https(_baseUrl, '/editarPerfil');
     final resp = await http.get(url, headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'token': await storage.read(key: 'token') ?? ''
@@ -43,14 +44,15 @@ class UserService extends ChangeNotifier {
     this.isSaving = true;
     notifyListeners();
 
-    final url = Uri.http(_baseUrl, '/editProfile');
+    final url = Uri.http(_baseUrl, '/editarPerfil');
     final resp = await http.post(url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'token': await storage.read(key: 'token') ?? ''
         },
-        body: user.toJson());
+        body: userEdit.toJson());
 
+    user = userEdit;
     this.isSaving = false;
     notifyListeners();
   }
