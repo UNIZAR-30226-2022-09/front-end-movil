@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:alejandria/models/models.dart';
 import 'package:alejandria/provider/provider.dart';
 import 'package:alejandria/services/services.dart';
@@ -6,6 +8,7 @@ import 'package:alejandria/themes/app_theme.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditProfileScreen extends StatelessWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
@@ -37,7 +40,11 @@ class EditProfileScreen extends StatelessWidget {
                   Navigator.pushNamed(context, 'tabs');
                 },
                 child: Text('Listo',
-                    style: TextStyle(color: AppTheme.primary, fontSize: 16)))
+                    style: TextStyle(
+                        color: userService.isSaving
+                            ? Colors.grey[600]
+                            : AppTheme.primary,
+                        fontSize: 16)))
           ],
         ),
         body: SingleChildScrollView(
@@ -47,7 +54,7 @@ class EditProfileScreen extends StatelessWidget {
                 SizedBox(
                   height: 20,
                 ),
-                _ProfilePicture(userService.userEdit.fotoDePerfil),
+                _ProfilePicture(userService),
                 SizedBox(
                   height: 15,
                 ),
@@ -79,22 +86,31 @@ class EditProfileScreen extends StatelessWidget {
 }
 
 class _ProfilePicture extends StatelessWidget {
-  final String? url;
-  const _ProfilePicture(this.url);
+  UserService userService;
+  _ProfilePicture(this.userService);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CircleAvatar(
-            radius: 55,
-            backgroundColor:
-                Preferences.isDarkMode ? Colors.grey[400] : Colors.grey[300],
-            child: url == null
-                ? Icon(Icons.add, size: 50, color: AppTheme.primary)
-                : FadeInImage(
-                    placeholder: AssetImage('assets/icon.png'),
-                    image: NetworkImage(url!))),
+        GestureDetector(
+          child: CircleAvatar(
+              radius: 55,
+              backgroundColor:
+                  Preferences.isDarkMode ? Colors.grey[400] : Colors.grey[300],
+              child: userService.userEdit.fotoDePerfil == null
+                  ? Icon(Icons.add, size: 50, color: AppTheme.primary)
+                  : FadeInImage(
+                      placeholder: AssetImage('assets/icon.png'),
+                      image: NetworkImage(userService.userEdit.fotoDePerfil!))),
+          onTap: () async {
+            final picker = new ImagePicker();
+            final PickedFile? pickedFile =
+                await picker.getImage(source: ImageSource.gallery);
+            if (pickedFile == null) return;
+            userService.updateSelectedProfileImage(pickedFile.path);
+          },
+        ),
         SizedBox(
           height: 5,
         ),
@@ -102,6 +118,19 @@ class _ProfilePicture extends StatelessWidget {
             style: TextStyle(color: AppTheme.primary)),
       ],
     );
+  }
+
+  Widget getProfilePicture(String? picture) {
+    //No tengo foto
+    if (picture == null)
+      return Icon(Icons.add, size: 50, color: AppTheme.primary);
+    //La foto es un link
+    else if (picture.startsWith('http'))
+      FadeInImage(
+          placeholder: AssetImage('assets/icon.png'),
+          image: NetworkImage(userService.userEdit.fotoDePerfil!));
+    //La foto esta en el dispositivo
+    return Image.file(File(picture));
   }
 }
 

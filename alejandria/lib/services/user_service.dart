@@ -13,7 +13,7 @@ class UserService extends ChangeNotifier {
 
   final storage = new FlutterSecureStorage();
 
-  File? ProfilePicture;
+  File? profilePicture;
 
   bool isLoading = true;
   bool isSaving = false;
@@ -57,9 +57,9 @@ class UserService extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateSelectedProductImage(String path) {
-    this.user.fotoDePerfil = path;
-    this.ProfilePicture = File.fromUri(Uri(path: path));
+  void updateSelectedProfileImage(String path) {
+    this.userEdit.fotoDePerfil = path;
+    this.profilePicture = File.fromUri(Uri(path: path));
 
     notifyListeners();
   }
