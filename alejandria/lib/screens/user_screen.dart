@@ -1,4 +1,5 @@
-import 'package:alejandria/provider/theme_provider.dart';
+import 'package:alejandria/provider/provider.dart';
+import 'package:alejandria/screens/screens.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
@@ -12,9 +13,38 @@ class UserScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userService = Provider.of<UserService>(context);
+    print(userService.user.tematicas);
+    if (userService.isLoading)
+      return Center(
+        child: GestureDetector(
+          onTap: () {
+            final authService =
+                Provider.of<AuthService>(context, listen: false);
+            authService.logOut();
+            Navigator.pushReplacementNamed(context, 'login');
+          },
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+                border: Border(
+                    top: BorderSide(color: AppTheme.primary.withOpacity(0.5)),
+                    bottom:
+                        BorderSide(color: AppTheme.primary.withOpacity(0.5)))),
+            child: ListTile(
+              leading: const Icon(
+                Icons.power_settings_new_rounded,
+                color: Colors.red,
+              ),
+              title: const Text('Cerrar Sesión',
+                  style: TextStyle(color: Colors.red)),
+            ),
+          ),
+        ),
+      );
     return Scaffold(
       appBar: AppBar(
-        title: Text('user_name',
+        title: Text(userService.user.nick,
             style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
@@ -24,7 +54,7 @@ class UserScreen extends StatelessWidget {
       endDrawer: _MyDrawer(),
       body: SingleChildScrollView(
           child: Column(
-        children: [_UpperContent(), _Posts()],
+        children: [_UpperContent(userService: userService), _Posts()],
       )),
     );
   }
@@ -132,9 +162,12 @@ class _DarkModeState extends State<_DarkMode> {
 }
 
 class _UpperContent extends StatelessWidget {
+  final UserService userService;
+
+  _UpperContent({Key? key, required this.userService}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    final userService = Provider.of<UserService>(context);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       _Photo_Followers(userService),
 
@@ -185,6 +218,9 @@ class _UpperContent extends StatelessWidget {
             ),
             onPressed: () {
               userService.userEdit = userService.user.copy();
+              final tematicas =
+                  Provider.of<TematicasProvider>(context, listen: false);
+              tematicas.resetData();
               Navigator.restorablePushNamed(context, 'editProfile');
             }),
       )
@@ -203,19 +239,25 @@ class _Photo_Followers extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.grey[400],
-              child: userService.user.fotoDePerfil == null
-                  ? Icon(
-                      Icons.person,
-                      size: 80,
-                      color: Colors.white,
-                    )
-                  : FadeInImage(
-                      placeholder: AssetImage('assets/icon.png'),
-                      image: NetworkImage(userService.user.fotoDePerfil!)),
-            ),
+            Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                    color: Colors.red, borderRadius: BorderRadius.circular(50)),
+                child: userService.user.fotoDePerfil == null
+                    ? Icon(
+                        Icons.person,
+                        size: 80,
+                        color: Colors.white,
+                      )
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: FadeInImage(
+                            fit: BoxFit.cover,
+                            placeholder: AssetImage('assets/icon.png'),
+                            image:
+                                NetworkImage(userService.user.fotoDePerfil!)),
+                      )),
             SizedBox(
               width: 30,
             ),

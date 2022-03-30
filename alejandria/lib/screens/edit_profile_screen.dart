@@ -16,6 +16,12 @@ class EditProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final UserService userService = Provider.of<UserService>(context);
+    if (userService.isLoading)
+      return Container(
+        height: 300,
+        width: double.infinity,
+        color: Colors.red,
+      );
     return Scaffold(
         appBar: AppBar(
           title: Text('Editar Perfil',
@@ -25,20 +31,23 @@ class EditProfileScreen extends StatelessWidget {
           bottom: BottomLineAppBar(),
           actions: [
             TextButton(
-                onPressed: () async {
-                  final tematicas =
-                      Provider.of<TematicasProvider>(context, listen: false);
-                  if (!tematicas.checkData()) {
-                    NotificationsService.showSnackbar(
-                        'Debe elegiir al menos 1 temática');
-                    return;
-                  }
+                onPressed: userService.isSaving
+                    ? null
+                    : () async {
+                        final tematicas = Provider.of<TematicasProvider>(
+                            context,
+                            listen: false);
+                        if (!tematicas.checkData()) {
+                          NotificationsService.showSnackbar(
+                              'Debe elegiir al menos 1 temática');
+                          return;
+                        }
 
-                  userService.editProfile();
-                  //TOODO: guardar los valores
-                  Navigator.popUntil(context, (route) => false);
-                  Navigator.pushNamed(context, 'tabs');
-                },
+                        userService.editProfile();
+
+                        Navigator.popUntil(context, (route) => false);
+                        Navigator.pushNamed(context, 'tabs');
+                      },
                 child: Text('Listo',
                     style: TextStyle(
                         color: userService.isSaving
@@ -94,15 +103,15 @@ class _ProfilePicture extends StatelessWidget {
     return Column(
       children: [
         GestureDetector(
-          child: CircleAvatar(
-              radius: 55,
-              backgroundColor:
-                  Preferences.isDarkMode ? Colors.grey[400] : Colors.grey[300],
-              child: userService.userEdit.fotoDePerfil == null
-                  ? Icon(Icons.add, size: 50, color: AppTheme.primary)
-                  : FadeInImage(
-                      placeholder: AssetImage('assets/icon.png'),
-                      image: NetworkImage(userService.userEdit.fotoDePerfil!))),
+          child: Container(
+            width: 110,
+            height: 110,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(55)),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(55),
+              child: getProfilePicture(userService.userEdit.fotoDePerfil),
+            ),
+          ),
           onTap: () async {
             final picker = new ImagePicker();
             final PickedFile? pickedFile =
@@ -121,16 +130,26 @@ class _ProfilePicture extends StatelessWidget {
   }
 
   Widget getProfilePicture(String? picture) {
+    print('me han llamado :)');
     //No tengo foto
-    if (picture == null)
+    if (picture == null) {
+      print('soy null xd');
       return Icon(Icons.add, size: 50, color: AppTheme.primary);
+    }
+
     //La foto es un link
-    else if (picture.startsWith('http'))
-      FadeInImage(
+    else if (picture.startsWith('http')) {
+      return FadeInImage(
+          fit: BoxFit.cover,
           placeholder: AssetImage('assets/icon.png'),
           image: NetworkImage(userService.userEdit.fotoDePerfil!));
+    }
     //La foto esta en el dispositivo
-    return Image.file(File(picture));
+    print('hola');
+    return Image.file(
+      File(picture),
+      fit: BoxFit.cover,
+    );
   }
 }
 
@@ -158,6 +177,7 @@ class _ProfileFormState extends State<_ProfileForm> {
           CustomInputField(
             icon: Icons.person_outline_rounded,
             placeholder: 'Nombre',
+            initialValue: userEdit.nombreDeUsuario,
             onChanged: (value) => userEdit.nombreDeUsuario = value,
           ),
           SizedBox(
@@ -167,6 +187,7 @@ class _ProfileFormState extends State<_ProfileForm> {
             icon: Icons.description_outlined,
             placeholder: 'Descripción',
             maxlines: 3,
+            initialValue: userEdit.descripcion,
             onChanged: (value) => userEdit.descripcion = value,
           ),
           SizedBox(
@@ -175,6 +196,7 @@ class _ProfileFormState extends State<_ProfileForm> {
           CustomInputField(
             icon: Icons.link_rounded,
             placeholder: 'link',
+            initialValue: userEdit.link,
             onChanged: (value) => userEdit.link = value,
           ),
         ]),
@@ -199,11 +221,12 @@ class _TematicasState extends State<_Tematicas> {
   Widget build(BuildContext context) {
     final tematicas = Provider.of<TematicasProvider>(context).tematicas;
 
-    //inicializo el array de  tematicas
-    tematicasService.map((value) {
-      int index = tematicas.indexWhere((element) => element.dbName == value);
+    for (int i = 0; i < tematicasService.length; i++) {
+      int index = tematicas
+          .indexWhere((element) => element.dbName == tematicasService[i]);
       tematicas[index].isSelected = true;
-    });
+    }
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10),
       width: double.infinity,

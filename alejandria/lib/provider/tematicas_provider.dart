@@ -6,7 +6,7 @@ class TematicasProvider with ChangeNotifier {
   String _selectedTematica = 'Preferencias';
 
   List<Tematica> tematicas = [
-    Tematica(FontAwesomeIcons.dna, 'Biología', 'Biiologia'),
+    Tematica(FontAwesomeIcons.dna, 'Biología', 'Biologia'),
     Tematica(FontAwesomeIcons.ruler, 'C. Sociales', 'C. Sociales'),
     Tematica(FontAwesomeIcons.coins, 'Economía', 'Economia'),
     Tematica(FontAwesomeIcons.lightbulb, 'Electrónica', 'Electronica'),
@@ -40,14 +40,15 @@ class TematicasProvider with ChangeNotifier {
   }
 
   bool checkData() {
-    tematicas.map((value) {
-      if (value.isSelected == true) return true;
-    });
-
+    for (int i = 0; i < tematicas.length; i++) {
+      if (tematicas[i].isSelected) return true;
+    }
     return false;
   }
 
   void resetData() {
-    tematicas.map((value) => value.isSelected = false);
+    for (int i = 0; i < tematicas.length; i++) {
+      tematicas[i].isSelected = false;
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:alejandria/models/user_model.dart';
+import 'package:alejandria/provider/provider.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -301,8 +302,14 @@ class __FormRState extends State<_FormR> {
                             nick: regsiterForm.nick,
                             tematicas: [],
                             nposts: 0,
+                            fotoDePerfil:
+                                'http://51.255.50.207:5000/display/levi.png',
                             nseguidores: 0,
                             nsiguiendo: 0);
+                        final tematicasProvider =
+                            Provider.of<TematicasProvider>(context,
+                                listen: false);
+                        tematicasProvider.resetData();
                         Navigator.pushReplacementNamed(context, 'editProfile');
                       } else {
                         NotificationsService.showSnackbar(errorMessage);

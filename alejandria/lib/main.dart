@@ -37,7 +37,8 @@ class MyApp extends StatelessWidget {
           'newRecoommendation': (_) => NewRecommendationScreen(),
           'notifications': (_) => NotificationsScreen(),
           'profile': (_) => UserScreen(),
-          'savedPosts': (_) => SavedPostsScreen()
+          'savedPosts': (_) => SavedPostsScreen(),
+          'loading': (_) => LoadingScreen()
         },
         scaffoldMessengerKey: NotificationsService.messengerKey,
         theme: Provider.of<ThemeProvider>(context).currentTheme);

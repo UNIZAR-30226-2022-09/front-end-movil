@@ -26,7 +26,7 @@ class UserService extends ChangeNotifier {
     this.isLoading = true;
     notifyListeners();
 
-    final url = Uri.https(_baseUrl, '/editarPerfil');
+    final url = Uri.http(_baseUrl, '/editarPerfil');
     final resp = await http.get(url, headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'token': await storage.read(key: 'token') ?? ''
@@ -34,6 +34,7 @@ class UserService extends ChangeNotifier {
 
     user = UserModel.fromMap(json.decode(resp.body));
 
+    print(user.toJson());
     this.isLoading = false;
     notifyListeners();
 
@@ -45,6 +46,7 @@ class UserService extends ChangeNotifier {
     notifyListeners();
 
     final url = Uri.http(_baseUrl, '/editarPerfil');
+    print(userEdit.toJson());
     final resp = await http.post(url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -52,15 +54,36 @@ class UserService extends ChangeNotifier {
         },
         body: userEdit.toJson());
 
+    print('POST' + userEdit.toJson());
+
+    if (this.userEdit.cambia_foto == 1) {
+      final url2 = Uri.parse('http://$_baseUrl/actualizarImagen');
+      final imageUploadRequest = http.MultipartRequest('POST', url2);
+      final file =
+          await http.MultipartFile.fromPath('nueva_foto', profilePicture!.path);
+
+      imageUploadRequest.files.add(file);
+      imageUploadRequest.headers['token'] =
+          await storage.read(key: 'token') ?? '';
+
+      final streamResponse = await imageUploadRequest.send();
+    }
+
+    this.userEdit.cambia_foto = 0;
     user = userEdit;
+    //user.tematicas = [...userEdit.tematicas];
+    if (this.userEdit.cambia_foto == 1) {
+      loadData();
+    }
     this.isSaving = false;
     notifyListeners();
   }
 
-  void updateSelectedProfileImage(String path) {
+  void updateSelectedProfileImage(String path) async {
     this.userEdit.fotoDePerfil = path;
     this.profilePicture = File.fromUri(Uri(path: path));
-
+    this.userEdit.cambia_foto = 1;
+    print('he llegado');
     notifyListeners();
   }
 }
