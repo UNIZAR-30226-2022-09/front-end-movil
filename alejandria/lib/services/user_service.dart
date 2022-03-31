@@ -34,7 +34,6 @@ class UserService extends ChangeNotifier {
 
     user = UserModel.fromMap(json.decode(resp.body));
 
-    print(user.toJson());
     this.isLoading = false;
     notifyListeners();
 
@@ -46,15 +45,12 @@ class UserService extends ChangeNotifier {
     notifyListeners();
 
     final url = Uri.http(_baseUrl, '/editarPerfil');
-    print(userEdit.toJson());
     final resp = await http.post(url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'token': await storage.read(key: 'token') ?? ''
         },
         body: userEdit.toJson());
-
-    print('POST' + userEdit.toJson());
 
     if (this.userEdit.cambia_foto == 1) {
       final url2 = Uri.parse('http://$_baseUrl/actualizarImagen');
@@ -66,7 +62,7 @@ class UserService extends ChangeNotifier {
       imageUploadRequest.headers['token'] =
           await storage.read(key: 'token') ?? '';
 
-      final streamResponse = await imageUploadRequest.send();
+      await imageUploadRequest.send();
     }
 
     this.userEdit.cambia_foto = 0;

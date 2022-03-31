@@ -1,16 +1,22 @@
+import 'dart:io';
+
 import 'package:alejandria/provider/provider.dart';
+import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:alejandria/widgets/tematica2.dart';
 import 'package:alejandria/widgets/widgets.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class NewArticleScreen extends StatelessWidget {
   const NewArticleScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    PostService articlePost = Provider.of<PostService>(context);
     return Scaffold(
         appBar: AppBar(
           title: Text('Nuevo post',
@@ -20,13 +26,34 @@ class NewArticleScreen extends StatelessWidget {
           bottom: BottomLineAppBar(),
           actions: [
             TextButton(
-                onPressed: () {
-                  //TOODO: guardar los valores
-                  Navigator.popUntil(context, (route) => false);
-                  Navigator.pushNamed(context, 'tabs');
-                },
+                onPressed: articlePost.isSaving
+                    ? null
+                    : () {
+                        final tematicas = Provider.of<TematicasProvider>(
+                            context,
+                            listen: false);
+                        if (!tematicas.checkData()) {
+                          NotificationsService.showSnackbar(
+                              'Debe elegiir al menos 1 temática');
+                          return;
+                        } else if (!(articlePost.check1 &&
+                            articlePost.check2)) {
+                          NotificationsService.showSnackbar(
+                              'Marca las casillas por favor');
+                          return;
+                        }
+
+                        //articlePost.uploadPost();
+
+                        Navigator.popUntil(context, (route) => false);
+                        Navigator.pushNamed(context, 'tabs');
+                      },
                 child: Text('Publicar',
-                    style: TextStyle(color: AppTheme.primary, fontSize: 16)))
+                    style: TextStyle(
+                        color: articlePost.isSaving
+                            ? Colors.grey[600]
+                            : AppTheme.primary,
+                        fontSize: 16)))
           ],
         ),
         body: SingleChildScrollView(
@@ -34,7 +61,7 @@ class NewArticleScreen extends StatelessWidget {
             padding: EdgeInsets.only(left: 15, right: 15, top: 15),
             child: Column(
               children: [
-                _SelectPdf(),
+                _SelectPdf(articlePost),
                 Divider(
                   color: AppTheme.primary,
                 ),
@@ -61,46 +88,57 @@ class NewArticleScreen extends StatelessWidget {
 }
 
 class _SelectPdf extends StatelessWidget {
-  const _SelectPdf({
-    Key? key,
-  }) : super(key: key);
+  PostService articlePost;
+  _SelectPdf(this.articlePost);
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         //Container con la portada del pdf
-        Container(
-          width: 110,
-          height: 155.57,
-          decoration: BoxDecoration(
-              color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
-          child: Icon(
-            Icons.add,
-            size: 50,
-            color: AppTheme.primary,
+        GestureDetector(
+          onTap: () async {
+            final result = await FilePicker.platform.pickFiles(
+              type: FileType.custom,
+              allowedExtensions: ['pdf'],
+            );
+            if (result == null) return;
+            articlePost.pdfArticle = File(result.files.single.path!);
+            articlePost.notify();
+          },
+          child: Container(
+            width: 110,
+            height: 155.57,
+            decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(10)),
+            child: articlePost.pdfArticle == null
+                ? Icon(
+                    Icons.add,
+                    size: 50,
+                    color: AppTheme.primary,
+                  )
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SfPdfViewer.file(
+                      articlePost.pdfArticle!,
+                      canShowScrollHead: false,
+                      enableDoubleTapZooming: false,
+                      enableTextSelection: false,
+                    ),
+                  ),
           ),
         ),
         //Checkboxes
-        _CheckBoxes()
+        _CheckBoxes(articlePost)
       ],
     );
   }
 }
 
-class _CheckBoxes extends StatefulWidget {
-  _CheckBoxes({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  State<_CheckBoxes> createState() => _CheckBoxesState();
-}
-
-class _CheckBoxesState extends State<_CheckBoxes> {
-  bool checkedValue1 = false;
-
-  bool checkedValue2 = false;
+class _CheckBoxes extends StatelessWidget {
+  PostService articlePost;
+  _CheckBoxes(this.articlePost);
 
   @override
   Widget build(BuildContext context) {
@@ -110,26 +148,26 @@ class _CheckBoxesState extends State<_CheckBoxes> {
       child: Column(
         children: [
           CheckboxListTile(
-              value: checkedValue1,
+              value: articlePost.check1,
               title: Text(
                 'Certifico que yo soy el autor del artículo',
                 textAlign: TextAlign.justify,
                 style: TextStyle(fontSize: 15),
               ),
               onChanged: (value) {
-                checkedValue1 = !checkedValue1;
-                setState(() {});
+                articlePost.check1 = !articlePost.check1;
+                articlePost.notify();
               }),
           CheckboxListTile(
-              value: checkedValue2,
+              value: articlePost.check2,
               title: Text(
                 'He comprendido que al publicar el artículo cualquier usuario de la plataforma podrá verlo',
                 textAlign: TextAlign.justify,
                 style: TextStyle(fontSize: 15),
               ),
               onChanged: (value) {
-                checkedValue2 = !checkedValue2;
-                setState(() {});
+                articlePost.check2 = !articlePost.check2;
+                articlePost.notify();
               })
         ],
       ),

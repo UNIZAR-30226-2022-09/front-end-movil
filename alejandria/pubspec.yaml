@@ -38,6 +38,8 @@ dependencies:
   http: ^0.13.4
   flutter_secure_storage: ^5.0.2
   image_picker: ^0.8.4+11
+  syncfusion_flutter_pdfviewer: ^19.4.56-beta
+  file_picker: ^4.5.1
 
 dev_dependencies:
 
