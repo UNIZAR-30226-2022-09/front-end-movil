@@ -72,9 +72,9 @@ class UserService extends ChangeNotifier {
     this.userEdit.cambia_foto = 0;
     user = userEdit;
     //user.tematicas = [...userEdit.tematicas];
-    if (this.userEdit.cambia_foto == 1) {
-      loadData();
-    }
+    //if (this.userEdit.cambia_foto == 1) {
+    loadData();
+    //}
     this.isSaving = false;
     notifyListeners();
   }

@@ -14,34 +14,7 @@ class UserScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userService = Provider.of<UserService>(context);
-    print(userService.user.tematicas);
-    if (userService.isLoading)
-      return Center(
-        child: GestureDetector(
-          onTap: () {
-            final authService =
-                Provider.of<AuthService>(context, listen: false);
-            authService.logOut();
-            Navigator.pushReplacementNamed(context, 'login');
-          },
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-                border: Border(
-                    top: BorderSide(color: AppTheme.primary.withOpacity(0.5)),
-                    bottom:
-                        BorderSide(color: AppTheme.primary.withOpacity(0.5)))),
-            child: ListTile(
-              leading: const Icon(
-                Icons.power_settings_new_rounded,
-                color: Colors.red,
-              ),
-              title: const Text('Cerrar Sesión',
-                  style: TextStyle(color: Colors.red)),
-            ),
-          ),
-        ),
-      );
+    if (userService.isLoading) return LoadingScreen();
     return Scaffold(
       appBar: AppBar(
         title: Text(userService.user.nick,
@@ -170,7 +143,6 @@ class _UpperContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       _Photo_Followers(userService),
-
       if (userService.user.nombreDeUsuario != null)
         Padding(
           padding: const EdgeInsets.only(left: 15, bottom: 10),
@@ -179,13 +151,11 @@ class _UpperContent extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
-
       if (userService.user.descripcion != null)
         Padding(
           padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
           child: Text(userService.user.descripcion!),
         ),
-
       if (userService.user.link != null)
         Padding(
             padding: const EdgeInsets.only(left: 15, right: 15, bottom: 5),
@@ -203,8 +173,6 @@ class _UpperContent extends StatelessWidget {
                 launch(userService.user.link!);
               },
             )),
-
-      //TODO: muchas cosas
       Padding(
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: OutlinedButton(
@@ -242,8 +210,8 @@ class _Photo_Followers extends StatelessWidget {
             Container(
                 width: 100,
                 height: 100,
-                decoration: BoxDecoration(
-                    color: Colors.red, borderRadius: BorderRadius.circular(50)),
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(50)),
                 child: userService.user.fotoDePerfil == null
                     ? Icon(
                         Icons.person,
