@@ -7,6 +7,7 @@ import 'dart:convert';
 class PostModel {
   PostModel({
     required this.tipo,
+    this.id,
     this.descripcion,
     this.titulo,
     this.autor,
@@ -21,6 +22,7 @@ class PostModel {
   });
 
   String tipo;
+  String? id;
   String? descripcion;
   String? titulo;
   String? autor;
@@ -39,6 +41,7 @@ class PostModel {
 
   factory PostModel.fromMap(Map<String, dynamic> json) => PostModel(
         tipo: json["tipo"],
+        id: json["id"],
         descripcion: json["descripcion"],
         titulo: json["titulo"],
         autor: json["autor"],
@@ -54,6 +57,7 @@ class PostModel {
 
   Map<String, dynamic> toMap() => {
         "tipo": tipo,
+        "id": id,
         "descripcion": descripcion,
         "titulo": titulo,
         "autor": autor,

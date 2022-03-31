@@ -1,4 +1,5 @@
 import 'package:alejandria/provider/tematicas_provider.dart';
+import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:alejandria/widgets/tematica2.dart';
@@ -11,6 +12,7 @@ class NewRecommendationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    PostService recPost = Provider.of<PostService>(context);
     return Scaffold(
         appBar: AppBar(
           title: Text('Nuevo post',
@@ -20,13 +22,34 @@ class NewRecommendationScreen extends StatelessWidget {
           bottom: BottomLineAppBar(),
           actions: [
             TextButton(
-                onPressed: () {
-                  //TOODO: guardar los valores
-                  Navigator.popUntil(context, (route) => false);
-                  Navigator.pushNamed(context, 'tabs');
-                },
+                onPressed: recPost.isSaving
+                    ? null
+                    : () async {
+                        final tematicas = Provider.of<TematicasProvider>(
+                            context,
+                            listen: false);
+                        if (!tematicas.checkData()) {
+                          NotificationsService.showSnackbar(
+                              'Debe elegiir al menos 1 temática');
+                          return;
+                        } else if (recPost.newPost.autor == null ||
+                            recPost.newPost.titulo == null) {
+                          NotificationsService.showSnackbar(
+                              'Los campos "Título" y "Autor" son obligatorios');
+                          return;
+                        }
+
+                        //articlePost.uploadPost();
+
+                        Navigator.popUntil(context, (route) => false);
+                        Navigator.pushNamed(context, 'tabs');
+                      },
                 child: Text('Publicar',
-                    style: TextStyle(color: AppTheme.primary, fontSize: 16)))
+                    style: TextStyle(
+                        color: recPost.isSaving
+                            ? Colors.grey[600]
+                            : AppTheme.primary,
+                        fontSize: 16)))
           ],
         ),
         body: SingleChildScrollView(
@@ -34,7 +57,7 @@ class NewRecommendationScreen extends StatelessWidget {
             padding: EdgeInsets.only(left: 15, right: 15, top: 15),
             child: Column(
               children: [
-                _Form(),
+                _Form(recPost),
                 Divider(
                   color: AppTheme.primary,
                 ),
@@ -48,7 +71,7 @@ class NewRecommendationScreen extends StatelessWidget {
                 SizedBox(
                   height: 15,
                 ),
-                _Tematicas()
+                _Tematicas(recPost)
               ],
             ),
           ),
@@ -57,19 +80,16 @@ class NewRecommendationScreen extends StatelessWidget {
 }
 
 class _Form extends StatefulWidget {
-  const _Form({
-    Key? key,
-  }) : super(key: key);
+  PostService recPost;
+  _Form(this.recPost);
 
   @override
-  State<_Form> createState() => _FormState();
+  State<_Form> createState() => _FormState(recPost);
 }
 
 class _FormState extends State<_Form> {
-  final titleCtrl = TextEditingController();
-  final authorCtrl = TextEditingController();
-  final descriptionCtrl = TextEditingController();
-  final linkCtrl = TextEditingController();
+  PostService recPost;
+  _FormState(this.recPost);
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +100,7 @@ class _FormState extends State<_Form> {
             icon: Icons.description,
             placeholder: 'Nombre del artículo',
             maxlines: 1,
-            textController: titleCtrl),
+            onChanged: (value) => recPost.newPost.titulo = value),
         SizedBox(
           height: 15,
         ),
@@ -88,7 +108,7 @@ class _FormState extends State<_Form> {
             icon: Icons.description,
             placeholder: 'Autor del artículo',
             maxlines: 1,
-            textController: authorCtrl),
+            onChanged: (value) => recPost.newPost.autor = value),
         SizedBox(
           height: 15,
         ),
@@ -96,20 +116,23 @@ class _FormState extends State<_Form> {
             icon: Icons.description,
             placeholder: 'Breve opinióndel artículo',
             maxlines: 3,
-            textController: descriptionCtrl),
+            onChanged: (value) => recPost.newPost.descripcion = value),
         SizedBox(
           height: 15,
         ),
         CustomInputField(
             icon: Icons.link_rounded,
             placeholder: 'link al atíiculo',
-            textController: linkCtrl),
+            onChanged: (value) => recPost.newPost.descripcion = value),
       ],
     ));
   }
 }
 
 class _Tematicas extends StatelessWidget {
+  PostService recPost;
+  _Tematicas(this.recPost);
+
   @override
   Widget build(BuildContext context) {
     final tematicas = Provider.of<TematicasProvider>(context).tematicas;
@@ -126,11 +149,11 @@ class _Tematicas extends StatelessWidget {
           ),
           itemCount: tematicas.length - 1,
           itemBuilder: (BuildContext context, int index) {
-            return tematicaWidget2(
-              index: index + 1,
-              icon: tematicas[index + 1].icon,
-              name: tematicas[index + 1].name,
-            );
+            return tematicaWidget(
+                index: index + 1,
+                icon: tematicas[index + 1].icon,
+                name: tematicas[index + 1].name,
+                list: recPost.newPost.tematicas);
           }),
     );
   }

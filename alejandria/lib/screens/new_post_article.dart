@@ -65,7 +65,7 @@ class NewArticleScreen extends StatelessWidget {
                 Divider(
                   color: AppTheme.primary,
                 ),
-                _Form(),
+                _Form(articlePost.newPost.descripcion),
                 Divider(
                   color: AppTheme.primary,
                 ),
@@ -79,7 +79,7 @@ class NewArticleScreen extends StatelessWidget {
                 SizedBox(
                   height: 15,
                 ),
-                _Tematicas()
+                _Tematicas(articlePost)
               ],
             ),
           ),
@@ -176,16 +176,16 @@ class _CheckBoxes extends StatelessWidget {
 }
 
 class _Form extends StatefulWidget {
-  const _Form({
-    Key? key,
-  }) : super(key: key);
+  String? description;
+  _Form(this.description);
 
   @override
-  State<_Form> createState() => _FormState();
+  State<_Form> createState() => _FormState(description);
 }
 
 class _FormState extends State<_Form> {
-  final descriptionCtrl = TextEditingController();
+  String? description;
+  _FormState(this.description);
 
   @override
   Widget build(BuildContext context) {
@@ -194,11 +194,14 @@ class _FormState extends State<_Form> {
             icon: Icons.description,
             placeholder: 'Breve descripción del artículo',
             maxlines: 3,
-            textController: descriptionCtrl));
+            onChanged: (value) => description = value));
   }
 }
 
 class _Tematicas extends StatelessWidget {
+  PostService articlePost;
+  _Tematicas(this.articlePost);
+
   @override
   Widget build(BuildContext context) {
     final tematicas = Provider.of<TematicasProvider>(context).tematicas;
@@ -215,11 +218,11 @@ class _Tematicas extends StatelessWidget {
           ),
           itemCount: tematicas.length - 1,
           itemBuilder: (BuildContext context, int index) {
-            return tematicaWidget2(
-              index: index + 1,
-              icon: tematicas[index + 1].icon,
-              name: tematicas[index + 1].name,
-            );
+            return tematicaWidget(
+                index: index + 1,
+                icon: tematicas[index + 1].icon,
+                name: tematicas[index + 1].name,
+                list: articlePost.newPost.tematicas);
           }),
     );
   }
