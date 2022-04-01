@@ -4,7 +4,6 @@ import 'package:alejandria/provider/provider.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
-import 'package:alejandria/widgets/tematica2.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +31,11 @@ class NewArticleScreen extends StatelessWidget {
                         final tematicas = Provider.of<TematicasProvider>(
                             context,
                             listen: false);
+                        if (articlePost.pdfArticle == null) {
+                          NotificationsService.showSnackbar(
+                              'Seleccione un archivo pdf');
+                          return;
+                        }
                         if (!tematicas.checkData()) {
                           NotificationsService.showSnackbar(
                               'Debe elegiir al menos 1 temática');

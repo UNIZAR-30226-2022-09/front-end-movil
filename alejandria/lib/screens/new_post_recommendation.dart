@@ -2,7 +2,6 @@ import 'package:alejandria/provider/tematicas_provider.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
-import 'package:alejandria/widgets/tematica2.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,13 +32,15 @@ class NewRecommendationScreen extends StatelessWidget {
                               'Debe elegiir al menos 1 temática');
                           return;
                         } else if (recPost.newPost.autor == null ||
-                            recPost.newPost.titulo == null) {
+                            recPost.newPost.titulo == null ||
+                            recPost.newPost.autor!.length == 0 ||
+                            recPost.newPost.titulo!.length == 0) {
                           NotificationsService.showSnackbar(
                               'Los campos "Título" y "Autor" son obligatorios');
                           return;
                         }
 
-                        //articlePost.uploadPost();
+                        recPost.uploadPost();
 
                         Navigator.popUntil(context, (route) => false);
                         Navigator.pushNamed(context, 'tabs');
@@ -122,8 +123,8 @@ class _FormState extends State<_Form> {
         ),
         CustomInputField(
             icon: Icons.link_rounded,
-            placeholder: 'link al atíiculo',
-            onChanged: (value) => recPost.newPost.descripcion = value),
+            placeholder: 'link al atículo',
+            onChanged: (value) => recPost.newPost.link = value),
       ],
     ));
   }

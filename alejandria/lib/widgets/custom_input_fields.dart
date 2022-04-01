@@ -12,6 +12,7 @@ class CustomInputField extends StatelessWidget {
   final String? Function(String?)? validator;
   final void Function(String)? onChanged;
   final String? initialValue;
+  final bool showLabelText;
 
   const CustomInputField(
       {Key? key,
@@ -24,7 +25,8 @@ class CustomInputField extends StatelessWidget {
       this.isIntro = false,
       this.validator,
       this.onChanged,
-      this.initialValue})
+      this.initialValue,
+      this.showLabelText = true})
       : super(key: key);
 
   @override
@@ -60,6 +62,6 @@ class CustomInputField extends StatelessWidget {
             : InputDecoration(
                 prefixIcon: Icon(icon),
                 hintText: placeholder,
-                labelText: placeholder));
+                labelText: showLabelText ? placeholder : null));
   }
 }

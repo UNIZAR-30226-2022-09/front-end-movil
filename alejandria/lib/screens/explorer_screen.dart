@@ -138,6 +138,21 @@ class _HeaderState extends State<_Header> {
   }
 }
 
+// class _FadeInOut extends StatelessWidget {
+//   const _FadeInOut({
+//     Key? key,
+//   }) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       width: double.infinity,
+//       height: 60,
+//       color: Colors.red,
+//     );
+//   }
+// }
+
 class _FadeInOut extends StatelessWidget {
   const _FadeInOut({
     Key? key,
@@ -146,10 +161,40 @@ class _FadeInOut extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      height: 60,
-      color: Colors.red,
-    );
+        width: double.infinity,
+        height: 60,
+        decoration: BoxDecoration(
+            border: Border(
+                top: BorderSide(color: AppTheme.primary.withOpacity(0.5)))),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              width: MediaQuery.of(context).size.width * 0.75,
+              height: 45,
+              child: TextFormField(
+                textAlignVertical: TextAlignVertical.bottom,
+                decoration: InputDecoration(
+                    hintText: 'Palabra(s) clave', prefixIcon: Icon(Icons.abc)),
+              ),
+            ),
+            MaterialButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              elevation: 0,
+              color: AppTheme.primary,
+              child: Container(
+                alignment: Alignment.center,
+                height: 45,
+                child: Text(
+                  'Buscar',
+                  style: TextStyle(fontSize: 17, color: Colors.white),
+                ),
+              ),
+              onPressed: () {},
+            )
+          ],
+        ));
   }
 }
 
@@ -206,16 +251,22 @@ class _TematicaBoton extends StatelessWidget {
         height: 45,
         margin: EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: (tematicaProvider.selectedTemaTica == this.tematica.name)
-                ? AppTheme.primary
-                : Colors.white54,
-            border: Border.all(color: AppTheme.primary.withOpacity(0.3))),
+          shape: BoxShape.circle,
+          color: (tematicaProvider.selectedTemaTica == this.tematica.name)
+              ? null
+              : Colors.grey[300],
+          gradient: (tematicaProvider.selectedTemaTica == this.tematica.name)
+              ? LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [AppTheme.primary, AppTheme.primary.withOpacity(0.9)])
+              : null,
+        ),
         child: Icon(
           tematica.icon,
           color: (tematicaProvider.selectedTemaTica == this.tematica.name)
               ? Colors.white
-              : Colors.black54,
+              : AppTheme.primary,
         ),
       ),
     );

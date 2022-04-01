@@ -36,8 +36,17 @@ class tematicaWidget extends StatelessWidget {
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: tematicaProvider.tematicas[index].isSelected
-                      ? AppTheme.primary
+                      ? null
                       : Colors.grey[300],
+                  gradient: tematicaProvider.tematicas[index].isSelected
+                      ? LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                              AppTheme.primary,
+                              AppTheme.primary.withOpacity(0.9)
+                            ])
+                      : null,
                   border: Border()),
               child: Icon(
                 icon,

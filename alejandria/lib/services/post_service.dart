@@ -20,36 +20,37 @@ class PostService extends ChangeNotifier {
   bool check2 = false;
 
   Future uploadPost() async {
-    this.isSaving = true;
-    notifyListeners();
+    print(newPost.toJson());
+    //this.isSaving = true;
+    // notifyListeners();
 
-    final url = Uri.http(_baseUrl, '/subirPost');
-    final resp = await http.post(url,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'token': await storage.read(key: 'token') ?? ''
-        },
-        body: newPost.toJson());
+    // final url = Uri.http(_baseUrl, '/subirPost');
+    // final resp = await http.post(url,
+    //     headers: <String, String>{
+    //       'Content-Type': 'application/json; charset=UTF-8',
+    //       'token': await storage.read(key: 'token') ?? ''
+    //     },
+    //     body: newPost.toJson());
 
-    if (this.newPost.tipo == "1") {
-      final url2 = Uri.parse('http://$_baseUrl/subirPdf');
-      final imageUploadRequest = http.MultipartRequest('POST', url2);
-      final file =
-          await http.MultipartFile.fromPath('nuevo_pdf', pdfArticle!.path);
+    // if (this.newPost.tipo == "1") {
+    //   final url2 = Uri.parse('http://$_baseUrl/subirPdf');
+    //   final imageUploadRequest = http.MultipartRequest('POST', url2);
+    //   final file =
+    //       await http.MultipartFile.fromPath('nuevo_pdf', pdfArticle!.path);
 
-      imageUploadRequest.files.add(file);
-      imageUploadRequest.headers['token'] =
-          await storage.read(key: 'token') ?? '';
+    //   imageUploadRequest.files.add(file);
+    //   imageUploadRequest.headers['token'] =
+    //       await storage.read(key: 'token') ?? '';
 
-      await imageUploadRequest.send();
+    //   await imageUploadRequest.send();
 
-      pdfArticle = null;
-      check1 = false;
-      check2 = false;
-    }
+    //   pdfArticle = null;
+    //   check1 = false;
+    //   check2 = false;
+    // }
 
-    this.isSaving = false;
-    notifyListeners();
+    // this.isSaving = false;
+    // notifyListeners();
   }
 
   void resetData(int tipo) {
