@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:alejandria/models/post_model.dart';
@@ -21,36 +22,41 @@ class PostService extends ChangeNotifier {
 
   Future uploadPost() async {
     print(newPost.toJson());
-    //this.isSaving = true;
-    // notifyListeners();
+    this.isSaving = true;
+    notifyListeners();
 
-    // final url = Uri.http(_baseUrl, '/subirPost');
-    // final resp = await http.post(url,
-    //     headers: <String, String>{
-    //       'Content-Type': 'application/json; charset=UTF-8',
-    //       'token': await storage.read(key: 'token') ?? ''
-    //     },
-    //     body: newPost.toJson());
+    final url = Uri.http(_baseUrl, '/subirPost');
+    final resp = await http.post(url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'token': await storage.read(key: 'token') ?? ''
+        },
+        body: newPost.toJson());
 
-    // if (this.newPost.tipo == "1") {
-    //   final url2 = Uri.parse('http://$_baseUrl/subirPdf');
-    //   final imageUploadRequest = http.MultipartRequest('POST', url2);
-    //   final file =
-    //       await http.MultipartFile.fromPath('nuevo_pdf', pdfArticle!.path);
+    print(newPost.toJson());
 
-    //   imageUploadRequest.files.add(file);
-    //   imageUploadRequest.headers['token'] =
-    //       await storage.read(key: 'token') ?? '';
+    if (this.newPost.tipo == "1") {
+      final Map<String, dynamic> decodedResp = json.decode(resp.body);
+      int id = decodedResp['id'];
+      print(id);
+      final url2 = Uri.parse('http://$_baseUrl/subirPdf');
+      final imageUploadRequest = http.MultipartRequest('POST', url2);
+      final file = await http.MultipartFile.fromPath('pdf', pdfArticle!.path);
 
-    //   await imageUploadRequest.send();
+      imageUploadRequest.files.add(file);
+      imageUploadRequest.headers['token'] =
+          await storage.read(key: 'token') ?? '';
+      imageUploadRequest.headers['id'] = id.toString();
 
-    //   pdfArticle = null;
-    //   check1 = false;
-    //   check2 = false;
-    // }
+      await imageUploadRequest.send();
 
-    // this.isSaving = false;
-    // notifyListeners();
+      pdfArticle = null;
+      check1 = false;
+      check2 = false;
+    }
+
+    this.isSaving = false;
+    notifyListeners();
   }
 
   void resetData(int tipo) {

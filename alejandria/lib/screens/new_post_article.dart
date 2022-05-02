@@ -47,7 +47,7 @@ class NewArticleScreen extends StatelessWidget {
                           return;
                         }
 
-                        //articlePost.uploadPost();
+                        articlePost.uploadPost();
 
                         Navigator.popUntil(context, (route) => false);
                         Navigator.pushNamed(context, 'tabs');
