@@ -63,13 +63,14 @@ class UserService extends ChangeNotifier {
           await storage.read(key: 'token') ?? '';
 
       await imageUploadRequest.send();
+      loadData();
     }
 
     this.userEdit.cambia_foto = 0;
     user = userEdit;
     //user.tematicas = [...userEdit.tematicas];
     //if (this.userEdit.cambia_foto == 1) {
-    loadData();
+
     //}
     this.isSaving = false;
     notifyListeners();

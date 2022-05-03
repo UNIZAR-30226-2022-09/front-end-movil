@@ -11,3 +11,5 @@ export 'package:alejandria/screens/saved_posts.dart';
 export 'package:alejandria/screens/tabs_screen.dart';
 export 'package:alejandria/screens/user_screen.dart';
 export 'package:alejandria/screens/loading_sceen.dart';
+export 'package:alejandria/screens/one_post_screen.dart';
+export 'package:alejandria/screens/comments_screen.dart';

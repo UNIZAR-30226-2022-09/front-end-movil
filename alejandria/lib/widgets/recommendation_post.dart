@@ -4,9 +4,13 @@ import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../models/post_list_model.dart';
+
 class RecommendationPost extends StatelessWidget {
-  const RecommendationPost({
+  PostListModel post;
+  RecommendationPost({
     Key? key,
+    required this.post,
   }) : super(key: key);
 
   @override
@@ -20,15 +24,12 @@ class RecommendationPost extends StatelessWidget {
         child: Stack(
           alignment: Alignment.bottomLeft,
           children: [
-            _Recommendation(),
+            _Recommendation(post),
+            Positioned(bottom: 0, right: 0, child: PostBottom(post: post)),
             Positioned(
-                bottom: 0,
-                right: 0,
-                child: PostBottom(
-                  isArticle: false,
-                )),
-            Positioned(
-                top: 0, left: 0, child: PostHeader('@nombreDeUsuario', size)),
+                top: 0,
+                left: 0,
+                child: PostHeader('@${post.usuario}', size, post.fotoDePerfil)),
           ],
         ),
       ),
@@ -48,7 +49,8 @@ class RecommendationPost extends StatelessWidget {
 }
 
 class _Recommendation extends StatelessWidget {
-  const _Recommendation();
+  PostListModel post;
+  _Recommendation(this.post);
 
   @override
   Widget build(BuildContext context) {
@@ -59,21 +61,19 @@ class _Recommendation extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 70),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(
-            'Título del Artículo - Autor',
+            '${post.titulo!} - ${post.autor!}',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
           SizedBox(
             height: 5,
           ),
-          Text(
-            'Nulla tempor ipsum exercitation incididunt. Qui consectetur laborum anim incididunt. Cupidatat cillum incididunt tempor ipsum enim in aute dolore Lorem. ',
-          ),
+          Text(post.descripcion!),
           SizedBox(
             height: 5,
           ),
           GestureDetector(
             child: Text(
-              'https://github.com/UNIZAR-30226-2022-09/front-end-movil',
+              post.link!,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -82,7 +82,7 @@ class _Recommendation extends StatelessWidget {
                       : Colors.blue[900]),
             ),
             onTap: () async {
-              launch("https://github.com/UNIZAR-30226-2022-09/front-end-movil");
+              launch(post.link!);
             },
           )
         ]),

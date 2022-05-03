@@ -1,12 +1,12 @@
+import 'package:alejandria/models/post_list_model.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 class ArticlePost extends StatelessWidget {
-  const ArticlePost({
-    Key? key,
-  }) : super(key: key);
+  PostListModel post;
+  ArticlePost({Key? key, required this.post}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +26,13 @@ class ArticlePost extends StatelessWidget {
                     bottom: 0,
                     right: 0,
                     child: PostBottom(
-                      isArticle: true,
+                      post: post,
                     )),
                 Positioned(
                     top: 0,
                     left: 0,
-                    child: PostHeader('@nombreDeUsuario', size)),
+                    child: PostHeader(
+                        '@${post.usuario}', size, post.fotoDePerfil)),
               ],
             ),
             _Description()

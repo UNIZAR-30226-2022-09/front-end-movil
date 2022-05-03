@@ -5,13 +5,14 @@ import 'package:flutter/material.dart';
 class PostHeader extends StatelessWidget {
   final String userName;
   final Size size;
+  final String imagePath;
 
-  const PostHeader(this.userName, this.size);
+  const PostHeader(this.userName, this.size, this.imagePath);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: size.width * 0.7,
+      //width: size.width * 0.6,
       height: 60,
       alignment: Alignment.center,
       decoration: BoxDecoration(
@@ -24,15 +25,26 @@ class PostHeader extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(children: [
-          CircleAvatar(
-            radius: 20,
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: FadeInImage(
+                    fit: BoxFit.cover,
+                    placeholder: AssetImage('assets/icon.png'),
+                    image: NetworkImage(imagePath))),
           ),
           SizedBox(
-            width: 7,
+            width: 10,
           ),
           Text(
             userName,
             style: TextStyle(fontSize: 17),
+          ),
+          SizedBox(
+            width: 10,
           )
         ]),
       ),

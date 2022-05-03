@@ -1,3 +1,4 @@
+import 'package:alejandria/screens/one_post_screen.dart';
 import 'package:alejandria/screens/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -51,7 +52,14 @@ class _Paginas extends StatelessWidget {
         ExplorerScreen(),
         NewPostScreen(),
         NotificationsScreen(),
-        UserScreen()
+        Navigator(
+          onGenerateRoute: (settings) {
+            Widget page = UserScreen();
+            if (settings.name == 'onePost') page = OnePostScreen();
+            return MaterialPageRoute(builder: (_) => page);
+          },
+        ),
+        //UserScreen()
       ],
     );
   }

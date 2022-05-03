@@ -5,6 +5,7 @@ import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -14,7 +15,16 @@ class UserScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userService = Provider.of<UserService>(context);
-    if (userService.isLoading) return LoadingScreen();
+    if (userService.isLoading)
+      return Scaffold(
+          body: GestureDetector(
+              onTap: () {
+                final authService =
+                    Provider.of<AuthService>(context, listen: false);
+                authService.logOut();
+                Navigator.pushReplacementNamed(context, 'login');
+              },
+              child: Container(width: 200, height: 100, color: Colors.black)));
     return Scaffold(
       appBar: AppBar(
         title: Text(userService.user.nick,
@@ -293,6 +303,7 @@ class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final articlesService = Provider.of<MyPostsService>(context);
     return Column(
       children: [
         Container(
@@ -322,27 +333,76 @@ class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
         Builder(builder: (_) {
           return _SelectedTabBar == 0
               ? Container(
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisExtent:
-                            MediaQuery.of(context).size.width * 0.7),
-                    itemCount: 10,
-                    itemBuilder: (BuildContext context, int indx) {
-                      return ArticleCover();
-                    },
-                  ),
+                  child: articlesService.misArticulos.length == 0
+                      ? Container(
+                          child: Column(children: [
+                            SizedBox(
+                              height: 90,
+                            ),
+                            FaIcon(
+                              FontAwesomeIcons.file,
+                              size: 100,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              'Todavía no hay articulos',
+                              style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 19,
+                                  fontStyle: FontStyle.italic),
+                            )
+                          ]),
+                        )
+                      : GridView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  mainAxisExtent:
+                                      MediaQuery.of(context).size.width * 0.7),
+                          itemCount: articlesService.misArticulos.length,
+                          itemBuilder: (BuildContext context, int indx) {
+                            return ArticleCover(
+                                post: articlesService.misArticulos[indx]);
+                          },
+                        ),
                 )
               : Container(
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: 10,
-                      itemBuilder: (BuildContext context, int indx) {
-                        return RecommendationPost();
-                      }),
+                  child: articlesService.misRecs.length == 0
+                      ? Container(
+                          child: Column(children: [
+                            SizedBox(
+                              height: 90,
+                            ),
+                            FaIcon(
+                              FontAwesomeIcons.thumbsUp,
+                              size: 100,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              'Todavía no hay recomendaciones',
+                              style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 19,
+                                  fontStyle: FontStyle.italic),
+                            )
+                          ]),
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: articlesService.misRecs.length,
+                          itemBuilder: (BuildContext context, int indx) {
+                            return RecommendationPost(
+                                post: articlesService.misRecs[indx]);
+                          }),
                 );
         })
       ],

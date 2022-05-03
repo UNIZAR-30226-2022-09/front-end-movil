@@ -1,5 +1,6 @@
 import 'package:alejandria/provider/tematicas_provider.dart';
 import 'package:alejandria/provider/theme_provider.dart';
+import 'package:alejandria/screens/one_post_screen.dart';
 import 'package:alejandria/screens/screens.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
@@ -12,6 +13,7 @@ void main() async {
   return runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => AuthService()),
     ChangeNotifierProvider(create: (_) => UserService()),
+    ChangeNotifierProvider(create: (_) => MyPostsService()),
     ChangeNotifierProvider(create: (_) => PostService()),
     ChangeNotifierProvider(
         create: (_) => ThemeProvider(isDarkmode: Preferences.isDarkMode)),
@@ -39,7 +41,9 @@ class MyApp extends StatelessWidget {
           'notifications': (_) => NotificationsScreen(),
           'profile': (_) => UserScreen(),
           'savedPosts': (_) => SavedPostsScreen(),
-          'loading': (_) => LoadingScreen()
+          'loading': (_) => LoadingScreen(),
+          'onePost': (_) => OnePostScreen(),
+          'comentarios': (_) => CommentsScreen()
         },
         scaffoldMessengerKey: NotificationsService.messengerKey,
         theme: Provider.of<ThemeProvider>(context).currentTheme);

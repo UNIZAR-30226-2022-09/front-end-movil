@@ -1,3 +1,4 @@
+import 'package:alejandria/models/post_list_model.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +59,22 @@ class _SavedPostsScreenState extends State<SavedPostsScreen>
                     physics: NeverScrollableScrollPhysics(),
                     itemCount: 5,
                     itemBuilder: (BuildContext context, int indx) {
-                      return RecommendationPost();
+                      return RecommendationPost(
+                          post: PostListModel(
+                              tipo: 2,
+                              usuario: 'alvaro',
+                              fotoDePerfil:
+                                  'https://www.emprendedores.es/wp-content/uploads/2021/05/De-emprendedor-a-empresario.jpg',
+                              nlikes: 10,
+                              likemio: false,
+                              ncomentarios: 2,
+                              nguardados: 4,
+                              guardadomio: false,
+                              titulo: 'Lacasta Calvo',
+                              autor: 'Alvaro Pomar',
+                              descripcion:
+                                  'Es Lacsta un enano calvo? Compruebalo en este articulo',
+                              link: 'https://www.google.com'));
                     }),
               ),
             ]));
