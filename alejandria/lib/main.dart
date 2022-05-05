@@ -1,6 +1,5 @@
 import 'package:alejandria/provider/tematicas_provider.dart';
 import 'package:alejandria/provider/theme_provider.dart';
-import 'package:alejandria/screens/one_post_screen.dart';
 import 'package:alejandria/screens/screens.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
@@ -43,7 +42,8 @@ class MyApp extends StatelessWidget {
           'savedPosts': (_) => SavedPostsScreen(),
           'loading': (_) => LoadingScreen(),
           'onePost': (_) => OnePostScreen(),
-          'comentarios': (_) => CommentsScreen()
+          'comentarios': (_) => CommentsScreen(),
+          'pdfScreen': (_) => PDFScreen()
         },
         scaffoldMessengerKey: NotificationsService.messengerKey,
         theme: Provider.of<ThemeProvider>(context).currentTheme);

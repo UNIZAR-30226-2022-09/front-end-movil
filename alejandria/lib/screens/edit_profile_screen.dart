@@ -114,8 +114,8 @@ class _ProfilePicture extends StatelessWidget {
           ),
           onTap: () async {
             final picker = new ImagePicker();
-            final PickedFile? pickedFile =
-                await picker.getImage(source: ImageSource.gallery);
+            final XFile? pickedFile = await picker.pickImage(
+                source: ImageSource.gallery, imageQuality: 20);
             if (pickedFile == null) return;
             userService.updateSelectedProfileImage(pickedFile.path);
           },
@@ -130,7 +130,6 @@ class _ProfilePicture extends StatelessWidget {
   }
 
   Widget getProfilePicture(String? picture) {
-    print('me han llamado :)');
     //No tengo foto
     if (picture == null) {
       print('soy null xd');
@@ -145,7 +144,6 @@ class _ProfilePicture extends StatelessWidget {
           image: NetworkImage(userService.userEdit.fotoDePerfil!));
     }
     //La foto esta en el dispositivo
-    print('hola');
     return Image.file(
       File(picture),
       fit: BoxFit.cover,

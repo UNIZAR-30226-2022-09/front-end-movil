@@ -64,7 +64,7 @@ class ExplorerScreen extends StatelessWidget {
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       mainAxisExtent: MediaQuery.of(context).size.width * 0.43),
-                  itemCount: 30,
+                  itemCount: 9,
                   itemBuilder: (BuildContext context, int indx) {
                     return ArticleCover();
                   },

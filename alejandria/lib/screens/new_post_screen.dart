@@ -1,4 +1,3 @@
-import 'package:alejandria/models/post_model.dart';
 import 'package:alejandria/provider/provider.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';

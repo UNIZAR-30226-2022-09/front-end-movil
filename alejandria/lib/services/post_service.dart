@@ -38,17 +38,20 @@ class PostService extends ChangeNotifier {
     if (this.newPost.tipo == "1") {
       final Map<String, dynamic> decodedResp = json.decode(resp.body);
       int id = decodedResp['id'];
-      print(id);
-      final url2 = Uri.parse('http://$_baseUrl/subirPdf');
-      final imageUploadRequest = http.MultipartRequest('POST', url2);
+      Uri url2 = Uri.parse('http://$_baseUrl/subirPdf');
+      final pdfUploadRequest = http.MultipartRequest('POST', url2);
       final file = await http.MultipartFile.fromPath('pdf', pdfArticle!.path);
 
-      imageUploadRequest.files.add(file);
-      imageUploadRequest.headers['token'] =
+      pdfUploadRequest.files.add(file);
+      pdfUploadRequest.headers['token'] =
           await storage.read(key: 'token') ?? '';
-      imageUploadRequest.headers['id'] = id.toString();
+      pdfUploadRequest.headers['id'] = id.toString();
 
-      await imageUploadRequest.send();
+      await pdfUploadRequest.send();
+
+      url2 = Uri.parse('http://$_baseUrl/subirPortada');
+
+      //final page = await pdfArticle!.getPage(1);
 
       pdfArticle = null;
       check1 = false;

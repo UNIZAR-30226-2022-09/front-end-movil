@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -28,6 +29,7 @@ class AuthService extends ChangeNotifier {
 
     if (decodedResp.containsKey('token')) {
       await storage.write(key: 'token', value: decodedResp['token']);
+      Preferences.userNick = nick;
       return null;
     } else {
       if (decodedResp['error'].toString() == 'Existe nick') {

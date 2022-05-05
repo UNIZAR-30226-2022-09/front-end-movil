@@ -27,7 +27,7 @@ class HomeScreen extends StatelessWidget {
         bottom: BottomLineAppBar(), //Color.fromRGBO(68, 114, 88, 1),
       ),
       body: ListView.builder(
-          itemCount: 10,
+          itemCount: 6,
           itemBuilder: (BuildContext context, int index) {
             return index % 2 == 0
                 ? ArticlePost(
@@ -36,6 +36,8 @@ class HomeScreen extends StatelessWidget {
                         usuario: "alvaroPomarMart",
                         fotoDePerfil:
                             'https://www.emprendedores.es/wp-content/uploads/2021/05/De-emprendedor-a-empresario.jpg',
+                        pdf:
+                            'http://51.255.50.207:5000/display2/Practica2_21_22.pdf',
                         nlikes: 30,
                         likemio: true,
                         ncomentarios: 10,
@@ -55,8 +57,7 @@ class HomeScreen extends StatelessWidget {
                         guardadomio: true,
                         titulo: 'UN articulo',
                         autor: 'Alvaro Pomar',
-                        descripcion:
-                            'Este articulo es muy intersante por que explica como ......',
+                        descripcion: 'Este articulo es muy intersante ',
                         link: 'https://www.google.com'));
           }),
     );

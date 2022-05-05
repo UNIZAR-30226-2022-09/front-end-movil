@@ -3,6 +3,7 @@ import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class ArticlePost extends StatelessWidget {
   PostListModel post;
@@ -21,7 +22,7 @@ class ArticlePost extends StatelessWidget {
             Stack(
               alignment: Alignment.bottomLeft,
               children: [
-                _BackgroundImage(size),
+                _BackgroundImage(size, post.pdf!, post.usuario),
                 Positioned(
                     bottom: 0,
                     right: 0,
@@ -56,7 +57,9 @@ class ArticlePost extends StatelessWidget {
 
 class _BackgroundImage extends StatelessWidget {
   final Size size;
-  const _BackgroundImage(this.size);
+  final String pdf;
+  final String user_name;
+  const _BackgroundImage(this.size, this.pdf, this.user_name);
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +71,23 @@ class _BackgroundImage extends StatelessWidget {
       child: Container(
         width: size.width * 0.95,
         height: size.width * 1.34,
+        child: Stack(children: [
+          SfPdfViewer.network(
+            pdf,
+            canShowScrollHead: false,
+            enableDoubleTapZooming: false,
+            enableTextSelection: false,
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, 'pdfScreen',
+                  arguments: {'pdf': pdf, 'user': user_name});
+            },
+            child: Container(
+              color: Colors.black.withOpacity(0.001),
+            ),
+          )
+        ]),
         decoration: BoxDecoration(
           color: Preferences.isDarkMode ? Colors.black87 : Colors.grey[400],
           border: Border(bottom: BorderSide(color: AppTheme.primary)),

@@ -11,10 +11,12 @@ class OnePostScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userService = Provider.of<UserService>(context);
+    final arguments = (ModalRoute.of(context)?.settings.arguments ??
+        <String, dynamic>{}) as Map;
+    PostListModel post = arguments['post'];
     return Scaffold(
         appBar: AppBar(
-          title: Text('Post de ${userService.user.nick}',
+          title: Text('Post de ${post.usuario}',
               style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w600,
@@ -22,18 +24,7 @@ class OnePostScreen extends StatelessWidget {
           bottom: BottomLineAppBar(), //Color.fromRGBO(68, 114, 88, 1),
         ),
         body: SingleChildScrollView(
-          child: ArticlePost(
-              post: PostListModel(
-                  tipo: 1,
-                  usuario: "alvaro",
-                  fotoDePerfil:
-                      'https://www.emprendedores.es/wp-content/uploads/2021/05/De-emprendedor-a-empresario.jpg',
-                  nlikes: 30,
-                  likemio: true,
-                  ncomentarios: 10,
-                  nguardados: 7,
-                  guardadomio: false,
-                  descripcion: 'mi articulo propio')),
+          child: ArticlePost(post: post),
         ));
   }
 }

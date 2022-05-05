@@ -57,6 +57,7 @@ class _Recommendation extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: Container(
+        width: double.infinity,
         color: Preferences.isDarkMode ? Colors.black : Colors.grey[50],
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 70),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

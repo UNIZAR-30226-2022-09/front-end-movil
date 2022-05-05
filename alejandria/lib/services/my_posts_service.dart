@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:alejandria/models/models.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +16,8 @@ class MyPostsService extends ChangeNotifier {
   bool isLoadingRec = true;
 
   MyPostsService() {
-    //this.loadArticles();
-    //this.loadRecs();
+    this.loadArticles();
+    this.loadRecs();
   }
 
   //TOODO: <List<PostListModel>>
@@ -35,7 +34,8 @@ class MyPostsService extends ChangeNotifier {
     );
 
     final Map<String, dynamic> articlesMap = json.decode(resp.body);
-    print(articlesMap);
+    print('ESTATUS DE LA RESPUESTA: ');
+    print(resp.statusCode);
 
     articlesMap.forEach((key, value) {
       final tempArticle = PostListModel.fromMap(value);
@@ -52,13 +52,11 @@ class MyPostsService extends ChangeNotifier {
     this.isLoadingRec = true;
     notifyListeners();
     final url = Uri.http(_baseUrl, '/misRecomendaciones');
-    final resp = await http.get(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'token': await storage.read(key: 'token') ?? ''
-      },
-    );
+    print(url);
+    final resp = await http.get(url, headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'token': await storage.read(key: 'token') ?? ''
+    });
 
     final Map<String, dynamic> recMap = json.decode(resp.body);
     print(recMap);
