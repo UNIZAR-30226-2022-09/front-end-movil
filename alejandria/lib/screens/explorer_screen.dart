@@ -1,5 +1,6 @@
 import 'package:alejandria/models/tematica_model.dart';
 import 'package:alejandria/provider/tematicas_provider.dart';
+import 'package:alejandria/search/search_delegate.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:alejandria/widgets/widgets.dart';
@@ -21,7 +22,8 @@ class ExplorerScreen extends StatelessWidget {
                 color: AppTheme.primary)),
         actions: [
           IconButton(
-              onPressed: () {},
+              onPressed: () =>
+                  showSearch(context: context, delegate: MySearchDelegate()),
               icon: Icon(
                 Icons.search,
                 color: AppTheme.primary,

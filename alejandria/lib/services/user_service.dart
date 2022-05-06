@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:alejandria/models/models.dart';
+import 'package:alejandria/models/search_model.dart';
+import 'package:alejandria/search/debouncer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -10,6 +13,8 @@ class UserService extends ChangeNotifier {
   final String _baseUrl = '51.255.50.207:5000';
   late UserModel user;
   late UserModel userEdit;
+
+  late UserModel otherUser;
 
   final storage = new FlutterSecureStorage();
 
@@ -82,5 +87,40 @@ class UserService extends ChangeNotifier {
     this.userEdit.cambia_foto = 1;
     print('he llegado');
     notifyListeners();
+  }
+
+  //Busqueda de usuarios
+
+  final debouncer = Debouncer(duration: Duration(milliseconds: 500));
+
+  final StreamController<List<MySearchResponse>> _suggestionsSC =
+      new StreamController.broadcast();
+  Stream<List<MySearchResponse>> get suggestionsStream =>
+      this._suggestionsSC.stream;
+
+  Future<List<MySearchResponse>> searchUsers(String user) async {
+    final url = Uri.http(_baseUrl, '/buscarUsuarios');
+    final resp = await http.get(url, headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'token': await storage.read(key: 'token') ?? '',
+      'nick': user
+    });
+
+    final searchResp = SearchResponse.fromJson(resp.body);
+    return searchResp.mySearchResponses;
+  }
+
+  void getSuggestionsByQuery(String searchTerm) {
+    debouncer.value = '';
+    debouncer.onValue = (value) async {
+      final results = await this.searchUsers(value);
+      this._suggestionsSC.add(results);
+    };
+
+    final timer = Timer.periodic(Duration(milliseconds: 300), (_) {
+      debouncer.value = searchTerm;
+    });
+
+    Future.delayed(Duration(milliseconds: 301)).then((_) => timer.cancel());
   }
 }

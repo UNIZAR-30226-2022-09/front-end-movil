@@ -1,12 +1,15 @@
 import 'dart:convert';
 
 import 'package:alejandria/models/post_list_model.dart';
+import 'package:alejandria/provider/tematicas_provider.dart';
+import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class PostBottom extends StatefulWidget {
   PostListModel post;
@@ -106,7 +109,23 @@ class _PostBottomState extends State<PostBottom> {
         SizedBox(
           width: 20,
         ),
-        GestureDetector(child: Icon(FontAwesomeIcons.shareNodes)),
+        GestureDetector(
+            onTap: () {
+              final tematicas =
+                  Provider.of<TematicasProvider>(context, listen: false);
+              tematicas.resetData();
+              PostService articlePost =
+                  Provider.of<PostService>(context, listen: false);
+              articlePost.resetData(2);
+              if (widget.post.tipo == 2) {
+                Navigator.pushNamed(context, 'newRecoommendation', arguments: {
+                  'link': 'https://www.alejandria.es/${widget.post.id}',
+                  'titulo': widget.post.titulo,
+                  'autor': widget.post.autor,
+                });
+              }
+            },
+            child: Icon(FontAwesomeIcons.shareNodes)),
       ]),
     );
   }

@@ -12,6 +12,8 @@ class NewRecommendationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     PostService recPost = Provider.of<PostService>(context);
+    final arguments = (ModalRoute.of(context)?.settings.arguments ??
+        <String, dynamic>{}) as Map;
     return Scaffold(
         appBar: AppBar(
           title: Text('Nuevo post',
@@ -58,7 +60,8 @@ class NewRecommendationScreen extends StatelessWidget {
             padding: EdgeInsets.only(left: 15, right: 15, top: 15),
             child: Column(
               children: [
-                _Form(recPost),
+                _Form(recPost, arguments['link'], arguments['autor'],
+                    arguments['titulo']),
                 Divider(
                   color: AppTheme.primary,
                 ),
@@ -82,15 +85,18 @@ class NewRecommendationScreen extends StatelessWidget {
 
 class _Form extends StatefulWidget {
   PostService recPost;
-  _Form(this.recPost);
+  String? link;
+  String? autor;
+  String? titulo;
+
+  _Form(this.recPost, this.link, this.autor, this.titulo);
 
   @override
-  State<_Form> createState() => _FormState(recPost);
+  State<_Form> createState() => _FormState();
 }
 
 class _FormState extends State<_Form> {
-  PostService recPost;
-  _FormState(this.recPost);
+  _FormState();
 
   @override
   Widget build(BuildContext context) {
@@ -100,16 +106,18 @@ class _FormState extends State<_Form> {
         CustomInputField(
             icon: Icons.description,
             placeholder: 'Nombre del artículo',
+            initialValue: widget.titulo,
             maxlines: 1,
-            onChanged: (value) => recPost.newPost.titulo = value),
+            onChanged: (value) => widget.recPost.newPost.titulo = value),
         SizedBox(
           height: 15,
         ),
         CustomInputField(
             icon: Icons.description,
             placeholder: 'Autor del artículo',
+            initialValue: widget.autor,
             maxlines: 1,
-            onChanged: (value) => recPost.newPost.autor = value),
+            onChanged: (value) => widget.recPost.newPost.autor = value),
         SizedBox(
           height: 15,
         ),
@@ -117,14 +125,15 @@ class _FormState extends State<_Form> {
             icon: Icons.description,
             placeholder: 'Breve opinióndel artículo',
             maxlines: 3,
-            onChanged: (value) => recPost.newPost.descripcion = value),
+            onChanged: (value) => widget.recPost.newPost.descripcion = value),
         SizedBox(
           height: 15,
         ),
         CustomInputField(
             icon: Icons.link_rounded,
             placeholder: 'link al atículo',
-            onChanged: (value) => recPost.newPost.link = value),
+            initialValue: widget.link,
+            onChanged: (value) => widget.recPost.newPost.link = value),
       ],
     ));
   }
