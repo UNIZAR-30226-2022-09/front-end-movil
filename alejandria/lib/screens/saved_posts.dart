@@ -49,7 +49,7 @@ class _SavedPostsScreenState extends State<SavedPostsScreen>
                       mainAxisExtent: MediaQuery.of(context).size.width * 0.7),
                   itemCount: 3,
                   itemBuilder: (BuildContext context, int indx) {
-                    return ArticleCover();
+                    return ArticleCover2();
                   },
                 ),
               ),

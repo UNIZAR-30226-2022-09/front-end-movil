@@ -22,7 +22,8 @@ class ArticlePost extends StatelessWidget {
             Stack(
               alignment: Alignment.bottomLeft,
               children: [
-                _BackgroundImage(size, post.pdf!, post.usuario),
+                _BackgroundImage(size, post.pdf!, post.usuario, post.portada!,
+                    post.descripcion! != 'None'),
                 Positioned(
                     bottom: 0,
                     right: 0,
@@ -36,7 +37,7 @@ class ArticlePost extends StatelessWidget {
                         '@${post.usuario}', size, post.fotoDePerfil)),
               ],
             ),
-            _Description()
+            _Description(post.descripcion)
           ],
         ),
       ),
@@ -58,25 +59,34 @@ class ArticlePost extends StatelessWidget {
 class _BackgroundImage extends StatelessWidget {
   final Size size;
   final String pdf;
+  final String portada;
   final String user_name;
-  const _BackgroundImage(this.size, this.pdf, this.user_name);
+  final bool rounded;
+  const _BackgroundImage(
+      this.size, this.pdf, this.user_name, this.portada, this.rounded);
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(20),
-        topRight: Radius.circular(20),
-      ),
+      borderRadius: !rounded
+          ? BorderRadius.circular(20)
+          : BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
       child: Container(
         width: size.width * 0.95,
         height: size.width * 1.34,
         child: Stack(children: [
-          SfPdfViewer.network(
-            pdf,
-            canShowScrollHead: false,
-            enableDoubleTapZooming: false,
-            enableTextSelection: false,
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            child: FadeInImage(
+                fit: BoxFit.cover,
+                placeholderFit: BoxFit.cover,
+                placeholder: AssetImage('assets/carga.jpg'),
+                //image: AssetImage('assets/carga.jpg')
+                image: NetworkImage(portada)),
           ),
           GestureDetector(
             onTap: () {
@@ -89,7 +99,7 @@ class _BackgroundImage extends StatelessWidget {
           )
         ]),
         decoration: BoxDecoration(
-          color: Preferences.isDarkMode ? Colors.black87 : Colors.grey[400],
+          color: Preferences.isDarkMode ? Colors.black87 : Colors.white,
           border: Border(bottom: BorderSide(color: AppTheme.primary)),
         ),
       ),
@@ -98,25 +108,26 @@ class _BackgroundImage extends StatelessWidget {
 }
 
 class _Description extends StatelessWidget {
-  const _Description({
-    Key? key,
-  }) : super(key: key);
+  String? descripcion;
+  _Description(this.descripcion);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Text(
-            'Sint qui adipisicing consequat nisi tempor in ea voluptate adipisicing labore eiusmod anim eu. Eiusmod mollit excepteur excepteur eu velit pariatur fugiat qui commodo ullamco. Occaecat Lorem tempor do laboris eu nulla occaecat culpa quis.'),
-      ),
-      decoration: BoxDecoration(
-        color: Preferences.isDarkMode ? Colors.black87 : Colors.white,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
-        ),
-      ),
-    );
+    return descripcion != null && descripcion != 'None'
+        ? Container(
+            width: double.infinity,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text(descripcion!),
+            ),
+            decoration: BoxDecoration(
+              color: Preferences.isDarkMode ? Colors.black87 : Colors.white,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+              ),
+            ),
+          )
+        : Container();
   }
 }

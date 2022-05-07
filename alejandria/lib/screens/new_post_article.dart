@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:alejandria/models/post_model.dart';
 import 'package:alejandria/provider/provider.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
@@ -69,7 +70,7 @@ class NewArticleScreen extends StatelessWidget {
                 Divider(
                   color: AppTheme.primary,
                 ),
-                _Form(articlePost.newPost.descripcion),
+                _Form(articlePost.newPost),
                 Divider(
                   color: AppTheme.primary,
                 ),
@@ -180,17 +181,14 @@ class _CheckBoxes extends StatelessWidget {
 }
 
 class _Form extends StatefulWidget {
-  String? description;
-  _Form(this.description);
+  PostModel post;
+  _Form(this.post);
 
   @override
-  State<_Form> createState() => _FormState(description);
+  State<_Form> createState() => _FormState();
 }
 
 class _FormState extends State<_Form> {
-  String? description;
-  _FormState(this.description);
-
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -198,7 +196,7 @@ class _FormState extends State<_Form> {
             icon: Icons.description,
             placeholder: 'Breve descripción del artículo',
             maxlines: 3,
-            onChanged: (value) => description = value));
+            onChanged: (value) => widget.post.descripcion = value));
   }
 }
 

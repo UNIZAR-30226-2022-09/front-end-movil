@@ -38,6 +38,7 @@ class HomeScreen extends StatelessWidget {
                             'https://www.emprendedores.es/wp-content/uploads/2021/05/De-emprendedor-a-empresario.jpg',
                         pdf:
                             'http://51.255.50.207:5000/display2/Practica2_21_22.pdf',
+                        portada: 'http://51.255.50.207:5000/display3/1.png',
                         nlikes: 30,
                         likemio: true,
                         ncomentarios: 10,

@@ -1,4 +1,5 @@
 import 'package:alejandria/screens/screens.dart';
+import 'package:alejandria/screens/una_prueba.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -51,7 +52,8 @@ class _Paginas extends StatelessWidget {
         ExplorerScreen(),
         NewPostScreen(),
         NotificationsScreen(),
-        UserScreen(),
+        UnaPruebaScreen()
+        //UserScreen(),
         // Navigator(
         //   onGenerateRoute: (settings) {
         //     Widget page = UserScreen();

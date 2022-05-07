@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:alejandria/models/models.dart';
 import 'package:alejandria/models/search_model.dart';
 import 'package:alejandria/search/debouncer.dart';
+import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -24,18 +25,21 @@ class UserService extends ChangeNotifier {
   bool isSaving = false;
 
   UserService() {
-    this.loadData();
+    this.loadData(Preferences.userNick);
   }
 
-  Future<UserModel> loadData() async {
+  Future<UserModel> loadData(String nick) async {
     this.isLoading = true;
     notifyListeners();
 
-    final url = Uri.http(_baseUrl, '/editarPerfil');
+    final url = Uri.http(_baseUrl, '/mostrarPerfil');
     final resp = await http.get(url, headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'token': await storage.read(key: 'token') ?? ''
+      'token': await storage.read(key: 'token') ?? '',
+      'nick': nick
     });
+    print('hola');
+    print(json.decode(resp.body));
 
     user = UserModel.fromMap(json.decode(resp.body));
 
@@ -68,7 +72,7 @@ class UserService extends ChangeNotifier {
           await storage.read(key: 'token') ?? '';
 
       await imageUploadRequest.send();
-      loadData();
+      loadData(Preferences.userNick);
     }
 
     this.userEdit.cambia_foto = 0;

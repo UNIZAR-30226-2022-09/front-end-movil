@@ -26,7 +26,7 @@ class UserScreen extends StatelessWidget {
               child: Container(width: 200, height: 100, color: Colors.black)));
     return Scaffold(
       appBar: AppBar(
-        title: Text(userService.user.nick,
+        title: Text(Preferences.userNick,
             style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w600,

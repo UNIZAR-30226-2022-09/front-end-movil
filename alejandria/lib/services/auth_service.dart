@@ -54,6 +54,7 @@ class AuthService extends ChangeNotifier {
 
     if (decodedResp.containsKey('token')) {
       await storage.write(key: 'token', value: decodedResp['token']);
+      Preferences.userNick = decodedResp['nick'];
       return null;
     } else {
       return 'Correo o contraseña incorrecto(s)';

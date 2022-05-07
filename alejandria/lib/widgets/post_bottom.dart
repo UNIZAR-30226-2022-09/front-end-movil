@@ -135,7 +135,7 @@ class _PostBottomState extends State<PostBottom> {
           ? Colors.white10
           : Colors.white.withOpacity(0.85),
       border: Border.all(color: AppTheme.primary.withOpacity(0.7)),
-      borderRadius: widget.post.tipo == 1
+      borderRadius: widget.post.tipo == 1 && widget.post.descripcion != 'None'
           ? BorderRadius.only(topLeft: Radius.circular(20))
           : BorderRadius.only(
               bottomRight: Radius.circular(18), topLeft: Radius.circular(20)));

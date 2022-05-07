@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:alejandria/models/models.dart';
+import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -16,26 +17,26 @@ class MyPostsService extends ChangeNotifier {
   bool isLoadingRec = true;
 
   MyPostsService() {
-    this.loadArticles();
-    this.loadRecs();
+    this.loadArticles(Preferences.userNick);
+    this.loadRecs(Preferences.userNick);
   }
 
   //TOODO: <List<PostListModel>>
-  Future<List<PostListModel>> loadArticles() async {
+  Future<List<PostListModel>> loadArticles(String nick) async {
     this.isLoadingArticles = true;
     notifyListeners();
-    final url = Uri.http(_baseUrl, '/misArticulos');
+    final url = Uri.http(_baseUrl, '/mostrarArticulos');
     final resp = await http.get(
       url,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'token': await storage.read(key: 'token') ?? ''
+        'token': await storage.read(key: 'token') ?? '',
+        'nick': nick
       },
     );
 
     final Map<String, dynamic> articlesMap = json.decode(resp.body);
-    print('ESTATUS DE LA RESPUESTA: ');
-    print(resp.statusCode);
+    print(json.decode(resp.body));
 
     articlesMap.forEach((key, value) {
       final tempArticle = PostListModel.fromMap(value);
@@ -48,14 +49,15 @@ class MyPostsService extends ChangeNotifier {
     return this.misArticulos;
   }
 
-  Future<List<PostListModel>> loadRecs() async {
+  Future<List<PostListModel>> loadRecs(String nick) async {
     this.isLoadingRec = true;
     notifyListeners();
-    final url = Uri.http(_baseUrl, '/misRecomendaciones');
+    final url = Uri.http(_baseUrl, '/mostrarRecomendaciones');
     print(url);
     final resp = await http.get(url, headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'token': await storage.read(key: 'token') ?? ''
+      'token': await storage.read(key: 'token') ?? '',
+      'nick': nick
     });
 
     final Map<String, dynamic> recMap = json.decode(resp.body);

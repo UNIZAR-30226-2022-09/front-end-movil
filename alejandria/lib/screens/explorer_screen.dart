@@ -68,7 +68,7 @@ class ExplorerScreen extends StatelessWidget {
                       mainAxisExtent: MediaQuery.of(context).size.width * 0.43),
                   itemCount: 9,
                   itemBuilder: (BuildContext context, int indx) {
-                    return ArticleCover();
+                    return ArticleCover2();
                   },
                 ),
               ),

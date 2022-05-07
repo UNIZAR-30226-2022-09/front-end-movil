@@ -1,4 +1,5 @@
 import 'package:alejandria/models/post_list_model.dart';
+import 'package:alejandria/screens/una_prueba.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:alejandria/widgets/bottom_line_appbar.dart';
@@ -7,15 +8,23 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class OnePostScreen extends StatelessWidget {
-  const OnePostScreen({Key? key}) : super(key: key);
+  PostListModel? myPost;
+  OnePostScreen({Key? key, this.myPost}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments ??
         <String, dynamic>{}) as Map;
-    PostListModel post = arguments['post'];
+    PostListModel post = arguments['post'] != null ? arguments['post'] : myPost;
     return Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios),
+              onPressed: () {
+                final prueba =
+                    Provider.of<PruebaProvider>(context, listen: false);
+                prueba.changeScreen(true, null);
+              }),
           title: Text('Post de ${post.usuario}',
               style: TextStyle(
                   fontSize: 22,
@@ -24,7 +33,7 @@ class OnePostScreen extends StatelessWidget {
           bottom: BottomLineAppBar(), //Color.fromRGBO(68, 114, 88, 1),
         ),
         body: SingleChildScrollView(
-          child: ArticlePost(post: post),
+          child: Hero(tag: post.id!, child: ArticlePost(post: post)),
         ));
   }
 }

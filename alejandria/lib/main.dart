@@ -1,6 +1,7 @@
 import 'package:alejandria/provider/tematicas_provider.dart';
 import 'package:alejandria/provider/theme_provider.dart';
 import 'package:alejandria/screens/screens.dart';
+import 'package:alejandria/screens/una_prueba.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ void main() async {
     ChangeNotifierProvider(create: (_) => UserService()),
     ChangeNotifierProvider(create: (_) => MyPostsService()),
     ChangeNotifierProvider(create: (_) => PostService()),
+    ChangeNotifierProvider(create: (_) => PruebaProvider()),
     ChangeNotifierProvider(
         create: (_) => ThemeProvider(isDarkmode: Preferences.isDarkMode)),
     ChangeNotifierProvider(create: (_) => TematicasProvider()),
@@ -43,7 +45,7 @@ class MyApp extends StatelessWidget {
           'loading': (_) => LoadingScreen(),
           'onePost': (_) => OnePostScreen(),
           'comentarios': (_) => CommentsScreen(),
-          'pdfScreen': (_) => PDFScreen()
+          'pdfScreen': (_) => PDFScreen(),
         },
         scaffoldMessengerKey: NotificationsService.messengerKey,
         theme: Provider.of<ThemeProvider>(context).currentTheme);

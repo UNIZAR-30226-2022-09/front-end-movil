@@ -9,6 +9,7 @@ class PostListModel {
     this.id,
     required this.tipo,
     this.pdf,
+    this.portada,
     this.descripcion,
     required this.usuario,
     required this.fotoDePerfil,
@@ -25,6 +26,7 @@ class PostListModel {
   String? id;
   int tipo;
   String? pdf;
+  String? portada;
   String? descripcion;
   String usuario;
   String fotoDePerfil;
@@ -45,6 +47,7 @@ class PostListModel {
   factory PostListModel.fromMap(Map<String, dynamic> json) => PostListModel(
         tipo: json["tipo"],
         pdf: json["pdf"] == null ? null : json["pdf"],
+        portada: json["portada"] == null ? null : json["portada"],
         descripcion: json["descripcion"],
         usuario: json["usuario"],
         fotoDePerfil: json["foto_de_perfil"],
@@ -61,6 +64,7 @@ class PostListModel {
   Map<String, dynamic> toMap() => {
         "tipo": tipo,
         "pdf": pdf == null ? null : pdf,
+        "portada": portada == null ? null : portada,
         "descripcion": descripcion,
         "usuario": usuario,
         "foto_de_perfil": fotoDePerfil,
