@@ -15,7 +15,8 @@ class UserModel {
       required this.nposts,
       required this.nseguidores,
       required this.nsiguiendo,
-      this.cambia_foto = 0});
+      this.cambia_foto = 0,
+      this.siguiendo});
 
   String nick;
   String? fotoDePerfil;
@@ -27,6 +28,7 @@ class UserModel {
   int nseguidores;
   int nsiguiendo;
   int? cambia_foto;
+  bool? siguiendo;
 
   factory UserModel.fromJson(String str) => UserModel.fromMap(json.decode(str));
 
@@ -42,7 +44,8 @@ class UserModel {
       nposts: json["nposts"],
       nseguidores: json["nseguidores"],
       nsiguiendo: json["nsiguiendo"],
-      cambia_foto: json["cambia_foto"]);
+      cambia_foto: json["cambia_foto"],
+      siguiendo: json["siguiendo"]);
 
   Map<String, dynamic> toMap() => {
         "nick": nick,
@@ -55,6 +58,7 @@ class UserModel {
         "nseguidores": nseguidores,
         "nsiguiendo": nsiguiendo,
         "cambia_foto": cambia_foto,
+        "siguiendo": siguiendo
       };
 
   UserModel copy() => UserModel(
@@ -67,5 +71,6 @@ class UserModel {
       nposts: this.nposts,
       nseguidores: this.nseguidores,
       nsiguiendo: this.nsiguiendo,
-      cambia_foto: this.cambia_foto);
+      cambia_foto: this.cambia_foto,
+      siguiendo: this.siguiendo);
 }

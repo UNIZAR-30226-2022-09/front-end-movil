@@ -33,7 +33,7 @@ class HomeScreen extends StatelessWidget {
                 ? ArticlePost(
                     post: PostListModel(
                         tipo: 1,
-                        usuario: "alvaroPomarMart",
+                        usuario: "alvaro1",
                         fotoDePerfil:
                             'https://www.emprendedores.es/wp-content/uploads/2021/05/De-emprendedor-a-empresario.jpg',
                         pdf:
@@ -48,7 +48,7 @@ class HomeScreen extends StatelessWidget {
                 : RecommendationPost(
                     post: PostListModel(
                         tipo: 2,
-                        usuario: 'alvaro',
+                        usuario: 'alvaro69',
                         fotoDePerfil:
                             'https://www.emprendedores.es/wp-content/uploads/2021/05/De-emprendedor-a-empresario.jpg',
                         nlikes: 10,

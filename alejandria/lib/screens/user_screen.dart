@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class UserScreen extends StatelessWidget {
   const UserScreen({Key? key}) : super(key: key);
@@ -221,20 +222,15 @@ class _Photo_Followers extends StatelessWidget {
                 height: 100,
                 decoration:
                     BoxDecoration(borderRadius: BorderRadius.circular(50)),
-                child: userService.user.fotoDePerfil == null
-                    ? Icon(
-                        Icons.person,
-                        size: 80,
-                        color: Colors.white,
-                      )
-                    : ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: FadeInImage(
-                            fit: BoxFit.cover,
-                            placeholder: AssetImage('assets/icon.png'),
-                            image:
-                                NetworkImage(userService.user.fotoDePerfil!)),
-                      )),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: CachedNetworkImage(
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                    imageUrl: userService.user.fotoDePerfil!,
+                  ),
+                )),
             SizedBox(
               width: 30,
             ),

@@ -7,6 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:pdf_render/pdf_render.dart' as render;
 import 'package:native_pdf_renderer/native_pdf_renderer.dart';
+import 'package:provider/provider.dart';
 //import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class PostService extends ChangeNotifier {
@@ -52,26 +53,10 @@ class PostService extends ChangeNotifier {
 
       await pdfUploadRequest.send();
 
-      //Pasar la portada a imagen
-/*
-      final document = await PdfDocument.openAsset(pdfArticle!.path);
-      final page = await document.getPage(1);
-      final pageImage = await page.render(width: page.width, height: page.height);
-
-      url2 = Uri.parse('http://$_baseUrl/subirPortada');
-      final coverUploadRequest = http.MultipartRequest('POST', url2);
-      final cover = await http.MultipartFile.fromPath('cover', pageImage);
-
-      coverUploadRequest.files.add(cover);
-      coverUploadRequest.headers['token'] =
-          await storage.read(key: 'token') ?? '';
-      coverUploadRequest.headers['id'] = id.toString();
-*/
-
       pdfArticle = null;
       check1 = false;
       check2 = false;
-    }
+    } else {}
 
     this.isSaving = false;
     notifyListeners();

@@ -8,8 +8,8 @@ import 'package:http/http.dart' as http;
 
 class MyPostsService extends ChangeNotifier {
   final String _baseUrl = '51.255.50.207:5000';
-  final List<PostListModel> misArticulos = [];
-  final List<PostListModel> misRecs = [];
+  List<PostListModel> misArticulos = [];
+  List<PostListModel> misRecs = [];
 
   final storage = new FlutterSecureStorage();
 
@@ -21,7 +21,6 @@ class MyPostsService extends ChangeNotifier {
     this.loadRecs(Preferences.userNick);
   }
 
-  //TOODO: <List<PostListModel>>
   Future<List<PostListModel>> loadArticles(String nick) async {
     this.isLoadingArticles = true;
     notifyListeners();
@@ -36,7 +35,8 @@ class MyPostsService extends ChangeNotifier {
     );
 
     final Map<String, dynamic> articlesMap = json.decode(resp.body);
-    print(json.decode(resp.body));
+
+    misArticulos = [];
 
     articlesMap.forEach((key, value) {
       final tempArticle = PostListModel.fromMap(value);
@@ -53,7 +53,6 @@ class MyPostsService extends ChangeNotifier {
     this.isLoadingRec = true;
     notifyListeners();
     final url = Uri.http(_baseUrl, '/mostrarRecomendaciones');
-    print(url);
     final resp = await http.get(url, headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'token': await storage.read(key: 'token') ?? '',
@@ -61,7 +60,8 @@ class MyPostsService extends ChangeNotifier {
     });
 
     final Map<String, dynamic> recMap = json.decode(resp.body);
-    print(recMap);
+
+    misRecs = [];
 
     recMap.forEach((key, value) {
       final tempRec = PostListModel.fromMap(value);
@@ -72,5 +72,48 @@ class MyPostsService extends ChangeNotifier {
     notifyListeners();
 
     return this.misRecs;
+  }
+
+  Future<List<PostListModel>> loadOtherArticles(String nick) async {
+    List<PostListModel> otrosArticulos = [];
+    final url = Uri.http(_baseUrl, '/mostrarArticulos');
+    final resp = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'token': await storage.read(key: 'token') ?? '',
+        'nick': nick
+      },
+    );
+
+    final Map<String, dynamic> articlesMap = json.decode(resp.body);
+
+    articlesMap.forEach((key, value) {
+      final tempArticle = PostListModel.fromMap(value);
+      tempArticle.id = key;
+      otrosArticulos.add(tempArticle);
+    });
+
+    return otrosArticulos;
+  }
+
+  Future<List<PostListModel>> loadOtherRecs(String nick) async {
+    List<PostListModel> otherRecs = [];
+    final url = Uri.http(_baseUrl, '/mostrarRecomendaciones');
+    final resp = await http.get(url, headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'token': await storage.read(key: 'token') ?? '',
+      'nick': nick
+    });
+
+    final Map<String, dynamic> recMap = json.decode(resp.body);
+
+    recMap.forEach((key, value) {
+      final tempRec = PostListModel.fromMap(value);
+      tempRec.id = key;
+      otherRecs.add(tempRec);
+    });
+
+    return otherRecs;
   }
 }

@@ -15,8 +15,6 @@ class UserService extends ChangeNotifier {
   late UserModel user;
   late UserModel userEdit;
 
-  late UserModel otherUser;
-
   final storage = new FlutterSecureStorage();
 
   File? profilePicture;
@@ -38,7 +36,6 @@ class UserService extends ChangeNotifier {
       'token': await storage.read(key: 'token') ?? '',
       'nick': nick
     });
-    print('hola');
     print(json.decode(resp.body));
 
     user = UserModel.fromMap(json.decode(resp.body));
@@ -47,6 +44,21 @@ class UserService extends ChangeNotifier {
     notifyListeners();
 
     return user;
+  }
+
+  Future<UserModel> loadOtherUser(String nick) async {
+    UserModel otherUser;
+
+    final url = Uri.http(_baseUrl, '/mostrarPerfil');
+    final resp = await http.get(url, headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'token': await storage.read(key: 'token') ?? '',
+      'nick': nick
+    });
+
+    otherUser = UserModel.fromMap(json.decode(resp.body));
+
+    return otherUser;
   }
 
   Future editProfile() async {
@@ -97,12 +109,11 @@ class UserService extends ChangeNotifier {
 
   final debouncer = Debouncer(duration: Duration(milliseconds: 500));
 
-  final StreamController<List<MySearchResponse>> _suggestionsSC =
+  final StreamController<List<SearchModel>> _suggestionsSC =
       new StreamController.broadcast();
-  Stream<List<MySearchResponse>> get suggestionsStream =>
-      this._suggestionsSC.stream;
+  Stream<List<SearchModel>> get suggestionsStream => this._suggestionsSC.stream;
 
-  Future<List<MySearchResponse>> searchUsers(String user) async {
+  Future<List<SearchModel>> searchUsers(String user) async {
     final url = Uri.http(_baseUrl, '/buscarUsuarios');
     final resp = await http.get(url, headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
@@ -110,8 +121,16 @@ class UserService extends ChangeNotifier {
       'nick': user
     });
 
-    final searchResp = SearchResponse.fromJson(resp.body);
-    return searchResp.mySearchResponses;
+    List<SearchModel> mySearch = [];
+
+    final Map<String, dynamic> searchMap = json.decode(resp.body);
+    searchMap.forEach((key, value) {
+      final tempSearch = SearchModel.fromMap(value);
+      tempSearch.nick = key;
+      mySearch.add(tempSearch);
+    });
+
+    return mySearch;
   }
 
   void getSuggestionsByQuery(String searchTerm) {

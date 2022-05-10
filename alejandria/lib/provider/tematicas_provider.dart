@@ -8,7 +8,7 @@ class TematicasProvider with ChangeNotifier {
   List<Tematica> tematicas = [
     Tematica(FontAwesomeIcons.user, 'Preferencias', 'pref'),
     Tematica(FontAwesomeIcons.dna, 'Biología', 'Biologia'),
-    Tematica(FontAwesomeIcons.ruler, 'C. Sociales', 'C. Sociales'),
+    Tematica(FontAwesomeIcons.ruler, 'C. Sociales', 'C.Sociales'),
     Tematica(FontAwesomeIcons.coins, 'Economía', 'Economia'),
     Tematica(FontAwesomeIcons.lightbulb, 'Electrónica', 'Electronica'),
     Tematica(FontAwesomeIcons.language, 'Filologia', 'Filologia'),

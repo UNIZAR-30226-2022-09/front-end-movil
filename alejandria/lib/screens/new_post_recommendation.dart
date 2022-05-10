@@ -1,3 +1,4 @@
+import 'package:alejandria/models/models.dart';
 import 'package:alejandria/provider/tematicas_provider.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
@@ -31,7 +32,7 @@ class NewRecommendationScreen extends StatelessWidget {
                             listen: false);
                         if (!tematicas.checkData()) {
                           NotificationsService.showSnackbar(
-                              'Debe elegiir al menos 1 temática');
+                              'Debe elegir al menos 1 temática');
                           return;
                         } else if (recPost.newPost.autor == null ||
                             recPost.newPost.titulo == null ||
@@ -43,6 +44,12 @@ class NewRecommendationScreen extends StatelessWidget {
                         }
 
                         recPost.uploadPost();
+                        final postsService =
+                            Provider.of<MyPostsService>(context, listen: false);
+                        final userService =
+                            Provider.of<UserService>(context, listen: false);
+                        await postsService.loadRecs(Preferences.userNick);
+                        userService.user.nposts += 1;
 
                         Navigator.popUntil(context, (route) => false);
                         Navigator.pushNamed(context, 'tabs');

@@ -38,7 +38,7 @@ class _PostBottomState extends State<PostBottom> {
                 : widget.post.nlikes + 1;
             widget.post.likemio = !widget.post.likemio;
             setState(() {});
-            /*
+
             final url = Uri.http(_baseUrl, '/darLike');
             await http.post(url,
                 headers: <String, String>{
@@ -48,7 +48,7 @@ class _PostBottomState extends State<PostBottom> {
                 body: json.encode(<String, dynamic>{
                   'id': widget.post.id!,
                   'like': widget.post.likemio
-                })); */
+                }));
           },
           child: widget.post.likemio
               ? Icon(

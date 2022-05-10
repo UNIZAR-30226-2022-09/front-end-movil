@@ -42,7 +42,6 @@ class EditProfileScreen extends StatelessWidget {
                               'Debe elegiir al menos 1 temática');
                           return;
                         }
-
                         userService.editProfile();
 
                         Navigator.popUntil(context, (route) => false);
@@ -208,20 +207,19 @@ class _Tematicas extends StatefulWidget {
   _Tematicas(this.tematicas);
 
   @override
-  State<_Tematicas> createState() => _TematicasState(tematicas);
+  State<_Tematicas> createState() => _TematicasState();
 }
 
 class _TematicasState extends State<_Tematicas> {
-  List<String> tematicasService;
-  _TematicasState(this.tematicasService);
+  _TematicasState();
 
   @override
   Widget build(BuildContext context) {
     final tematicas = Provider.of<TematicasProvider>(context).tematicas;
 
-    for (int i = 0; i < tematicasService.length; i++) {
+    for (int i = 0; i < widget.tematicas.length; i++) {
       int index = tematicas
-          .indexWhere((element) => element.dbName == tematicasService[i]);
+          .indexWhere((element) => element.dbName == widget.tematicas[i]);
       tematicas[index].isSelected = true;
     }
 
@@ -242,7 +240,7 @@ class _TematicasState extends State<_Tematicas> {
               index: index + 1,
               icon: tematicas[index + 1].icon,
               name: tematicas[index + 1].name,
-              list: tematicasService,
+              list: widget.tematicas,
             );
           }),
     );

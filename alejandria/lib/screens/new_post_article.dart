@@ -28,7 +28,7 @@ class NewArticleScreen extends StatelessWidget {
             TextButton(
                 onPressed: articlePost.isSaving
                     ? null
-                    : () {
+                    : () async {
                         final tematicas = Provider.of<TematicasProvider>(
                             context,
                             listen: false);
@@ -49,6 +49,12 @@ class NewArticleScreen extends StatelessWidget {
                         }
 
                         articlePost.uploadPost();
+                        final postsService =
+                            Provider.of<MyPostsService>(context, listen: false);
+                        final userService =
+                            Provider.of<UserService>(context, listen: false);
+                        await postsService.loadArticles(Preferences.userNick);
+                        userService.user.nposts += 1;
 
                         Navigator.popUntil(context, (route) => false);
                         Navigator.pushNamed(context, 'tabs');

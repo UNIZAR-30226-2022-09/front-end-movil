@@ -4,44 +4,22 @@
 
 import 'dart:convert';
 
-class SearchResponse {
-  SearchResponse({
-    required this.mySearchResponses,
-  });
+class SearchModel {
+  SearchModel({required this.fotoDePerfil, this.nick});
 
-  List<MySearchResponse> mySearchResponses;
-
-  factory SearchResponse.fromJson(String str) =>
-      SearchResponse.fromMap(json.decode(str));
-
-  factory SearchResponse.fromMap(Map<String, dynamic> json) => SearchResponse(
-        mySearchResponses: List<MySearchResponse>.from(
-            json["MySearchResponses"].map((x) => MySearchResponse.fromMap(x))),
-      );
-}
-
-class MySearchResponse {
-  MySearchResponse({
-    required this.nick,
-    required this.fotoDePerfil,
-  });
-
-  String nick;
   String fotoDePerfil;
+  String? nick;
 
-  factory MySearchResponse.fromJson(String str) =>
-      MySearchResponse.fromMap(json.decode(str));
+  factory SearchModel.fromJson(String str) =>
+      SearchModel.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory MySearchResponse.fromMap(Map<String, dynamic> json) =>
-      MySearchResponse(
-        nick: json["nick"],
+  factory SearchModel.fromMap(Map<String, dynamic> json) => SearchModel(
         fotoDePerfil: json["foto_de_perfil"],
       );
 
   Map<String, dynamic> toMap() => {
-        "nick": nick,
         "foto_de_perfil": fotoDePerfil,
       };
 }

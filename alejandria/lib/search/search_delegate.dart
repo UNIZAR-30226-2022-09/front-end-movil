@@ -49,7 +49,7 @@ class MySearchDelegate extends SearchDelegate {
 
     return StreamBuilder(
         stream: userProvider.suggestionsStream,
-        builder: (_, AsyncSnapshot<List<MySearchResponse>> snapshot) {
+        builder: (_, AsyncSnapshot<List<SearchModel>> snapshot) {
           if (!snapshot.hasData) {
             return Center(
                 child: Icon(
@@ -62,29 +62,36 @@ class MySearchDelegate extends SearchDelegate {
 
           return ListView.builder(
               itemCount: users.length,
-              itemBuilder: (_, int i) => _UserItem(users[i]));
+              itemBuilder: (_, int i) => Padding(
+                  padding: EdgeInsets.symmetric(vertical: 5),
+                  child: _UserItem(users[i])));
         });
   }
 }
 
 class _UserItem extends StatelessWidget {
-  final MySearchResponse resp;
+  final SearchModel resp;
   const _UserItem(this.resp);
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
         leading: Container(
-          width: 60,
-          height: 60,
+          width: 50,
+          height: 50,
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
-          child: FadeInImage(
-              placeholder: AssetImage('assets/icon.png'),
-              image: NetworkImage(resp.fotoDePerfil)),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(50),
+            child: FadeInImage(
+                fit: BoxFit.cover,
+                placeholder: AssetImage('assets/icon.png'),
+                image: NetworkImage(resp.fotoDePerfil)),
+          ),
         ),
         title: Text('@${resp.nick}'),
         onTap: () {
-          //TODO: ir a la pantalla del usuario
+          Navigator.pushNamed(context, 'otherUser',
+              arguments: {'nick': resp.nick});
         });
   }
 }

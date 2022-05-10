@@ -24,29 +24,36 @@ class PostHeader extends StatelessWidget {
           border: Border.all(color: AppTheme.primary.withOpacity(0.7))),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Row(children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(50),
-                child: FadeInImage(
-                    fit: BoxFit.cover,
-                    placeholder: AssetImage('assets/icon.png'),
-                    image: NetworkImage(imagePath))),
-          ),
-          SizedBox(
-            width: 10,
-          ),
-          Text(
-            userName,
-            style: TextStyle(fontSize: 17),
-          ),
-          SizedBox(
-            width: 10,
-          )
-        ]),
+        child: GestureDetector(
+          onTap: () {
+            // Navigator.pushNamed(context, 'otherUser',
+            //     arguments: {'nick': userName});
+          },
+          child: Row(children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(50)),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: FadeInImage(
+                      fit: BoxFit.cover,
+                      placeholder: AssetImage('assets/icon.png'),
+                      image: NetworkImage(imagePath))),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              userName,
+              style: TextStyle(fontSize: 17),
+            ),
+            SizedBox(
+              width: 10,
+            )
+          ]),
+        ),
       ),
     );
   }
