@@ -47,7 +47,6 @@ class _PostBottomState extends State<PostBottom> {
                 },
                 body: json.encode(<String, dynamic>{
                   'id': widget.post.id!,
-                  'like': widget.post.likemio
                 }));
           },
           child: widget.post.likemio
@@ -87,7 +86,7 @@ class _PostBottomState extends State<PostBottom> {
                   : widget.post.nguardados + 1;
               widget.post.guardadomio = !widget.post.guardadomio;
               setState(() {});
-              /*
+
               final url = Uri.http(_baseUrl, '/guardar');
               await http.post(url,
                   headers: <String, String>{
@@ -96,8 +95,7 @@ class _PostBottomState extends State<PostBottom> {
                   },
                   body: json.encode(<String, dynamic>{
                     'id': widget.post.id!,
-                    'guardar': widget.post.guardadomio
-                  })); */
+                  }));
             },
             child: widget.post.guardadomio
                 ? Icon(FontAwesomeIcons.solidFloppyDisk)

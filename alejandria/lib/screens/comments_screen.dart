@@ -58,18 +58,11 @@ class _WriteCommentState extends State<_WriteComment> {
         child: TextFormField(
           onChanged: (value) {
             myComment = value;
-            print(myComment);
-            setState(() {});
           },
           decoration: InputDecoration(
               hintText: 'Escribe un comentario',
               suffix: GestureDetector(
-                onTap: myComment.length == 0
-                    ? null
-                    : () {
-                        //TODO: hacer post del comentario
-                        print('hola');
-                      },
+                onTap: myComment.length == 0 ? null : () async {},
                 child: Text(
                   'Publicar',
                   style: TextStyle(

@@ -35,6 +35,7 @@ class MyPostsService extends ChangeNotifier {
     );
 
     final Map<String, dynamic> articlesMap = json.decode(resp.body);
+    print(json.decode(resp.body));
 
     misArticulos = [];
 

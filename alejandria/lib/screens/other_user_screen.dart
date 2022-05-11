@@ -143,11 +143,12 @@ class _FollowButtonState extends State<_FollowButton> {
           ),
           onPressed: () async {
             final String _baseUrl = '51.255.50.207:5000';
-            final url = Uri.http(_baseUrl, '/darLike');
+            final url = Uri.http(_baseUrl, '/seguirUser');
             await http.post(url,
                 headers: <String, String>{
                   'Content-Type': 'application/json; charset=UTF-8',
                   //'token': await storage.read(key: 'token') ?? '',
+                  'nick': widget.thisUser.nick,
                 },
                 body: json.encode(
                     <String, dynamic>{'nick': 'hola', 'siguiendo': false}));
