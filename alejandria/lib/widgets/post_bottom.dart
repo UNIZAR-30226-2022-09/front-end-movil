@@ -68,7 +68,8 @@ class _PostBottomState extends State<PostBottom> {
               Navigator.pushNamed(context, 'comentarios', arguments: {
                 'descripcion': widget.post.descripcion,
                 'id_publicacion': widget.post.id,
-                'foto_de_perfil_user': widget.post.fotoDePerfil
+                'foto_de_perfil_user': widget.post.fotoDePerfil,
+                'post': widget.post
               });
             },
             child: Icon(FontAwesomeIcons.comment)),
@@ -130,7 +131,7 @@ class _PostBottomState extends State<PostBottom> {
 
   BoxDecoration _buildBoxDecoration() => BoxDecoration(
       color: Preferences.isDarkMode
-          ? Colors.white10
+          ? Colors.black87
           : Colors.white.withOpacity(0.85),
       border: Border.all(color: AppTheme.primary.withOpacity(0.7)),
       borderRadius: widget.post.tipo == 1 && widget.post.descripcion != 'None'

@@ -93,7 +93,9 @@ class _BackgroundImage extends StatelessWidget {
                   arguments: {'pdf': pdf, 'user': user_name});
             },
             child: Container(
-              color: Colors.black.withOpacity(0.001),
+              color: Preferences.isDarkMode
+                  ? Colors.black.withOpacity(0.1)
+                  : Colors.black.withOpacity(0.001),
             ),
           )
         ]),

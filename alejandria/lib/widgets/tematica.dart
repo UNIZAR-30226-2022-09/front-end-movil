@@ -1,4 +1,5 @@
 import 'package:alejandria/provider/provider.dart';
+import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -37,7 +38,9 @@ class tematicaWidget extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: tematicaProvider.tematicas[index].isSelected
                       ? null
-                      : Colors.grey[300],
+                      : Preferences.isDarkMode
+                          ? Colors.grey[400]
+                          : Colors.grey[300],
                   gradient: tematicaProvider.tematicas[index].isSelected
                       ? LinearGradient(
                           begin: Alignment.topLeft,

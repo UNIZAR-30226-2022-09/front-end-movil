@@ -17,7 +17,7 @@ class PostHeader extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
           color: Preferences.isDarkMode
-              ? Colors.white10
+              ? Colors.black87
               : Colors.white.withOpacity(0.85),
           borderRadius: BorderRadius.only(
               bottomRight: Radius.circular(20), topLeft: Radius.circular(18)),

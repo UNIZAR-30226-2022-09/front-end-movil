@@ -40,6 +40,7 @@ class CustomInputField extends StatelessWidget {
         validator: validator,
         onChanged: onChanged,
         initialValue: initialValue,
+        style: isIntro ? TextStyle(fontSize: 18, color: Colors.black) : null,
         decoration: isIntro
             ? InputDecoration(
                 prefixIcon: Icon(

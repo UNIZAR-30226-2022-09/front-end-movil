@@ -121,7 +121,7 @@ class _SelectPdf extends StatelessWidget {
             width: 110,
             height: 155.57,
             decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Colors.grey[400],
                 borderRadius: BorderRadius.circular(10)),
             child: articlePost.pdfArticle == null
                 ? Icon(

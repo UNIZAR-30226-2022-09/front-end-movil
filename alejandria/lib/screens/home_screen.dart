@@ -1,13 +1,38 @@
+import 'dart:async';
+
 import 'package:alejandria/models/models.dart';
+import 'package:alejandria/services/my_posts_service.dart';
 import 'package:alejandria/themes/app_theme.dart';
+import 'package:alejandria/widgets/no_info.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  Future? myFuture;
+
+  Future<List<PostListModel>> _fetchData() async {
+    final postService = Provider.of<MyPostsService>(context, listen: false);
+    return postService.loadHome();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    myFuture = _fetchData();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final articlesService = Provider.of<MyPostsService>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('ALEJANDRÍA',
@@ -26,40 +51,32 @@ class HomeScreen extends StatelessWidget {
         ],
         bottom: BottomLineAppBar(), //Color.fromRGBO(68, 114, 88, 1),
       ),
-      body: ListView.builder(
-          itemCount: 6,
-          itemBuilder: (BuildContext context, int index) {
-            return index % 2 == 0
-                ? ArticlePost(
-                    post: PostListModel(
-                        tipo: 1,
-                        usuario: "alvaro1",
-                        fotoDePerfil:
-                            'https://www.emprendedores.es/wp-content/uploads/2021/05/De-emprendedor-a-empresario.jpg',
-                        pdf:
-                            'http://51.255.50.207:5000/display2/Practica2_21_22.pdf',
-                        portada: 'http://51.255.50.207:5000/display3/1.png',
-                        nlikes: 30,
-                        likemio: true,
-                        ncomentarios: 10,
-                        nguardados: 7,
-                        guardadomio: false,
-                        descripcion: 'mi articulo propio'))
-                : RecommendationPost(
-                    post: PostListModel(
-                        tipo: 2,
-                        usuario: 'alvaro69',
-                        fotoDePerfil:
-                            'https://www.emprendedores.es/wp-content/uploads/2021/05/De-emprendedor-a-empresario.jpg',
-                        nlikes: 10,
-                        likemio: false,
-                        ncomentarios: 2,
-                        nguardados: 4,
-                        guardadomio: true,
-                        titulo: 'UN articulo',
-                        autor: 'Alvaro Pomar',
-                        descripcion: 'Este articulo es muy intersante ',
-                        link: 'https://www.google.com'));
+      body: FutureBuilder(
+          future: myFuture,
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                  child: CircularProgressIndicator(
+                color: AppTheme.primary,
+              ));
+            } else if (snapshot.connectionState == ConnectionState.done) {
+              return articlesService.postsHome.length == 0
+                  ? Center(
+                      child: NoPosts(
+                          'Sigue a mas usuarios para ver sus publicaciones',
+                          FontAwesomeIcons.solidUser),
+                    )
+                  : ListView.builder(
+                      itemCount: articlesService.postsHome.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return articlesService.postsHome[index].tipo == 1
+                            ? ArticlePost(
+                                post: articlesService.postsHome[index])
+                            : RecommendationPost(
+                                post: articlesService.postsHome[index]);
+                      });
+            }
+            return Container();
           }),
     );
   }

@@ -1,7 +1,11 @@
 import 'package:alejandria/models/post_list_model.dart';
+import 'package:alejandria/services/my_posts_service.dart';
 import 'package:alejandria/themes/app_theme.dart';
+import 'package:alejandria/widgets/no_info.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class SavedPostsScreen extends StatefulWidget {
   const SavedPostsScreen({Key? key}) : super(key: key);
@@ -12,9 +16,20 @@ class SavedPostsScreen extends StatefulWidget {
 
 class _SavedPostsScreenState extends State<SavedPostsScreen>
     with TickerProviderStateMixin {
+  late List<PostListModel> savedArticles;
+  late List<PostListModel> savedRecs;
   @override
   Widget build(BuildContext context) {
     TabController _tabController = TabController(length: 2, vsync: this);
+    final ssService = Provider.of<MyPostsService>(context, listen: false);
+    Future<void> getSavedArticles() async {
+      savedArticles = await ssService.loadSavedArticles();
+    }
+
+    Future<void> getSavedRecs() async {
+      savedRecs = await ssService.loadSavedRecs();
+    }
+
     return Scaffold(
         appBar: AppBar(
           title: Text('Posts Guardados',
@@ -41,40 +56,59 @@ class _SavedPostsScreenState extends State<SavedPostsScreen>
             physics: BouncingScrollPhysics(),
             children: [
               SingleChildScrollView(
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisExtent: MediaQuery.of(context).size.width * 0.7),
-                  itemCount: 3,
-                  itemBuilder: (BuildContext context, int indx) {
-                    return ArticleCover2();
-                  },
-                ),
+                child: FutureBuilder(
+                    future: getSavedArticles(),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (snapshot.connectionState ==
+                          ConnectionState.done) {
+                        return savedArticles.length == 0
+                            ? NoPosts('Todavía no has guardado ningun artículo',
+                                FontAwesomeIcons.file)
+                            : GridView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        mainAxisExtent:
+                                            MediaQuery.of(context).size.width *
+                                                0.7),
+                                itemCount: savedArticles.length,
+                                itemBuilder: (BuildContext context, int indx) {
+                                  return ArticleCover(
+                                    post: savedArticles[indx],
+                                    dondeVoy: 2,
+                                  );
+                                },
+                              );
+                      }
+                      return Container();
+                    }),
               ),
               SingleChildScrollView(
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: 5,
-                    itemBuilder: (BuildContext context, int indx) {
-                      return RecommendationPost(
-                          post: PostListModel(
-                              tipo: 2,
-                              usuario: 'alvaro',
-                              fotoDePerfil:
-                                  'https://www.emprendedores.es/wp-content/uploads/2021/05/De-emprendedor-a-empresario.jpg',
-                              nlikes: 10,
-                              likemio: false,
-                              ncomentarios: 2,
-                              nguardados: 4,
-                              guardadomio: false,
-                              titulo: 'Lacasta Calvo',
-                              autor: 'Alvaro Pomar',
-                              descripcion:
-                                  'Es Lacsta un enano calvo? Compruebalo en este articulo',
-                              link: 'https://www.google.com'));
+                child: FutureBuilder(
+                    future: getSavedRecs(),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (snapshot.connectionState ==
+                          ConnectionState.done) {
+                        return savedRecs.length == 0
+                            ? NoPosts(
+                                'Todavía no has guardado ninguna recomendación',
+                                FontAwesomeIcons.thumbsUp)
+                            : ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: savedRecs.length,
+                                itemBuilder: (BuildContext context, int indx) {
+                                  return RecommendationPost(
+                                      post: savedRecs[indx]);
+                                });
+                      }
+                      return Container();
                     }),
               ),
             ]));

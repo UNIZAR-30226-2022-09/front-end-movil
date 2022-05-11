@@ -106,7 +106,6 @@ class _HeaderState extends State<_Header> {
             GestureDetector(
               onTap: () {
                 _isVisible = !_isVisible;
-                print(_isVisible);
                 setState(() {});
               },
               child: Container(

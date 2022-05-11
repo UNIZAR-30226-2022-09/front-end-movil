@@ -6,13 +6,13 @@ import 'package:alejandria/themes/app_theme.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../share_preferences/preferences.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class OtherUserScreen extends StatefulWidget {
@@ -53,7 +53,10 @@ class _OtherUserScreenState extends State<OtherUserScreen> {
           future: getUser(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return Center(
+                  child: CircularProgressIndicator(
+                color: AppTheme.primary,
+              ));
             } else if (snapshot.connectionState == ConnectionState.done) {
               return SingleChildScrollView(
                   child: Column(
@@ -64,41 +67,78 @@ class _OtherUserScreenState extends State<OtherUserScreen> {
               ));
             }
             return Container(
-              child: Text('Eror'),
+              child: Text('Error'),
             );
           }),
     );
   }
 }
 
-class _UpperContent extends StatelessWidget {
+class _UpperContent extends StatefulWidget {
   final UserModel thisUser;
 
   _UpperContent(this.thisUser);
 
   @override
+  State<_UpperContent> createState() => _UpperContentState();
+}
+
+class _UpperContentState extends State<_UpperContent> {
+  @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      _Photo_Followers(thisUser),
-      if (thisUser.nombreDeUsuario != null)
+      Container(
+          padding: EdgeInsets.all(15),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                  width: 100,
+                  height: 100,
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(50)),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: CachedNetworkImage(
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) =>
+                          const CircularProgressIndicator(),
+                      imageUrl: widget.thisUser.fotoDePerfil!,
+                    ),
+                  )),
+              SizedBox(
+                width: 30,
+              ),
+              _numbers(number: widget.thisUser.nposts, msg: 'Posts'),
+              SizedBox(
+                width: 15,
+              ),
+              _numbers(number: widget.thisUser.nseguidores, msg: 'Seguidores'),
+              SizedBox(
+                width: 15,
+              ),
+              _numbers(number: widget.thisUser.nsiguiendo, msg: 'Siguiendo')
+            ],
+          )),
+      if (widget.thisUser.nombreDeUsuario != null)
         Padding(
           padding: const EdgeInsets.only(left: 15, bottom: 10),
           child: Text(
-            thisUser.nombreDeUsuario!, //
+            widget.thisUser.nombreDeUsuario!, //
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
-      if (thisUser.descripcion != null)
+      if (widget.thisUser.descripcion != null)
         Padding(
           padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-          child: Text(thisUser.descripcion!),
+          child: Text(widget.thisUser.descripcion!),
         ),
-      if (thisUser.link != null)
+      if (widget.thisUser.link != null)
         Padding(
             padding: const EdgeInsets.only(left: 15, right: 15, bottom: 5),
             child: GestureDetector(
               child: Text(
-                thisUser.link!,
+                widget.thisUser.link!,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -107,95 +147,44 @@ class _UpperContent extends StatelessWidget {
                         : Colors.blue[900]),
               ),
               onTap: () async {
-                launch(thisUser.link!);
+                launch(widget.thisUser.link!);
               },
             )),
-      _FollowButton(thisUser: thisUser)
+      Padding(
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        child: OutlinedButton(
+            style: OutlinedButton.styleFrom(
+                primary: widget.thisUser.siguiendo!
+                    ? Colors.white
+                    : AppTheme.primary,
+                backgroundColor:
+                    widget.thisUser.siguiendo! ? AppTheme.primary : null,
+                side: BorderSide(color: AppTheme.primary)),
+            child: Container(
+              alignment: Alignment.center,
+              width: double.infinity,
+              child: Text(widget.thisUser.siguiendo! ? 'Siguiendo' : 'Seguir'),
+            ),
+            onPressed: () async {
+              final storage = new FlutterSecureStorage();
+              final String _baseUrl = '51.255.50.207:5000';
+              final url = Uri.http(_baseUrl, '/seguirUser');
+              await http.post(url,
+                  headers: <String, String>{
+                    'Content-Type': 'application/json; charset=UTF-8',
+                    'token': await storage.read(key: 'token') ?? '',
+                  },
+                  body: json.encode(<String, dynamic>{
+                    'nick': widget.thisUser.nick,
+                  }));
+              widget.thisUser.siguiendo = !widget.thisUser.siguiendo!;
+              widget.thisUser.nseguidores = widget.thisUser.siguiendo!
+                  ? widget.thisUser.nseguidores + 1
+                  : widget.thisUser.nseguidores - 1;
+              setState(() {});
+            }),
+      )
     ]);
-  }
-}
-
-class _FollowButton extends StatefulWidget {
-  const _FollowButton({
-    Key? key,
-    required this.thisUser,
-  }) : super(key: key);
-
-  final UserModel thisUser;
-
-  @override
-  State<_FollowButton> createState() => _FollowButtonState();
-}
-
-class _FollowButtonState extends State<_FollowButton> {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-      child: OutlinedButton(
-          style: OutlinedButton.styleFrom(
-              primary: AppTheme.primary,
-              side: BorderSide(color: AppTheme.primary)),
-          child: Container(
-            alignment: Alignment.center,
-            width: double.infinity,
-            child: Text(widget.thisUser.siguiendo! ? 'Siguiendo' : 'Seguir'),
-          ),
-          onPressed: () async {
-            final String _baseUrl = '51.255.50.207:5000';
-            final url = Uri.http(_baseUrl, '/seguirUser');
-            await http.post(url,
-                headers: <String, String>{
-                  'Content-Type': 'application/json; charset=UTF-8',
-                  //'token': await storage.read(key: 'token') ?? '',
-                  'nick': widget.thisUser.nick,
-                },
-                body: json.encode(
-                    <String, dynamic>{'nick': 'hola', 'siguiendo': false}));
-          }),
-    );
-  }
-}
-
-class _Photo_Followers extends StatelessWidget {
-  final UserModel thisUser;
-  const _Photo_Followers(this.thisUser);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        padding: EdgeInsets.all(15),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-                width: 100,
-                height: 100,
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(50)),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: CachedNetworkImage(
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) =>
-                        const CircularProgressIndicator(),
-                    imageUrl: thisUser.fotoDePerfil!,
-                  ),
-                )),
-            SizedBox(
-              width: 30,
-            ),
-            _numbers(number: thisUser.nposts, msg: 'Posts'),
-            SizedBox(
-              width: 15,
-            ),
-            _numbers(number: thisUser.nseguidores, msg: 'Seguidores'),
-            SizedBox(
-              width: 15,
-            ),
-            _numbers(number: thisUser.nsiguiendo, msg: 'Siguiendo')
-          ],
-        ));
   }
 }
 
@@ -261,7 +250,6 @@ class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
             onTap: (value) {
               _SelectedTabBar = value;
               setState(() {});
-              print(value);
             },
             controller: _tabController,
             unselectedLabelColor: Colors.grey,
@@ -315,7 +303,10 @@ class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
                                       MediaQuery.of(context).size.width * 0.7),
                           itemCount: widget.articles.length,
                           itemBuilder: (BuildContext context, int indx) {
-                            return ArticleCover(post: widget.articles[indx]);
+                            return ArticleCover(
+                              post: widget.articles[indx],
+                              dondeVoy: 2,
+                            );
                           },
                         ),
                 )

@@ -1,6 +1,7 @@
 import 'package:alejandria/models/user_model.dart';
 import 'package:alejandria/provider/provider.dart';
 import 'package:alejandria/services/services.dart';
+import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -157,6 +158,13 @@ class __FormState extends State<_Form> {
 
                       if (errorMessage == null) {
                         Navigator.pushReplacementNamed(context, 'tabs');
+                        final userService =
+                            Provider.of<UserService>(context, listen: false);
+                        await userService.loadData(Preferences.userNick);
+                        final postsService =
+                            Provider.of<MyPostsService>(context, listen: false);
+                        await postsService.loadRecs(Preferences.userNick);
+                        await postsService.loadArticles(Preferences.userNick);
                       } else {
                         NotificationsService.showSnackbar(errorMessage);
                         loginForm.isLoading = false;
@@ -298,14 +306,13 @@ class __FormRState extends State<_FormR> {
                       if (errorMessage == null) {
                         final userService =
                             Provider.of<UserService>(context, listen: false);
-                        userService.userEdit = UserModel(
-                            nick: regsiterForm.nick,
-                            tematicas: [],
-                            nposts: 0,
-                            fotoDePerfil:
-                                'http://51.255.50.207:5000/display/levi.png',
-                            nseguidores: 0,
-                            nsiguiendo: 0);
+                        userService.userEdit =
+                            await userService.loadData(regsiterForm.nick);
+                        final postsService =
+                            Provider.of<MyPostsService>(context, listen: false);
+                        await postsService.loadRecs(Preferences.userNick);
+                        await postsService.loadArticles(Preferences.userNick);
+
                         final tematicasProvider =
                             Provider.of<TematicasProvider>(context,
                                 listen: false);

@@ -5,10 +5,6 @@ import 'package:alejandria/models/post_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:pdf_render/pdf_render.dart' as render;
-import 'package:native_pdf_renderer/native_pdf_renderer.dart';
-import 'package:provider/provider.dart';
-//import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class PostService extends ChangeNotifier {
   final String _baseUrl = '51.255.50.207:5000';

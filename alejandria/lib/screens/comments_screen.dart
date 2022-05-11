@@ -1,12 +1,18 @@
+import 'package:alejandria/models/models.dart';
+import 'package:alejandria/services/services.dart';
+import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CommentsScreen extends StatelessWidget {
+  List<ComentraioModel> comentarios = [];
   @override
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments ??
         <String, dynamic>{}) as Map;
+    PostListModel post = arguments['post'];
 
     return Scaffold(
         appBar: AppBar(
@@ -21,13 +27,14 @@ class CommentsScreen extends StatelessWidget {
           child: Column(
             children: [
               _Description(
-                descripcion: arguments['descripcion'],
-                imagePath: arguments['foto_de_perfil_user'],
+                descripcion: post.descripcion,
+                imagePath: post.fotoDePerfil,
               ),
-              Expanded(
-                child: Container(),
+              _VerComentarios(post.id!),
+              SizedBox(
+                height: 5,
               ),
-              _WriteComment(),
+              _WriteComment(post),
               SizedBox(
                 height: 2,
               )
@@ -40,33 +47,115 @@ class CommentsScreen extends StatelessWidget {
   }
 }
 
+class _VerComentarios extends StatelessWidget {
+  String id;
+  _VerComentarios(this.id);
+
+  @override
+  Widget build(BuildContext context) {
+    final myService = Provider.of<ComentariosService>(context);
+    Future<void> getComments() async {
+      await myService.cargarComentarios(id);
+    }
+
+    return Expanded(
+      child: FutureBuilder(
+          future: getComments(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                  child: CircularProgressIndicator(color: AppTheme.primary));
+            } else if (snapshot.connectionState == ConnectionState.done) {
+              return ListView.builder(
+                  reverse: true,
+                  shrinkWrap: true,
+                  itemCount: myService.comentarios.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Column(
+                      children: [
+                        Comentario(myService.comentarios[index]),
+                        Container(
+                            width: double.infinity,
+                            height: 0.5,
+                            color: AppTheme.primary),
+                      ],
+                    );
+                  });
+            }
+            return Container();
+          }),
+    );
+  }
+}
+
+class Comentario extends StatelessWidget {
+  ComentraioModel comentario;
+
+  Comentario(this.comentario);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
+        child: ClipRRect(
+            borderRadius: BorderRadius.circular(50),
+            child: FadeInImage(
+                fit: BoxFit.cover,
+                placeholder: AssetImage('assets/icon.png'),
+                image: NetworkImage(comentario.fotoDePerfil))),
+      ),
+      title: Text('@${comentario.nick}',
+          style: TextStyle(fontWeight: FontWeight.bold)),
+      subtitle: Text(comentario.comentario,
+          style: TextStyle(
+              color: Preferences.isDarkMode ? Colors.white : Colors.black)),
+    );
+  }
+}
+
 class _WriteComment extends StatefulWidget {
-  const _WriteComment({
-    Key? key,
-  }) : super(key: key);
+  PostListModel post;
+  _WriteComment(this.post);
 
   @override
   State<_WriteComment> createState() => _WriteCommentState();
 }
 
 class _WriteCommentState extends State<_WriteComment> {
-  String myComment = "";
+  final TextEditingController _controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Padding(
         padding: EdgeInsets.symmetric(horizontal: 8),
         child: TextFormField(
+          controller: _controller,
           onChanged: (value) {
-            myComment = value;
+            if (value.length == 0 || value.length == 1) setState(() {});
           },
           decoration: InputDecoration(
               hintText: 'Escribe un comentario',
               suffix: GestureDetector(
-                onTap: myComment.length == 0 ? null : () async {},
+                onTap: _controller.text.length == 0
+                    ? null
+                    : () async {
+                        final subirC = Provider.of<ComentariosService>(context,
+                            listen: false);
+                        subirC.subirComentario(
+                            widget.post.id!, _controller.text);
+                        _controller.clear();
+                        widget.post.ncomentarios += 1;
+                        final articlesService =
+                            Provider.of<MyPostsService>(context, listen: false);
+                        articlesService.notifyListeners();
+                        FocusManager.instance.primaryFocus?.unfocus();
+                      },
                 child: Text(
                   'Publicar',
                   style: TextStyle(
-                      color: myComment.length == 0
+                      color: _controller.text.length == 0
                           ? AppTheme.primary.withOpacity(0.5)
                           : AppTheme.primary),
                 ),
@@ -83,8 +172,6 @@ class _Description extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    descripcion =
-        "Lorem ipsum nostrud amet qui. Do eiusmod pariatur mollit adipisicing ullamco sint eiusmod fugiat anim labore. Dolore anim occaecat cupidatat sit tempor nisi. Sint eu aliquip et nulla est ea excepteur adipisicing elit exercitation officia. Ullamco nostrud sunt est amet proident.";
     return descripcion != null
         ? Container(
             width: double.infinity,

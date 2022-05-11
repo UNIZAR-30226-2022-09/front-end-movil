@@ -9,7 +9,8 @@ import 'package:provider/provider.dart';
 
 class OnePostScreen extends StatelessWidget {
   PostListModel? myPost;
-  OnePostScreen({Key? key, this.myPost}) : super(key: key);
+  int? dondeVoy;
+  OnePostScreen({Key? key, this.myPost, this.dondeVoy}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +22,13 @@ class OnePostScreen extends StatelessWidget {
           leading: IconButton(
               icon: Icon(Icons.arrow_back_ios),
               onPressed: () {
-                final prueba =
-                    Provider.of<PruebaProvider>(context, listen: false);
-                prueba.changeScreen(true, null);
+                if (dondeVoy != null) {
+                  final prueba =
+                      Provider.of<PruebaProvider>(context, listen: false);
+                  prueba.changeScreen(true, null);
+                } else {
+                  Navigator.pop(context);
+                }
               }),
           title: Text('Post de ${post.usuario}',
               style: TextStyle(

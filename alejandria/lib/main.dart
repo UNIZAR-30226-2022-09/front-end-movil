@@ -17,6 +17,7 @@ void main() async {
     ChangeNotifierProvider(create: (_) => MyPostsService()),
     ChangeNotifierProvider(create: (_) => PostService()),
     ChangeNotifierProvider(create: (_) => PruebaProvider()),
+    ChangeNotifierProvider(create: (_) => ComentariosService()),
     ChangeNotifierProvider(
         create: (_) => ThemeProvider(isDarkmode: Preferences.isDarkMode)),
     ChangeNotifierProvider(create: (_) => TematicasProvider()),

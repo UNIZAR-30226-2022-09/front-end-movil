@@ -307,7 +307,6 @@ class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
             onTap: (value) {
               _SelectedTabBar = value;
               setState(() {});
-              print(value);
             },
             controller: _tabController,
             unselectedLabelColor: Colors.grey,
@@ -362,7 +361,9 @@ class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
                           itemCount: articlesService.misArticulos.length,
                           itemBuilder: (BuildContext context, int indx) {
                             return ArticleCover(
-                                post: articlesService.misArticulos[indx]);
+                              post: articlesService.misArticulos[indx],
+                              dondeVoy: 1,
+                            );
                           },
                         ),
                 )

@@ -36,7 +36,6 @@ class UserService extends ChangeNotifier {
       'token': await storage.read(key: 'token') ?? '',
       'nick': nick
     });
-    print(json.decode(resp.body));
 
     user = UserModel.fromMap(json.decode(resp.body));
 
@@ -101,7 +100,6 @@ class UserService extends ChangeNotifier {
     this.userEdit.fotoDePerfil = path;
     this.profilePicture = File.fromUri(Uri(path: path));
     this.userEdit.cambia_foto = 1;
-    print('he llegado');
     notifyListeners();
   }
 

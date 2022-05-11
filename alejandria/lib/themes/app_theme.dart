@@ -47,6 +47,9 @@ class AppTheme {
       ));
 
   static final ThemeData darkTheme = ThemeData.dark().copyWith(
+    scaffoldBackgroundColor: Colors.black38,
+
+    backgroundColor: Colors.black,
     inputDecorationTheme: InputDecorationTheme(
         iconColor: dark,
         floatingLabelStyle:
@@ -67,9 +70,13 @@ class AppTheme {
         fillColor: Colors.white24),
     //AppBar
     appBarTheme: AppBarTheme(
-        elevation: 0, centerTitle: true, iconTheme: IconThemeData(color: dark)),
+        backgroundColor: Colors.grey[900],
+        elevation: 0,
+        centerTitle: true,
+        iconTheme: IconThemeData(color: dark)),
     //Bottom Navigation Bar
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: Colors.grey[900],
         selectedItemColor: dark,
         unselectedItemColor: Colors.white,
         showSelectedLabels: false,

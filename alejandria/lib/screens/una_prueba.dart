@@ -18,6 +18,11 @@ class UnaPruebaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final prueba = Provider.of<PruebaProvider>(context);
-    return prueba.total ? UserScreen() : OnePostScreen(myPost: prueba.myPost);
+    return prueba.total
+        ? UserScreen()
+        : OnePostScreen(
+            myPost: prueba.myPost,
+            dondeVoy: 1,
+          );
   }
 }

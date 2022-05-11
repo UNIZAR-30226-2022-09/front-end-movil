@@ -1,4 +1,3 @@
-import 'package:alejandria/models/models.dart';
 import 'package:alejandria/provider/tematicas_provider.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
