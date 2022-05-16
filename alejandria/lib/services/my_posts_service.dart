@@ -23,7 +23,7 @@ class MyPostsService extends ChangeNotifier {
   bool finHome = false;
 
   //Variables para controlar posts de otro usuario
-  List<PostListModel> otrsArticulos = [];
+  List<PostListModel> otrosArticulos = [];
   int offsetOtrosArticulos = 0;
   bool finOtrosArticulos = false;
   List<PostListModel> otrasRecs = [];
@@ -41,7 +41,6 @@ class MyPostsService extends ChangeNotifier {
   final storage = new FlutterSecureStorage();
 
   bool isLoadingArticles = true;
-  bool isLoadingRec = true;
 
   MyPostsService() {
     this.loadArticles(Preferences.userNick);
@@ -49,8 +48,8 @@ class MyPostsService extends ChangeNotifier {
   }
 
   Future<List<PostListModel>> loadArticles(String nick) async {
-    this.isLoadingArticles = true;
-    notifyListeners();
+    bool soyYo = Preferences.userNick == nick;
+
     final url = Uri.http(_baseUrl, '/mostrarArticulosPaginados');
     final resp = await http.get(
       url,
@@ -58,40 +57,49 @@ class MyPostsService extends ChangeNotifier {
         'Content-Type': 'application/json; charset=UTF-8',
         'token': await storage.read(key: 'token') ?? '',
         'offset': 0.toString(),
-        'limit': 4.toString(),
+        'limit': 6.toString(),
         'nick': nick
       },
     );
 
     final Map<String, dynamic> articlesMap = json.decode(resp.body);
 
-    misArticulos = [];
+    soyYo ? misArticulos = [] : otrosArticulos = [];
 
     if (!articlesMap.containsKey('fin')) {
       articlesMap.forEach((key, value) {
         final tempArticle = PostListModel.fromMap(value);
         tempArticle.id = key;
-        this.misArticulos.add(tempArticle);
+        if (soyYo)
+          this.misArticulos.add(tempArticle);
+        else
+          this.otrosArticulos.add(tempArticle);
       });
-      this.isLoadingArticles = false;
-      notifyListeners();
-      finArticulos = false;
-      offsetArticulos = 1;
+      if (soyYo) {
+        finArticulos = false;
+        offsetArticulos = 1;
+      } else {
+        finOtrosArticulos = false;
+        offsetOtrosArticulos = 1;
+      }
     }
 
     return this.misArticulos;
   }
 
   Future<void> loadMoreArticles(String nick) async {
-    if (finArticulos) return;
+    bool soyYo = nick == Preferences.userNick;
+    if (soyYo ? finArticulos : finOtrosArticulos) return;
     final url = Uri.http(_baseUrl, '/mostrarArticulosPaginados');
     final resp = await http.get(
       url,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'token': await storage.read(key: 'token') ?? '',
-        'offset': offsetArticulos.toString(),
-        'limit': 4.toString(),
+        'offset': soyYo
+            ? offsetArticulos.toString()
+            : offsetOtrosArticulos.toString(),
+        'limit': 6.toString(),
         'nick': nick
       },
     );
@@ -99,24 +107,26 @@ class MyPostsService extends ChangeNotifier {
     final Map<String, dynamic> articlesMap = json.decode(resp.body);
 
     if (articlesMap.containsKey('fin')) {
-      finArticulos = true;
+      soyYo ? finArticulos = true : finOtrosArticulos = true;
       return;
     }
 
     articlesMap.forEach((key, value) {
       final tempArticle = PostListModel.fromMap(value);
       tempArticle.id = key;
-      this.misArticulos.add(tempArticle);
+      if (soyYo)
+        this.misArticulos.add(tempArticle);
+      else
+        this.otrosArticulos.add(tempArticle);
     });
 
-    offsetArticulos += 1;
+    soyYo ? offsetArticulos += 1 : offsetOtrosArticulos += 1;
     notifyListeners();
     return;
   }
 
   Future<void> loadRecs(String nick) async {
-    this.isLoadingRec = true;
-    notifyListeners();
+    bool soyYo = nick == Preferences.userNick;
     final url = Uri.http(_baseUrl, '/mostrarRecomendacionesPaginadas');
     final resp = await http.get(url, headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
@@ -128,43 +138,60 @@ class MyPostsService extends ChangeNotifier {
 
     final Map<String, dynamic> recMap = json.decode(resp.body);
 
-    misRecs = [];
+    soyYo ? misRecs = [] : otrasRecs = [];
 
     if (!recMap.containsKey('fin')) {
       recMap.forEach((key, value) {
         final tempRec = PostListModel.fromMap(value);
         tempRec.id = key;
-        this.misRecs.add(tempRec);
+        if (soyYo)
+          this.misRecs.add(tempRec);
+        else
+          this.otrasRecs.add(tempRec);
       });
-      offsetRecs = 1;
+      if (soyYo) {
+        offsetRecs = 1;
+        finRecs = false;
+      } else {
+        offsetOtrasRecs = 1;
+        finOtrasRecs = false;
+      }
     }
-    notifyListeners();
   }
 
   Future<void> loadMoreRecs(String nick) async {
-    if (finRecs) return;
+    bool soyYo = nick == Preferences.userNick;
+    if (soyYo ? finRecs : finOtrasRecs) return;
     final url = Uri.http(_baseUrl, '/mostrarRecomendacionesPaginadas');
     final resp = await http.get(url, headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'token': await storage.read(key: 'token') ?? '',
-      'offset': offsetRecs.toString(),
+      'offset': soyYo ? offsetRecs.toString() : offsetOtrasRecs.toString(),
       'limit': 4.toString(),
       'nick': nick
     });
 
     final Map<String, dynamic> recMap = json.decode(resp.body);
     if (recMap.containsKey('fin')) {
-      finRecs = true;
+      soyYo ? finRecs = true : finOtrasRecs = true;
       return;
     }
 
     recMap.forEach((key, value) {
       final tempRec = PostListModel.fromMap(value);
       tempRec.id = key;
-      this.misRecs.add(tempRec);
+      if (soyYo)
+        this.misRecs.add(tempRec);
+      else
+        this.otrasRecs.add(tempRec);
     });
-    finRecs = false;
-    offsetRecs += 1;
+    if (soyYo) {
+      finRecs = false;
+      offsetRecs += 1;
+    } else {
+      finOtrasRecs = false;
+      offsetOtrasRecs += 1;
+    }
     notifyListeners();
   }
 
@@ -224,51 +251,6 @@ class MyPostsService extends ChangeNotifier {
     });
     offsetHome += 1;
     notifyListeners();
-  }
-
-  Future<List<PostListModel>> loadOtherArticles(String nick) async {
-    List<PostListModel> otrosArticulos = [];
-    final url = Uri.http(_baseUrl, '/mostrarArticulos');
-    final resp = await http.get(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'token': await storage.read(key: 'token') ?? '',
-        'nick': nick
-      },
-    );
-
-    final Map<String, dynamic> articlesMap = json.decode(resp.body);
-
-    if (!articlesMap.containsKey('fin')) {
-      articlesMap.forEach((key, value) {
-        final tempArticle = PostListModel.fromMap(value);
-        tempArticle.id = key;
-        otrosArticulos.add(tempArticle);
-      });
-    }
-    return otrosArticulos;
-  }
-
-  Future<List<PostListModel>> loadOtherRecs(String nick) async {
-    List<PostListModel> otherRecs = [];
-    final url = Uri.http(_baseUrl, '/mostrarRecomendaciones');
-    final resp = await http.get(url, headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-      'token': await storage.read(key: 'token') ?? '',
-      'nick': nick
-    });
-
-    final Map<String, dynamic> recMap = json.decode(resp.body);
-    if (!recMap.containsKey('fin')) {
-      recMap.forEach((key, value) {
-        final tempRec = PostListModel.fromMap(value);
-        tempRec.id = key;
-        otherRecs.add(tempRec);
-      });
-    }
-
-    return otherRecs;
   }
 
   Future<List<PostListModel>> loadSavedArticles() async {
@@ -379,5 +361,10 @@ class MyPostsService extends ChangeNotifier {
   void resetSavedPosts() {
     misArticulosG = [];
     misRecsG = [];
+  }
+
+  void resetOtherPosts() {
+    otrosArticulos = [];
+    otrasRecs = [];
   }
 }

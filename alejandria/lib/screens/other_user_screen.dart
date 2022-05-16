@@ -22,63 +22,98 @@ class OtherUserScreen extends StatefulWidget {
   State<OtherUserScreen> createState() => _OtherUserScreenState();
 }
 
-class _OtherUserScreenState extends State<OtherUserScreen> {
+class _OtherUserScreenState extends State<OtherUserScreen>
+    with SingleTickerProviderStateMixin {
   Future? myFuture;
 
   late String nick;
-
   late UserModel thisUser;
-  late List<PostListModel> thisUserArticles;
-  late List<PostListModel> thisUserRecs;
+
+  late TabController _tabController2;
+  final ScrollController _scrollController = ScrollController();
+  bool isLoading = false;
+
+  Future<void> _fetchMorePosts(bool i) async {
+    if (isLoading) return;
+    isLoading = true;
+    final postService = Provider.of<MyPostsService>(context, listen: false);
+    if (i) {
+      await postService.loadMoreArticles(nick);
+    } else {
+      await postService.loadMoreRecs(nick);
+    }
+
+    await Future.delayed(const Duration(seconds: 3));
+    isLoading = false;
+  }
 
   @override
   void initState() {
     super.initState();
     nick = widget.args?['nick'];
     myFuture = _getUser(nick);
+    _tabController2 = TabController(length: 2, vsync: this);
+    _scrollController.addListener(() {
+      if ((_scrollController.position.pixels + 500) >=
+          _scrollController.position.maxScrollExtent) {
+        if (_tabController2.index == 0) {
+          _fetchMorePosts(true);
+        } else {
+          _fetchMorePosts(false);
+        }
+      }
+    });
   }
 
   Future<void> _getUser(String nick) async {
     final userService = Provider.of<UserService>(context, listen: false);
     final articlesService = Provider.of<MyPostsService>(context, listen: false);
     thisUser = await userService.loadOtherUser(nick);
-    thisUserArticles = await articlesService.loadOtherArticles(nick);
-    thisUserRecs = await articlesService.loadOtherRecs(nick);
+    await articlesService.loadArticles(nick);
+    await articlesService.loadRecs(nick);
     return;
   }
 
   @override
   build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(nick,
-            style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.primary)),
-        bottom: BottomLineAppBar(), //Color.fromRGBO(68, 114, 88, 1),
+    final postsService = Provider.of<MyPostsService>(context);
+    return WillPopScope(
+      onWillPop: () {
+        postsService.resetOtherPosts();
+        return Future.value(true);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(nick,
+              style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.primary)),
+          bottom: BottomLineAppBar(), //Color.fromRGBO(68, 114, 88, 1),
+        ),
+        body: FutureBuilder(
+            future: myFuture,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                    child: CircularProgressIndicator(
+                  color: AppTheme.primary,
+                ));
+              } else if (snapshot.connectionState == ConnectionState.done) {
+                return SingleChildScrollView(
+                    controller: _scrollController,
+                    child: Column(
+                      children: [
+                        _UpperContent(thisUser),
+                        _Posts(_tabController2)
+                      ],
+                    ));
+              }
+              return Container(
+                child: Text('Error'),
+              );
+            }),
       ),
-      body: FutureBuilder(
-          future: myFuture,
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                  child: CircularProgressIndicator(
-                color: AppTheme.primary,
-              ));
-            } else if (snapshot.connectionState == ConnectionState.done) {
-              return SingleChildScrollView(
-                  child: Column(
-                children: [
-                  _UpperContent(thisUser),
-                  _Posts(thisUserArticles, thisUserRecs)
-                ],
-              ));
-            }
-            return Container(
-              child: Text('Error'),
-            );
-          }),
     );
   }
 }
@@ -108,11 +143,10 @@ class _UpperContentState extends State<_UpperContent> {
                       BoxDecoration(borderRadius: BorderRadius.circular(50)),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(50),
-                    child: CachedNetworkImage(
+                    child: FadeInImage(
                       fit: BoxFit.cover,
-                      placeholder: (context, url) =>
-                          const CircularProgressIndicator(),
-                      imageUrl: widget.thisUser.fotoDePerfil!,
+                      placeholder: AssetImage('assets/icon.png'),
+                      image: NetworkImage(widget.thisUser.fotoDePerfil!),
                     ),
                   )),
               SizedBox(
@@ -224,33 +258,20 @@ class _numbers extends StatelessWidget {
 }
 
 class _Posts extends StatefulWidget {
-  final List<PostListModel> articles;
-  final List<PostListModel> recs;
+  final _tabController2;
 
-  _Posts(this.articles, this.recs);
+  _Posts(this._tabController2);
   @override
   State<_Posts> createState() => _PostsState();
 }
 
-class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
+class _PostsState extends State<_Posts> {
   int _SelectedTabBar = 0;
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
+    final postService = Provider.of<MyPostsService>(context);
+
     return Column(
       children: [
         Container(
@@ -260,7 +281,7 @@ class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
               _SelectedTabBar = value;
               setState(() {});
             },
-            controller: _tabController,
+            controller: widget._tabController2,
             unselectedLabelColor: Colors.grey,
             labelColor: AppTheme.primary,
             indicatorColor: AppTheme.primary,
@@ -279,7 +300,7 @@ class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
         Builder(builder: (_) {
           return _SelectedTabBar == 0
               ? Container(
-                  child: widget.articles.length == 0
+                  child: postService.otrosArticulos.length == 0
                       ? Container(
                           child: Column(children: [
                             SizedBox(
@@ -310,17 +331,17 @@ class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
                                   crossAxisCount: 2,
                                   mainAxisExtent:
                                       MediaQuery.of(context).size.width * 0.7),
-                          itemCount: widget.articles.length,
+                          itemCount: postService.otrosArticulos.length,
                           itemBuilder: (BuildContext context, int indx) {
                             return ArticleCover(
-                              post: widget.articles[indx],
+                              post: postService.otrosArticulos[indx],
                               dondeVoy: 2,
                             );
                           },
                         ),
                 )
               : Container(
-                  child: widget.recs.length == 0
+                  child: postService.otrasRecs.length == 0
                       ? Container(
                           child: Column(children: [
                             SizedBox(
@@ -346,9 +367,10 @@ class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
                       : ListView.builder(
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
-                          itemCount: widget.recs.length,
+                          itemCount: postService.otrasRecs.length,
                           itemBuilder: (BuildContext context, int indx) {
-                            return RecommendationPost(post: widget.recs[indx]);
+                            return RecommendationPost(
+                                post: postService.otrasRecs[indx]);
                           }),
                 );
         })

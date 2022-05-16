@@ -43,7 +43,6 @@ class _UserScreenState extends State<UserScreen>
       if ((_scrollController.position.pixels + 500) >=
           _scrollController.position.maxScrollExtent) {
         if (_tabController2.index == 0) {
-          print('estoy');
           _fetchMoreArticles(true);
         } else {
           _fetchMoreArticles(false);
