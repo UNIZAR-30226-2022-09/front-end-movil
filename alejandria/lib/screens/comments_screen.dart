@@ -55,6 +55,7 @@ class _VerComentarios extends StatelessWidget {
   Widget build(BuildContext context) {
     final myService = Provider.of<ComentariosService>(context);
     Future<void> getComments() async {
+      print('me han llamado');
       await myService.cargarComentarios(id);
     }
 
@@ -73,6 +74,12 @@ class _VerComentarios extends StatelessWidget {
                   itemBuilder: (BuildContext context, int index) {
                     return Column(
                       children: [
+                        index == myService.comentarios.length - 1
+                            ? Container(
+                                width: double.infinity,
+                                height: 0.5,
+                                color: AppTheme.primary)
+                            : Container(),
                         Comentario(myService.comentarios[index]),
                         Container(
                             width: double.infinity,
@@ -173,43 +180,26 @@ class _Description extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return descripcion != null
-        ? Container(
-            width: double.infinity,
-            child: Padding(
-                padding: EdgeInsets.all(8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50)),
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(50),
-                            child: FadeInImage(
-                                fit: BoxFit.cover,
-                                placeholder: AssetImage('assets/icon.png'),
-                                image: NetworkImage(imagePath))),
-                      ),
-                    ),
-                    Flexible(
-                      child: Text(
-                        descripcion!,
-                        maxLines: 10,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 15),
-                      ),
-                    ),
-                  ],
-                )),
-            decoration: BoxDecoration(
-                border: Border(
-                    bottom:
-                        BorderSide(color: AppTheme.primary.withOpacity(0.5)))),
-          )
+        ? ListTile(
+            shape: Border(bottom: BorderSide(color: AppTheme.primary)),
+            leading: Container(
+              width: 40,
+              height: 40,
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(50)),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: FadeInImage(
+                      fit: BoxFit.cover,
+                      placeholder: AssetImage('assets/icon.png'),
+                      image: NetworkImage(imagePath))),
+            ),
+            title: Text(
+              descripcion!,
+              maxLines: 10,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 15),
+            ))
         : Container();
   }
 }

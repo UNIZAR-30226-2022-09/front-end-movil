@@ -12,13 +12,13 @@ class ComentariosService extends ChangeNotifier {
   final storage = new FlutterSecureStorage();
 
   Future<List<ComentraioModel>> cargarComentarios(String id) async {
-    comentarios = [];
     final url = Uri.http('51.255.50.207:5000', '/verComentarios');
     final resp = await http.get(url, headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'token': await storage.read(key: 'token') ?? '',
       'id': id
     });
+    comentarios = [];
     final Map<String, dynamic> commentsMap = json.decode(resp.body);
     commentsMap.forEach((key, value) {
       comentarios.add(ComentraioModel.fromMap(value));

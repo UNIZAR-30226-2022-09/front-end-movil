@@ -48,7 +48,9 @@ class MyApp extends StatelessWidget {
           'onePost': (_) => OnePostScreen(),
           'comentarios': (_) => CommentsScreen(),
           'pdfScreen': (_) => PDFScreen(),
-          'otherUser': (_) => OtherUserScreen()
+          'otherUser': (context) => OtherUserScreen(ModalRoute.of(context)!
+              .settings
+              .arguments as Map<String, dynamic>)
         },
         scaffoldMessengerKey: NotificationsService.messengerKey,
         theme: Provider.of<ThemeProvider>(context).currentTheme);

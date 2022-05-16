@@ -26,8 +26,10 @@ class PostHeader extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: GestureDetector(
           onTap: () {
-            // Navigator.pushNamed(context, 'otherUser',
-            //     arguments: {'nick': userName});
+            if (userName.substring(1) != Preferences.userNick) {
+              Navigator.pushNamed(context, 'otherUser',
+                  arguments: {'nick': userName});
+            }
           },
           child: Row(children: [
             Container(

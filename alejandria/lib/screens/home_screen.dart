@@ -18,20 +18,43 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Future? myFuture;
+  final ScrollController _scrollController = ScrollController();
+  bool isLoading = false;
 
   Future<List<PostListModel>> _fetchData() async {
     final postService = Provider.of<MyPostsService>(context, listen: false);
     return postService.loadHome();
   }
 
+  Future<void> _fetchMoreData() async {
+    if (isLoading) return;
+    isLoading = true;
+    final postService = Provider.of<MyPostsService>(context, listen: false);
+    await postService.loadMoreHome();
+    await Future.delayed(const Duration(seconds: 3));
+    isLoading = false;
+  }
+
   @override
   void initState() {
     super.initState();
     myFuture = _fetchData();
+    _scrollController.addListener(() {
+      if ((_scrollController.position.pixels + 500) >=
+          _scrollController.position.maxScrollExtent) {
+        _fetchMoreData();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    Future<void> _refresh() async {
+      final pstService = Provider.of<MyPostsService>(context, listen: false);
+      await pstService.loadHome();
+      pstService.notifyListeners();
+    }
+
     final articlesService = Provider.of<MyPostsService>(context);
     return Scaffold(
       appBar: AppBar(
@@ -61,20 +84,34 @@ class _HomeScreenState extends State<HomeScreen> {
               ));
             } else if (snapshot.connectionState == ConnectionState.done) {
               return articlesService.postsHome.length == 0
-                  ? Center(
-                      child: NoPosts(
-                          'Sigue a mas usuarios para ver sus publicaciones',
-                          FontAwesomeIcons.solidUser),
+                  ? RefreshIndicator(
+                      onRefresh: _fetchData,
+                      color: AppTheme.primary,
+                      child: ListView.builder(
+                          itemCount: 1,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Center(
+                              child: NoPosts(
+                                  'Sigue a mas usuarios para ver sus publicaciones',
+                                  FontAwesomeIcons.solidUser),
+                            );
+                          }),
                     )
-                  : ListView.builder(
-                      itemCount: articlesService.postsHome.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return articlesService.postsHome[index].tipo == 1
-                            ? ArticlePost(
-                                post: articlesService.postsHome[index])
-                            : RecommendationPost(
-                                post: articlesService.postsHome[index]);
-                      });
+                  : RefreshIndicator(
+                      onRefresh: _refresh,
+                      color: AppTheme.primary,
+                      child: ListView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          controller: _scrollController,
+                          itemCount: articlesService.postsHome.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return articlesService.postsHome[index].tipo == 1
+                                ? ArticlePost(
+                                    post: articlesService.postsHome[index])
+                                : RecommendationPost(
+                                    post: articlesService.postsHome[index]);
+                          }),
+                    );
             }
             return Container();
           }),

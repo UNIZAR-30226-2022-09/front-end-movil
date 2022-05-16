@@ -9,22 +9,63 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-class UserScreen extends StatelessWidget {
-  const UserScreen({Key? key}) : super(key: key);
+class UserScreen extends StatefulWidget {
+  UserScreen({Key? key}) : super(key: key);
+
+  @override
+  State<UserScreen> createState() => _UserScreenState();
+}
+
+class _UserScreenState extends State<UserScreen>
+    with SingleTickerProviderStateMixin {
+  final ScrollController _scrollController = ScrollController();
+  late TabController _tabController2;
+  bool isLoading = false;
+
+  Future<void> _fetchMoreArticles(bool i) async {
+    if (isLoading) return;
+    isLoading = true;
+    final postService = Provider.of<MyPostsService>(context, listen: false);
+    if (i) {
+      await postService.loadMoreArticles(Preferences.userNick);
+    } else {
+      await postService.loadMoreRecs(Preferences.userNick);
+    }
+
+    await Future.delayed(const Duration(seconds: 3));
+    isLoading = false;
+  }
+
+  @override
+  void initState() {
+    _tabController2 = TabController(length: 2, vsync: this);
+    _scrollController.addListener(() {
+      if ((_scrollController.position.pixels + 500) >=
+          _scrollController.position.maxScrollExtent) {
+        if (_tabController2.index == 0) {
+          print('estoy');
+          _fetchMoreArticles(true);
+        } else {
+          _fetchMoreArticles(false);
+        }
+      }
+    });
+  }
+
+  Future<void> onRefresh() async {
+    await Future.delayed(const Duration(seconds: 2));
+  }
 
   @override
   Widget build(BuildContext context) {
     final userService = Provider.of<UserService>(context);
-    if (userService.isLoading)
-      return Scaffold(
-          body: GestureDetector(
-              onTap: () {
-                final authService =
-                    Provider.of<AuthService>(context, listen: false);
-                authService.logOut();
-                Navigator.pushReplacementNamed(context, 'login');
-              },
-              child: Container(width: 200, height: 100, color: Colors.black)));
+    Future<void> onRefresh() async {
+      await userService.loadData(Preferences.userNick);
+      final postsService = Provider.of<MyPostsService>(context, listen: false);
+      await postsService.loadArticles(Preferences.userNick);
+      await postsService.loadRecs(Preferences.userNick);
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(Preferences.userNick,
@@ -35,10 +76,26 @@ class UserScreen extends StatelessWidget {
         bottom: BottomLineAppBar(), //Color.fromRGBO(68, 114, 88, 1),
       ),
       endDrawer: _MyDrawer(),
-      body: SingleChildScrollView(
-          child: Column(
-        children: [_UpperContent(userService: userService), _Posts()],
-      )),
+      body: RefreshIndicator(
+        onRefresh: onRefresh,
+        color: AppTheme.primary,
+        child: userService.isLoading
+            ? Container(
+                width: double.infinity,
+                height: 500,
+                child: Center(
+                    child: CircularProgressIndicator(
+                  color: AppTheme.primary,
+                )))
+            : SingleChildScrollView(
+                controller: _scrollController,
+                child: Column(
+                  children: [
+                    _UpperContent(userService: userService),
+                    _Posts(_tabController2)
+                  ],
+                )),
+      ),
     );
   }
 }
@@ -153,36 +210,41 @@ class _UpperContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       _Photo_Followers(userService),
-      if (userService.user.nombreDeUsuario != null)
-        Padding(
-          padding: const EdgeInsets.only(left: 15, bottom: 10),
-          child: Text(
-            userService.user.nombreDeUsuario!, //
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-        ),
-      if (userService.user.descripcion != null)
-        Padding(
-          padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-          child: Text(userService.user.descripcion!),
-        ),
-      if (userService.user.link != null)
-        Padding(
-            padding: const EdgeInsets.only(left: 15, right: 15, bottom: 5),
-            child: GestureDetector(
+      userService.user.nombreDeUsuario != null &&
+              userService.user.nombreDeUsuario!.length > 0
+          ? Padding(
+              padding: const EdgeInsets.only(left: 15, bottom: 10),
               child: Text(
-                userService.user.link!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    color: Preferences.isDarkMode
-                        ? Colors.blue[200]
-                        : Colors.blue[900]),
+                userService.user.nombreDeUsuario!, //
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
-              onTap: () async {
-                launch(userService.user.link!);
-              },
-            )),
+            )
+          : Container(),
+      userService.user.descripcion != null &&
+              userService.user.descripcion!.length > 0
+          ? Padding(
+              padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
+              child: Text(userService.user.descripcion!),
+            )
+          : Container(),
+      userService.user.link != null && userService.user.link!.length > 0
+          ? Padding(
+              padding: const EdgeInsets.only(left: 15, right: 15, bottom: 5),
+              child: GestureDetector(
+                child: Text(
+                  userService.user.link!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      color: Preferences.isDarkMode
+                          ? Colors.blue[200]
+                          : Colors.blue[900]),
+                ),
+                onTap: () async {
+                  launch(userService.user.link!);
+                },
+              ))
+          : Container(),
       Padding(
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: OutlinedButton(
@@ -223,14 +285,12 @@ class _Photo_Followers extends StatelessWidget {
                 decoration:
                     BoxDecoration(borderRadius: BorderRadius.circular(50)),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: CachedNetworkImage(
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) =>
-                        const CircularProgressIndicator(),
-                    imageUrl: userService.user.fotoDePerfil!,
-                  ),
-                )),
+                    borderRadius: BorderRadius.circular(50),
+                    child: FadeInImage(
+                      fit: BoxFit.cover,
+                      placeholder: AssetImage('assets/icon.png'),
+                      image: NetworkImage(userService.user.fotoDePerfil!),
+                    ))),
             SizedBox(
               width: 30,
             ),
@@ -275,26 +335,16 @@ class _numbers extends StatelessWidget {
 }
 
 class _Posts extends StatefulWidget {
+  final _tabController2;
+  _Posts(this._tabController2);
   @override
   State<_Posts> createState() => _PostsState();
 }
 
 class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
   int _SelectedTabBar = 0;
-  late TabController _tabController;
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -308,7 +358,7 @@ class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
               _SelectedTabBar = value;
               setState(() {});
             },
-            controller: _tabController,
+            controller: widget._tabController2,
             unselectedLabelColor: Colors.grey,
             labelColor: AppTheme.primary,
             indicatorColor: AppTheme.primary,
@@ -351,8 +401,8 @@ class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
                           ]),
                         )
                       : GridView.builder(
-                          shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 2,
@@ -392,8 +442,8 @@ class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
                           ]),
                         )
                       : ListView.builder(
-                          shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
                           itemCount: articlesService.misRecs.length,
                           itemBuilder: (BuildContext context, int indx) {
                             return RecommendationPost(

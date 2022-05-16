@@ -16,33 +16,42 @@ import '../share_preferences/preferences.dart';
 import 'package:http/http.dart' as http;
 
 class OtherUserScreen extends StatefulWidget {
+  final Map<String, dynamic>? args;
+  const OtherUserScreen(this.args, {Key? key}) : super(key: key);
   @override
   State<OtherUserScreen> createState() => _OtherUserScreenState();
 }
 
 class _OtherUserScreenState extends State<OtherUserScreen> {
+  Future? myFuture;
+
+  late String nick;
+
+  late UserModel thisUser;
+  late List<PostListModel> thisUserArticles;
+  late List<PostListModel> thisUserRecs;
+
+  @override
+  void initState() {
+    super.initState();
+    nick = widget.args?['nick'];
+    myFuture = _getUser(nick);
+  }
+
+  Future<void> _getUser(String nick) async {
+    final userService = Provider.of<UserService>(context, listen: false);
+    final articlesService = Provider.of<MyPostsService>(context, listen: false);
+    thisUser = await userService.loadOtherUser(nick);
+    thisUserArticles = await articlesService.loadOtherArticles(nick);
+    thisUserRecs = await articlesService.loadOtherRecs(nick);
+    return;
+  }
+
   @override
   build(BuildContext context) {
-    final userService = Provider.of<UserService>(context);
-    final articlesService = Provider.of<MyPostsService>(context);
-    final arguments = (ModalRoute.of(context)?.settings.arguments ??
-        <String, dynamic>{}) as Map;
-
-    late UserModel thisUser;
-    late List<PostListModel> thisUserArticles;
-    late List<PostListModel> thisUserRecs;
-
-    Future<void> getUser() async {
-      thisUser = await userService.loadOtherUser(arguments['nick']);
-      thisUserArticles =
-          await articlesService.loadOtherArticles(arguments['nick']);
-      thisUserRecs = await articlesService.loadOtherRecs(arguments['nick']);
-      return;
-    }
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(arguments['nick'],
+        title: Text(nick,
             style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
@@ -50,7 +59,7 @@ class _OtherUserScreenState extends State<OtherUserScreen> {
         bottom: BottomLineAppBar(), //Color.fromRGBO(68, 114, 88, 1),
       ),
       body: FutureBuilder(
-          future: getUser(),
+          future: myFuture,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(
