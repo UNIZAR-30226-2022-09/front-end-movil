@@ -28,7 +28,7 @@ class PostHeader extends StatelessWidget {
           onTap: () {
             if (userName.substring(1) != Preferences.userNick) {
               Navigator.pushNamed(context, 'otherUser',
-                  arguments: {'nick': userName});
+                  arguments: {'nick': userName.substring(1)});
             }
           },
           child: Row(children: [

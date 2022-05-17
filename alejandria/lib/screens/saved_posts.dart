@@ -62,7 +62,7 @@ class _SavedPostsScreenState extends State<SavedPostsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final ssService = Provider.of<MyPostsService>(context, listen: false);
+    final ssService = Provider.of<MyPostsService>(context);
 
     return WillPopScope(
       onWillPop: () {

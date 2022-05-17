@@ -115,12 +115,18 @@ class _PostBottomState extends State<PostBottom> {
               tematicas.resetData();
               PostService articlePost =
                   Provider.of<PostService>(context, listen: false);
-              articlePost.resetData(2);
               if (widget.post.tipo == 2) {
+                articlePost.resetData(2);
                 Navigator.pushNamed(context, 'newRecoommendation', arguments: {
                   'link': 'https://www.alejandria.es/${widget.post.id}',
                   'titulo': widget.post.titulo,
                   'autor': widget.post.autor,
+                });
+              } else {
+                articlePost.resetData(1);
+                Navigator.pushNamed(context, 'newRecoommendation', arguments: {
+                  'link': 'https://www.alejandria.es/${widget.post.id}',
+                  'autor': '@${widget.post.usuario}'
                 });
               }
             },

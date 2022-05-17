@@ -38,6 +38,17 @@ class MyPostsService extends ChangeNotifier {
   int offsetRecsG = 1;
   bool finSavedRecs = false;
 
+  //Variables Para Controlar explorados
+  List<PostListModel> novedades = [];
+  List<PostListModel> populares = [];
+  int offsetPopulares = 1;
+  bool finPopulares = false;
+
+  List<PostListModel> novedadesR = [];
+  List<PostListModel> popularesR = [];
+  int offsetPopularesR = 1;
+  bool finPopularesR = false;
+
   final storage = new FlutterSecureStorage();
 
   bool isLoadingArticles = true;
@@ -356,6 +367,100 @@ class MyPostsService extends ChangeNotifier {
     });
     offsetRecsG += 1;
     notifyListeners();
+  }
+
+  Future<void> LoadNovedades(String tematica, String texto) async {
+    novedades = [];
+    if (texto.length == 0) texto = '';
+    print('tematica: $tematica');
+    print('texto: $texto');
+    final url = Uri.http(_baseUrl, '/RecientesArticulos');
+    final resp = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'token': await storage.read(key: 'token') ?? '',
+        'limit': 20.toString(),
+        'tematicas': tematica,
+        'filtrado': texto
+      },
+    );
+    print('??');
+    print(json.decode(resp.body));
+    print('!!');
+    final Map<String, dynamic> explorerMap = json.decode(resp.body);
+    if (explorerMap.containsKey('fin')) return;
+    explorerMap.forEach((key, value) {
+      final temp = PostListModel.fromMap(value);
+      temp.id = key;
+      temp.tipo == 1 ? novedades.add(temp) : null;
+    });
+    notifyListeners();
+  }
+
+  Future<void> LoadPopulares(String tematica, String texto) async {
+    populares = [];
+    final url = Uri.http(_baseUrl, '/PopularesArticulos');
+    final resp = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'token': await storage.read(key: 'token') ?? '',
+        'limit': 9.toString(),
+        'offset': 0.toString(),
+        'tematicas': tematica,
+        'filtrado': texto
+      },
+    );
+    final Map<String, dynamic> explorerMap = json.decode(resp.body);
+    if (explorerMap.containsKey('fin')) return;
+    explorerMap.forEach((key, value) {
+      final temp = PostListModel.fromMap(value);
+      temp.id = key;
+      populares.add(temp);
+    });
+    notifyListeners();
+  }
+
+  Future<void> LoadPopularesR(String tematica, String texto) async {
+    popularesR = [];
+    final url = Uri.http(_baseUrl, '/PopularesRecomendaciones');
+    final resp = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'token': await storage.read(key: 'token') ?? '',
+        'limit': 4.toString(),
+        'offset': 0.toString(),
+        'tematicas': tematica,
+        'filtrado': texto
+      },
+    );
+
+    final Map<String, dynamic> explorerMap = json.decode(resp.body);
+    if (explorerMap.containsKey('fin')) return;
+    explorerMap.forEach((key, value) {
+      final temp = PostListModel.fromMap(value);
+      temp.id = key;
+      popularesR.add(temp);
+    });
+    notifyListeners();
+  }
+
+  Future<PostListModel> getInfoPost(String id) async {
+    final url = Uri.http(_baseUrl, '/infoPost');
+    final resp = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'token': await storage.read(key: 'token') ?? '',
+        'id': id
+      },
+    );
+    PostListModel post = json.decode(resp.body);
+    post.id = id;
+
+    return post;
   }
 
   void resetSavedPosts() {

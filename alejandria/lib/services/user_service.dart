@@ -15,6 +15,8 @@ class UserService extends ChangeNotifier {
   late UserModel user;
   late UserModel userEdit;
 
+  late UserModel otherUser;
+
   final storage = new FlutterSecureStorage();
 
   File? profilePicture;
@@ -46,8 +48,6 @@ class UserService extends ChangeNotifier {
   }
 
   Future<UserModel> loadOtherUser(String nick) async {
-    UserModel otherUser;
-
     final url = Uri.http(_baseUrl, '/mostrarPerfil');
     final resp = await http.get(url, headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',

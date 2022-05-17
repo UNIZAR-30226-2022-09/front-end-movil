@@ -2,6 +2,7 @@ import 'package:alejandria/provider/provider.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
+import 'package:alejandria/widgets/no_info.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -51,18 +52,15 @@ class _UserScreenState extends State<UserScreen>
     });
   }
 
-  Future<void> onRefresh() async {
-    await Future.delayed(const Duration(seconds: 2));
-  }
-
   @override
   Widget build(BuildContext context) {
     final userService = Provider.of<UserService>(context);
+    final postsService = Provider.of<MyPostsService>(context);
     Future<void> onRefresh() async {
       await userService.loadData(Preferences.userNick);
-      final postsService = Provider.of<MyPostsService>(context, listen: false);
       await postsService.loadArticles(Preferences.userNick);
       await postsService.loadRecs(Preferences.userNick);
+      _tabController2.index = 0;
     }
 
     return Scaffold(
@@ -91,7 +89,7 @@ class _UserScreenState extends State<UserScreen>
                 child: Column(
                   children: [
                     _UpperContent(userService: userService),
-                    _Posts(_tabController2)
+                    _Posts(_tabController2),
                   ],
                 )),
       ),
@@ -138,6 +136,9 @@ class _MyDrawer extends StatelessWidget {
             Expanded(child: Container()),
             GestureDetector(
               onTap: () {
+                final tp =
+                    Provider.of<TematicasProvider>(context, listen: false);
+                tp.selectedTematica = 'pref';
                 final authService =
                     Provider.of<AuthService>(context, listen: false);
                 authService.logOut();
@@ -379,75 +380,72 @@ class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
                   child: articlesService.misArticulos.length == 0
                       ? Container(
                           child: Column(children: [
-                            SizedBox(
-                              height: 90,
-                            ),
-                            FaIcon(
-                              FontAwesomeIcons.file,
-                              size: 100,
-                              color: Colors.grey,
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              'Todavía no hay articulos',
-                              style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 19,
-                                  fontStyle: FontStyle.italic),
+                            NoPosts('Todavía no hay articulos',
+                                FontAwesomeIcons.file),
+                            Container(
+                              width: double.infinity,
+                              height: 120,
                             )
                           ]),
                         )
-                      : GridView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  mainAxisExtent:
-                                      MediaQuery.of(context).size.width * 0.7),
-                          itemCount: articlesService.misArticulos.length,
-                          itemBuilder: (BuildContext context, int indx) {
-                            return ArticleCover(
-                              post: articlesService.misArticulos[indx],
-                              dondeVoy: 1,
-                            );
-                          },
+                      : Column(
+                          children: [
+                            GridView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      mainAxisExtent:
+                                          MediaQuery.of(context).size.width *
+                                              0.7),
+                              itemCount: articlesService.misArticulos.length,
+                              itemBuilder: (BuildContext context, int indx) {
+                                return ArticleCover(
+                                  post: articlesService.misArticulos[indx],
+                                  dondeVoy: 1,
+                                );
+                              },
+                            ),
+                            articlesService.misArticulos.length < 3
+                                ? Container(
+                                    width: double.infinity,
+                                    height: 70,
+                                  )
+                                : Container()
+                          ],
                         ),
                 )
               : Container(
                   child: articlesService.misRecs.length == 0
                       ? Container(
                           child: Column(children: [
-                            SizedBox(
-                              height: 90,
-                            ),
-                            FaIcon(
-                              FontAwesomeIcons.thumbsUp,
-                              size: 100,
-                              color: Colors.grey,
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              'Todavía no hay recomendaciones',
-                              style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 19,
-                                  fontStyle: FontStyle.italic),
+                            NoPosts('Todavía no hay recomendaciones',
+                                FontAwesomeIcons.thumbsUp),
+                            Container(
+                              width: double.infinity,
+                              height: 120,
                             )
                           ]),
                         )
-                      : ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: articlesService.misRecs.length,
-                          itemBuilder: (BuildContext context, int indx) {
-                            return RecommendationPost(
-                                post: articlesService.misRecs[indx]);
-                          }),
+                      : Column(
+                          children: [
+                            ListView.builder(
+                                physics: NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: articlesService.misRecs.length,
+                                itemBuilder: (BuildContext context, int indx) {
+                                  return RecommendationPost(
+                                      post: articlesService.misRecs[indx]);
+                                }),
+                            articlesService.misRecs.length == 1
+                                ? Container(
+                                    width: double.infinity,
+                                    height: 110,
+                                  )
+                                : Container()
+                          ],
+                        ),
                 );
         })
       ],

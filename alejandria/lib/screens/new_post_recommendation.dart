@@ -1,3 +1,4 @@
+import 'package:alejandria/models/post_list_model.dart';
 import 'package:alejandria/provider/tematicas_provider.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
@@ -14,6 +15,11 @@ class NewRecommendationScreen extends StatelessWidget {
     PostService recPost = Provider.of<PostService>(context);
     final arguments = (ModalRoute.of(context)?.settings.arguments ??
         <String, dynamic>{}) as Map;
+    print(arguments['link']);
+    if (arguments['autor'] != null) recPost.newPost.autor = arguments['autor'];
+    if (arguments['link'] != null) recPost.newPost.link = arguments['link'];
+    if (arguments['titulo'] != null)
+      recPost.newPost.titulo = arguments['titulo'];
     return Scaffold(
         appBar: AppBar(
           title: Text('Nuevo post',
@@ -26,6 +32,9 @@ class NewRecommendationScreen extends StatelessWidget {
                 onPressed: recPost.isSaving
                     ? null
                     : () async {
+                        print('autor: ${recPost.newPost.autor}');
+                        print('titulo: ${recPost.newPost.autor}');
+                        print('link: ${recPost.newPost.autor}');
                         final tematicas = Provider.of<TematicasProvider>(
                             context,
                             listen: false);
@@ -41,7 +50,7 @@ class NewRecommendationScreen extends StatelessWidget {
                               'Los campos "Título" y "Autor" son obligatorios');
                           return;
                         }
-
+                        recPost.newPost.tipo = '2';
                         recPost.uploadPost();
                         final postsService =
                             Provider.of<MyPostsService>(context, listen: false);

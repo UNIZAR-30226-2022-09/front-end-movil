@@ -1,7 +1,9 @@
+import 'package:alejandria/services/my_posts_service.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/post_list_model.dart';
@@ -74,7 +76,9 @@ class _Recommendation extends StatelessWidget {
           ),
           GestureDetector(
             child: Text(
-              post.link!,
+              post.link!.contains('https://www.alejandria.es')
+                  ? 'ver post original'
+                  : post.link!,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -83,7 +87,15 @@ class _Recommendation extends StatelessWidget {
                       : Colors.blue[900]),
             ),
             onTap: () async {
-              launch(post.link!);
+              if (post.link!.contains('https://www.alejandria.es')) {
+                final splitted = post.link!.split('/');
+                final postService = Provider.of<MyPostsService>(context);
+                final thisPost =
+                    postService.getInfoPost(splitted[splitted.length - 1]);
+                Navigator.pushNamed(context, 'onePost',
+                    arguments: {'post': thisPost});
+              } else
+                launch(post.link!);
             },
           )
         ]),

@@ -38,7 +38,9 @@ class OnePostScreen extends StatelessWidget {
           bottom: BottomLineAppBar(), //Color.fromRGBO(68, 114, 88, 1),
         ),
         body: SingleChildScrollView(
-          child: Hero(tag: post.id!, child: ArticlePost(post: post)),
+          child: post.tipo == 1
+              ? Hero(tag: post.id!, child: ArticlePost(post: post))
+              : RecommendationPost(post: post),
         ));
   }
 }

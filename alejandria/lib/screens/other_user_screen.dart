@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:alejandria/models/models.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/themes/app_theme.dart';
+import 'package:alejandria/widgets/no_info.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,6 @@ class _OtherUserScreenState extends State<OtherUserScreen>
   Future? myFuture;
 
   late String nick;
-  late UserModel thisUser;
 
   late TabController _tabController2;
   final ScrollController _scrollController = ScrollController();
@@ -68,7 +68,7 @@ class _OtherUserScreenState extends State<OtherUserScreen>
   Future<void> _getUser(String nick) async {
     final userService = Provider.of<UserService>(context, listen: false);
     final articlesService = Provider.of<MyPostsService>(context, listen: false);
-    thisUser = await userService.loadOtherUser(nick);
+    await userService.loadOtherUser(nick);
     await articlesService.loadArticles(nick);
     await articlesService.loadRecs(nick);
     return;
@@ -77,6 +77,13 @@ class _OtherUserScreenState extends State<OtherUserScreen>
   @override
   build(BuildContext context) {
     final postsService = Provider.of<MyPostsService>(context);
+    final userService = Provider.of<UserService>(context);
+    Future<void> _onRefresh() async {
+      await userService.loadOtherUser(nick);
+      await postsService.loadArticles(nick);
+      await postsService.loadRecs(nick);
+    }
+
     return WillPopScope(
       onWillPop: () {
         postsService.resetOtherPosts();
@@ -100,14 +107,18 @@ class _OtherUserScreenState extends State<OtherUserScreen>
                   color: AppTheme.primary,
                 ));
               } else if (snapshot.connectionState == ConnectionState.done) {
-                return SingleChildScrollView(
-                    controller: _scrollController,
-                    child: Column(
-                      children: [
-                        _UpperContent(thisUser),
-                        _Posts(_tabController2)
-                      ],
-                    ));
+                return RefreshIndicator(
+                  onRefresh: _onRefresh,
+                  color: AppTheme.primary,
+                  child: SingleChildScrollView(
+                      controller: _scrollController,
+                      child: Column(
+                        children: [
+                          _UpperContent(userService.otherUser),
+                          _Posts(_tabController2),
+                        ],
+                      )),
+                );
               }
               return Container(
                 child: Text('Error'),
@@ -163,7 +174,8 @@ class _UpperContentState extends State<_UpperContent> {
               _numbers(number: widget.thisUser.nsiguiendo, msg: 'Siguiendo')
             ],
           )),
-      if (widget.thisUser.nombreDeUsuario != null)
+      if (widget.thisUser.nombreDeUsuario != null &&
+          widget.thisUser.nombreDeUsuario!.length > 0)
         Padding(
           padding: const EdgeInsets.only(left: 15, bottom: 10),
           child: Text(
@@ -171,12 +183,13 @@ class _UpperContentState extends State<_UpperContent> {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
-      if (widget.thisUser.descripcion != null)
+      if (widget.thisUser.descripcion != null &&
+          widget.thisUser.descripcion!.length > 0)
         Padding(
           padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
           child: Text(widget.thisUser.descripcion!),
         ),
-      if (widget.thisUser.link != null)
+      if (widget.thisUser.link != null && widget.thisUser.link!.length > 0)
         Padding(
             padding: const EdgeInsets.only(left: 15, right: 15, bottom: 5),
             child: GestureDetector(
@@ -301,77 +314,80 @@ class _PostsState extends State<_Posts> {
           return _SelectedTabBar == 0
               ? Container(
                   child: postService.otrosArticulos.length == 0
-                      ? Container(
-                          child: Column(children: [
-                            SizedBox(
-                              height: 90,
+                      ? Column(
+                          children: [
+                            Container(
+                              child: Column(children: [
+                                NoPosts('Todavía no hay articulos',
+                                    FontAwesomeIcons.file),
+                                //Para que haya scroll
+                                Container(
+                                  width: double.infinity,
+                                  height: 240,
+                                )
+                              ]),
                             ),
-                            FaIcon(
-                              FontAwesomeIcons.file,
-                              size: 100,
-                              color: Colors.grey,
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              'Todavía no hay articulos',
-                              style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 19,
-                                  fontStyle: FontStyle.italic),
-                            )
-                          ]),
+                          ],
                         )
-                      : GridView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  mainAxisExtent:
-                                      MediaQuery.of(context).size.width * 0.7),
-                          itemCount: postService.otrosArticulos.length,
-                          itemBuilder: (BuildContext context, int indx) {
-                            return ArticleCover(
-                              post: postService.otrosArticulos[indx],
-                              dondeVoy: 2,
-                            );
-                          },
+                      : Column(
+                          children: [
+                            GridView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      mainAxisExtent:
+                                          MediaQuery.of(context).size.width *
+                                              0.7),
+                              itemCount: postService.otrosArticulos.length,
+                              itemBuilder: (BuildContext context, int indx) {
+                                return ArticleCover(
+                                  post: postService.otrosArticulos[indx],
+                                  dondeVoy: 2,
+                                );
+                              },
+                            ),
+                            postService.otrosArticulos.length < 3
+                                ? Container(
+                                    width: double.infinity,
+                                    height: 130,
+                                  )
+                                : Container()
+                          ],
                         ),
                 )
               : Container(
                   child: postService.otrasRecs.length == 0
-                      ? Container(
-                          child: Column(children: [
-                            SizedBox(
-                              height: 90,
+                      ? Column(
+                          children: [
+                            Container(
+                              child: Column(children: [
+                                NoPosts('Todavía no hay recomendaciones',
+                                    FontAwesomeIcons.thumbsUp),
+                                Container(
+                                  width: double.infinity,
+                                  height: 240,
+                                )
+                              ]),
                             ),
-                            FaIcon(
-                              FontAwesomeIcons.thumbsUp,
-                              size: 100,
-                              color: Colors.grey,
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              'Todavía no hay recomendaciones',
-                              style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 19,
-                                  fontStyle: FontStyle.italic),
-                            )
-                          ]),
+                          ],
                         )
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: postService.otrasRecs.length,
-                          itemBuilder: (BuildContext context, int indx) {
-                            return RecommendationPost(
-                                post: postService.otrasRecs[indx]);
-                          }),
+                      : Column(
+                          children: [
+                            ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: postService.otrasRecs.length,
+                                itemBuilder: (BuildContext context, int indx) {
+                                  return RecommendationPost(
+                                      post: postService.otrasRecs[indx]);
+                                }),
+                            postService.otrasRecs.length == 1
+                                ? Container(width: double.infinity, height: 215)
+                                : Container()
+                          ],
+                        ),
                 );
         })
       ],
