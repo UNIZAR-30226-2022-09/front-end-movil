@@ -8,7 +8,7 @@ class tematicaWidget extends StatelessWidget {
   final int index;
   final IconData icon;
   final String name;
-  List<String> list;
+  final List<String> list;
   tematicaWidget(
       {Key? key,
       required this.index,

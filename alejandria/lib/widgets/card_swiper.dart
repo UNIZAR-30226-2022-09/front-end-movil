@@ -10,9 +10,6 @@ class CardSwiper extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final postsService = Provider.of<MyPostsService>(context);
-    print(postsService.novedades.length);
-
-    //TODO: progress circular indicator
 
     return Container(
       width: double.infinity,

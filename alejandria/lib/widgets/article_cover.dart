@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ArticleCover extends StatelessWidget {
-  PostListModel post;
-  int dondeVoy;
+  final PostListModel post;
+  final int dondeVoy;
   ArticleCover({Key? key, required this.post, required this.dondeVoy})
       : super(key: key);
 

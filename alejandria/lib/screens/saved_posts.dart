@@ -1,4 +1,3 @@
-import 'package:alejandria/models/post_list_model.dart';
 import 'package:alejandria/services/my_posts_service.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:alejandria/widgets/no_info.dart';
@@ -42,7 +41,6 @@ class _SavedPostsScreenState extends State<SavedPostsScreen>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     myFuture = getSavedPosts();

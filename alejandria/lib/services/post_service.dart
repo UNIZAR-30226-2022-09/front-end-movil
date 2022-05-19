@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:alejandria/models/post_list_model.dart';
 import 'package:alejandria/models/post_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -22,11 +21,8 @@ class PostService extends ChangeNotifier {
   bool check2 = false;
 
   Future uploadPost() async {
-    print(newPost.toJson());
     this.isSaving = true;
     notifyListeners();
-
-    print(newPost.link);
 
     final url = Uri.http(_baseUrl, '/subirPost');
     final resp = await http.post(url,
@@ -35,8 +31,6 @@ class PostService extends ChangeNotifier {
           'token': await storage.read(key: 'token') ?? ''
         },
         body: newPost.toJson());
-
-    print(newPost.toJson());
 
     if (this.newPost.tipo == "1") {
       final Map<String, dynamic> decodedResp = json.decode(resp.body);

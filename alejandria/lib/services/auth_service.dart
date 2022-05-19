@@ -25,7 +25,6 @@ class AuthService extends ChangeNotifier {
         }));
 
     final Map<String, dynamic> decodedResp = json.decode(resp.body);
-    print(decodedResp);
 
     if (decodedResp.containsKey('token')) {
       await storage.write(key: 'token', value: decodedResp['token']);
@@ -50,7 +49,6 @@ class AuthService extends ChangeNotifier {
             <String, String>{'nickOcorreo': e_mail, 'password': password}));
 
     final Map<String, dynamic> decodedResp = json.decode(resp.body);
-    print(decodedResp);
 
     if (decodedResp.containsKey('token')) {
       await storage.write(key: 'token', value: decodedResp['token']);

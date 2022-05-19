@@ -49,17 +49,7 @@ class MyPostsService extends ChangeNotifier {
   int offsetPopularesR = 1;
   bool finPopularesR = false;
 
-  PostListModel postRT = PostListModel(
-      tipo: 1,
-      usuario: 'user',
-      fotoDePerfil: 'http://51.255.50.207:5000/display/raul.jpg',
-      portada: 'http://51.255.50.207:5000/display/raul.jpg',
-      pdf: 'http://51.255.50.207:5000/display2/43.pdf',
-      nlikes: 0,
-      likemio: false,
-      ncomentarios: 0,
-      nguardados: 0,
-      guardadomio: false);
+  late PostListModel postRT;
 
   final storage = new FlutterSecureStorage();
 
@@ -68,6 +58,7 @@ class MyPostsService extends ChangeNotifier {
   MyPostsService() {
     this.loadArticles(Preferences.userNick);
     this.loadRecs(Preferences.userNick);
+    this.loadHome();
   }
 
   Future<List<PostListModel>> loadArticles(String nick) async {
@@ -222,7 +213,7 @@ class MyPostsService extends ChangeNotifier {
   }
 
   Future<List<PostListModel>> loadHome() async {
-    postsHome = []; //lo he cambiado
+    postsHome = [];
     final url = Uri.http(_baseUrl, '/HomePaginado');
     final resp = await http.get(
       url,
@@ -250,6 +241,7 @@ class MyPostsService extends ChangeNotifier {
         finHome = false;
       offsetHome = 1;
     }
+    notifyListeners();
     return this.postsHome;
   }
 

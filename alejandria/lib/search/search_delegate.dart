@@ -1,5 +1,6 @@
 import 'package:alejandria/models/search_model.dart';
 import 'package:alejandria/services/user_service.dart';
+import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -90,8 +91,12 @@ class _UserItem extends StatelessWidget {
         ),
         title: Text('@${resp.nick}'),
         onTap: () {
-          Navigator.pushNamed(context, 'otherUser',
-              arguments: {'nick': resp.nick});
+          if (Preferences.userNick == resp.nick) {
+            Navigator.pushNamed(context, 'profile');
+          } else {
+            Navigator.pushNamed(context, 'otherUser',
+                arguments: {'nick': resp.nick});
+          }
         });
   }
 }

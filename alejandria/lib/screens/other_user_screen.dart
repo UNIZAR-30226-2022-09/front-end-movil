@@ -5,7 +5,6 @@ import 'package:alejandria/services/services.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:alejandria/widgets/no_info.dart';
 import 'package:alejandria/widgets/widgets.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -237,6 +236,9 @@ class _UpperContentState extends State<_UpperContent> {
               widget.thisUser.nseguidores = widget.thisUser.siguiendo!
                   ? widget.thisUser.nseguidores + 1
                   : widget.thisUser.nseguidores - 1;
+              final postsService =
+                  Provider.of<MyPostsService>(context, listen: false);
+              postsService.loadHome();
               setState(() {});
             }),
       )

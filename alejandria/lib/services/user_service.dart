@@ -65,7 +65,7 @@ class UserService extends ChangeNotifier {
     notifyListeners();
 
     final url = Uri.http(_baseUrl, '/editarPerfil');
-    final resp = await http.post(url,
+    await http.post(url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'token': await storage.read(key: 'token') ?? ''

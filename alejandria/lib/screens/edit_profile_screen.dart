@@ -131,7 +131,6 @@ class _ProfilePicture extends StatelessWidget {
   Widget getProfilePicture(String? picture) {
     //No tengo foto
     if (picture == null) {
-      print('soy null xd');
       return Icon(Icons.add, size: 50, color: AppTheme.primary);
     }
 

@@ -1,15 +1,13 @@
 import 'package:alejandria/models/post_list_model.dart';
 import 'package:alejandria/screens/una_prueba.dart';
-import 'package:alejandria/services/services.dart';
 import 'package:alejandria/themes/app_theme.dart';
-import 'package:alejandria/widgets/bottom_line_appbar.dart';
 import 'package:alejandria/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class OnePostScreen extends StatelessWidget {
-  PostListModel? myPost;
-  int? dondeVoy;
+  final PostListModel? myPost;
+  final int? dondeVoy;
   OnePostScreen({Key? key, this.myPost, this.dondeVoy}) : super(key: key);
 
   @override

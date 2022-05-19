@@ -48,14 +48,13 @@ class CommentsScreen extends StatelessWidget {
 }
 
 class _VerComentarios extends StatelessWidget {
-  String id;
+  final String id;
   _VerComentarios(this.id);
 
   @override
   Widget build(BuildContext context) {
     final myService = Provider.of<ComentariosService>(context);
     Future<void> getComments() async {
-      print('me han llamado');
       await myService.cargarComentarios(id);
     }
 
@@ -96,7 +95,7 @@ class _VerComentarios extends StatelessWidget {
 }
 
 class Comentario extends StatelessWidget {
-  ComentraioModel comentario;
+  final ComentraioModel comentario;
 
   Comentario(this.comentario);
 
@@ -124,7 +123,7 @@ class Comentario extends StatelessWidget {
 }
 
 class _WriteComment extends StatefulWidget {
-  PostListModel post;
+  final PostListModel post;
   _WriteComment(this.post);
 
   @override
@@ -172,8 +171,8 @@ class _WriteCommentState extends State<_WriteComment> {
 }
 
 class _Description extends StatelessWidget {
-  String? descripcion;
-  String imagePath;
+  final String? descripcion;
+  final String imagePath;
   _Description({Key? key, this.descripcion, required this.imagePath})
       : super(key: key);
 

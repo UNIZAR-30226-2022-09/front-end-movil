@@ -34,7 +34,7 @@ class CustomInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-        maxLength: maxLength,
+        maxLength: maxLength == 500 ? null : maxLength,
         controller: textController,
         autocorrect: false,
         obscureText: isPassword,

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:alejandria/models/models.dart';
 import 'package:alejandria/services/my_posts_service.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:alejandria/widgets/no_info.dart';
@@ -17,13 +16,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Future? myFuture;
   final ScrollController _scrollController = ScrollController();
   bool isLoading = false;
 
-  Future<List<PostListModel>> _fetchData() async {
+  Future<void> _fetchData() async {
     final postService = Provider.of<MyPostsService>(context, listen: false);
-    return postService.loadHome();
+    postService.loadHome();
   }
 
   Future<void> _fetchMoreData() async {
@@ -38,7 +36,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    myFuture = _fetchData();
     _scrollController.addListener(() {
       if ((_scrollController.position.pixels + 500) >=
           _scrollController.position.maxScrollExtent) {
@@ -52,69 +49,54 @@ class _HomeScreenState extends State<HomeScreen> {
     Future<void> _refresh() async {
       final pstService = Provider.of<MyPostsService>(context, listen: false);
       await pstService.loadHome();
-      pstService.notifyListeners();
     }
 
     final articlesService = Provider.of<MyPostsService>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('ALEJANDRÍA',
-            style: TextStyle(
-                fontFamily: 'Amazing Grotesc Ultra',
-                fontSize: 30,
-                color: AppTheme.primary)),
-        actions: [
-          IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.chat_bubble_outline_rounded,
+        appBar: AppBar(
+          title: Text('ALEJANDRÍA',
+              style: TextStyle(
+                  fontFamily: 'Amazing Grotesc Ultra',
+                  fontSize: 30,
+                  color: AppTheme.primary)),
+          actions: [
+            IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.chat_bubble_outline_rounded,
+                  color: AppTheme.primary,
+                  size: 30,
+                ))
+          ],
+          bottom: BottomLineAppBar(), //Color.fromRGBO(68, 114, 88, 1),
+        ),
+        body: articlesService.postsHome.length == 0
+            ? RefreshIndicator(
+                onRefresh: _fetchData,
                 color: AppTheme.primary,
-                size: 30,
-              ))
-        ],
-        bottom: BottomLineAppBar(), //Color.fromRGBO(68, 114, 88, 1),
-      ),
-      body: FutureBuilder(
-          future: myFuture,
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                  child: CircularProgressIndicator(
+                child: ListView.builder(
+                    itemCount: 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Center(
+                        child: NoPosts(
+                            'Sigue a mas usuarios para ver sus publicaciones',
+                            FontAwesomeIcons.solidUser),
+                      );
+                    }),
+              )
+            : RefreshIndicator(
+                onRefresh: _refresh,
                 color: AppTheme.primary,
+                child: ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    controller: _scrollController,
+                    itemCount: articlesService.postsHome.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return articlesService.postsHome[index].tipo == 1
+                          ? ArticlePost(post: articlesService.postsHome[index])
+                          : RecommendationPost(
+                              post: articlesService.postsHome[index]);
+                    }),
               ));
-            } else if (snapshot.connectionState == ConnectionState.done) {
-              return articlesService.postsHome.length == 0
-                  ? RefreshIndicator(
-                      onRefresh: _fetchData,
-                      color: AppTheme.primary,
-                      child: ListView.builder(
-                          itemCount: 1,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Center(
-                              child: NoPosts(
-                                  'Sigue a mas usuarios para ver sus publicaciones',
-                                  FontAwesomeIcons.solidUser),
-                            );
-                          }),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _refresh,
-                      color: AppTheme.primary,
-                      child: ListView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          controller: _scrollController,
-                          itemCount: articlesService.postsHome.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return articlesService.postsHome[index].tipo == 1
-                                ? ArticlePost(
-                                    post: articlesService.postsHome[index])
-                                : RecommendationPost(
-                                    post: articlesService.postsHome[index]);
-                          }),
-                    );
-            }
-            return Container();
-          }),
-    );
   }
 }

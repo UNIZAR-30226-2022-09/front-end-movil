@@ -1,10 +1,6 @@
 import 'package:alejandria/models/post_list_model.dart';
-import 'package:alejandria/screens/una_prueba.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:alejandria/screens/una_prueba.dart';
 
 class ArticleCover2 extends StatelessWidget {
   PostListModel post;

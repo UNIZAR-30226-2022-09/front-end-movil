@@ -152,7 +152,6 @@ class __FormState extends State<_Form> {
 
                       loginForm.isLoading = true;
 
-                      // TODO: validar si el login es correcto
                       final String? errorMessage = await authService
                           .validateUser(loginForm.email, loginForm.password);
 
@@ -163,6 +162,7 @@ class __FormState extends State<_Form> {
                         await userService.loadData(Preferences.userNick);
                         final postsService =
                             Provider.of<MyPostsService>(context, listen: false);
+                        await postsService.loadHome();
                         await postsService.loadRecs(Preferences.userNick);
                         await postsService.loadArticles(Preferences.userNick);
                       } else {
@@ -310,6 +310,7 @@ class __FormRState extends State<_FormR> {
                             await userService.loadData(regsiterForm.nick);
                         final postsService =
                             Provider.of<MyPostsService>(context, listen: false);
+                        await postsService.loadHome();
                         await postsService.loadRecs(Preferences.userNick);
                         await postsService.loadArticles(Preferences.userNick);
 
