@@ -46,7 +46,6 @@ class PostService extends ChangeNotifier {
 
       await pdfUploadRequest.send();
 
-      //pdfArticle = null;
       check1 = false;
       check2 = false;
     } else {}

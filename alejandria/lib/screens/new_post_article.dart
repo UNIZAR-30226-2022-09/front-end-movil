@@ -39,7 +39,7 @@ class NewArticleScreen extends StatelessWidget {
                         }
                         if (!tematicas.checkData()) {
                           NotificationsService.showSnackbar(
-                              'Debe elegiir al menos 1 temática');
+                              'Debe elegir al menos 1 temática');
                           return;
                         } else if (!(articlePost.check1 &&
                             articlePost.check2)) {

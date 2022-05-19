@@ -40,9 +40,13 @@ class NewRecommendationScreen extends StatelessWidget {
                         } else if (recPost.newPost.autor == null ||
                             recPost.newPost.titulo == null ||
                             recPost.newPost.autor!.length == 0 ||
-                            recPost.newPost.titulo!.length == 0) {
+                            recPost.newPost.titulo!.length == 0 ||
+                            recPost.newPost.link == null ||
+                            recPost.newPost.link!.length == 0 ||
+                            recPost.newPost.descripcion == null ||
+                            recPost.newPost.descripcion!.length == 0) {
                           NotificationsService.showSnackbar(
-                              'Los campos "Título" y "Autor" son obligatorios');
+                              'Rellena todos los campos');
                           return;
                         }
                         recPost.newPost.tipo = '2';
