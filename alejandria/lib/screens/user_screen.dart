@@ -384,7 +384,7 @@ class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
                                 FontAwesomeIcons.file),
                             Container(
                               width: double.infinity,
-                              height: 120,
+                              height: 160,
                             )
                           ]),
                         )
@@ -410,7 +410,7 @@ class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
                             articlesService.misArticulos.length < 3
                                 ? Container(
                                     width: double.infinity,
-                                    height: 70,
+                                    height: 90,
                                   )
                                 : Container()
                           ],
@@ -441,7 +441,7 @@ class _PostsState extends State<_Posts> with SingleTickerProviderStateMixin {
                             articlesService.misRecs.length == 1
                                 ? Container(
                                     width: double.infinity,
-                                    height: 110,
+                                    height: 150,
                                   )
                                 : Container()
                           ],

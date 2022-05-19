@@ -46,7 +46,7 @@ class NewRecommendationScreen extends StatelessWidget {
                           return;
                         }
                         recPost.newPost.tipo = '2';
-                        recPost.uploadPost();
+                        await recPost.uploadPost();
                         final postsService =
                             Provider.of<MyPostsService>(context, listen: false);
                         final userService =
@@ -57,12 +57,13 @@ class NewRecommendationScreen extends StatelessWidget {
                         Navigator.popUntil(context, (route) => false);
                         Navigator.pushNamed(context, 'tabs');
                       },
-                child: Text('Publicar',
-                    style: TextStyle(
-                        color: recPost.isSaving
-                            ? Colors.grey[600]
-                            : AppTheme.primary,
-                        fontSize: 16)))
+                child: recPost.isSaving
+                    ? CircularProgressIndicator(
+                        color: AppTheme.primary,
+                      )
+                    : Text('Publicar',
+                        style:
+                            TextStyle(color: AppTheme.primary, fontSize: 16)))
           ],
         ),
         body: SingleChildScrollView(

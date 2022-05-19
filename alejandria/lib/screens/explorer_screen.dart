@@ -31,7 +31,7 @@ class _ExplorerScreenState extends State<ExplorerScreen>
     final postService = Provider.of<MyPostsService>(context, listen: false);
     final tematicas = Provider.of<TematicasProvider>(context, listen: false);
     if (i) {
-      await postService.LoadMorePopularesR(
+      await postService.LoadMorePopulares(
           tematicas.selectedTemaTica, _controller.text);
     } else {
       await postService.LoadMorePopularesR(

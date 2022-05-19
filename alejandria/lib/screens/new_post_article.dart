@@ -48,7 +48,7 @@ class NewArticleScreen extends StatelessWidget {
                           return;
                         }
 
-                        articlePost.uploadPost();
+                        await articlePost.uploadPost();
                         final postsService =
                             Provider.of<MyPostsService>(context, listen: false);
                         final userService =
@@ -59,12 +59,13 @@ class NewArticleScreen extends StatelessWidget {
                         Navigator.popUntil(context, (route) => false);
                         Navigator.pushNamed(context, 'tabs');
                       },
-                child: Text('Publicar',
-                    style: TextStyle(
-                        color: articlePost.isSaving
-                            ? Colors.grey[600]
-                            : AppTheme.primary,
-                        fontSize: 16)))
+                child: articlePost.isSaving
+                    ? CircularProgressIndicator(
+                        color: AppTheme.primary,
+                      )
+                    : Text('Publicar',
+                        style:
+                            TextStyle(color: AppTheme.primary, fontSize: 16)))
           ],
         ),
         body: SingleChildScrollView(
