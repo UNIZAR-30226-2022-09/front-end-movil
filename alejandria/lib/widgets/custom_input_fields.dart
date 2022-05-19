@@ -13,6 +13,7 @@ class CustomInputField extends StatelessWidget {
   final void Function(String)? onChanged;
   final String? initialValue;
   final bool showLabelText;
+  final int maxLength;
 
   const CustomInputField(
       {Key? key,
@@ -26,12 +27,14 @@ class CustomInputField extends StatelessWidget {
       this.validator,
       this.onChanged,
       this.initialValue,
+      this.maxLength = 500,
       this.showLabelText = true})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+        maxLength: maxLength,
         controller: textController,
         autocorrect: false,
         obscureText: isPassword,

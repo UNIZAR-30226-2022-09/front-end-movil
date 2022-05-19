@@ -56,49 +56,53 @@ class _Recommendation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final postService = Provider.of<MyPostsService>(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: Container(
         width: double.infinity,
         color: Preferences.isDarkMode ? Colors.black : Colors.grey[50],
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 70),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(
-            '${post.titulo!} - ${post.autor!}',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Text(post.descripcion!),
-          SizedBox(
-            height: 5,
-          ),
-          GestureDetector(
-            child: Text(
-              post.link!.contains('https://www.alejandria.es')
-                  ? 'ver post original'
-                  : post.link!,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                  color: Preferences.isDarkMode
-                      ? Colors.blue[200]
-                      : Colors.blue[900]),
-            ),
-            onTap: () async {
-              if (post.link!.contains('https://www.alejandria.es')) {
-                final splitted = post.link!.split('/');
-                final postService = Provider.of<MyPostsService>(context);
-                final thisPost =
-                    postService.getInfoPost(splitted[splitted.length - 1]);
-                Navigator.pushNamed(context, 'onePost',
-                    arguments: {'post': thisPost});
-              } else
-                launch(post.link!);
-            },
-          )
-        ]),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${post.titulo!} - ${post.autor!}',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Text(post.descripcion!),
+              SizedBox(
+                height: 5,
+              ),
+              GestureDetector(
+                child: Text(
+                  post.link!.contains('https://www.alejandria.es')
+                      ? 'ver post original'
+                      : post.link!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      color: Preferences.isDarkMode
+                          ? Colors.blue[200]
+                          : Colors.blue[900]),
+                ),
+                onTap: () async {
+                  if (post.link!.contains('www.alejandria.es')) {
+                    final splitted = post.link!.split('/');
+                    await postService
+                        .getInfoPost(splitted[splitted.length - 1]);
+                    Navigator.pushNamed(context, 'onePost',
+                        arguments: {'post': postService.postRT});
+                  } else {
+                    launch(post.link!);
+                  }
+                },
+              )
+            ]),
       ),
     );
   }

@@ -120,7 +120,8 @@ class _FormState extends State<_Form> {
       children: [
         CustomInputField(
             icon: Icons.description,
-            placeholder: 'Nombre del artículo',
+            placeholder: 'Título del artículo',
+            maxLength: 40,
             initialValue: widget.titulo,
             maxlines: 1,
             onChanged: (value) => widget.recPost.newPost.titulo = value),
@@ -130,6 +131,7 @@ class _FormState extends State<_Form> {
         CustomInputField(
             icon: Icons.description,
             placeholder: 'Autor del artículo',
+            maxLength: 25,
             initialValue: widget.autor,
             maxlines: 1,
             onChanged: (value) => widget.recPost.newPost.autor = value),
@@ -138,7 +140,8 @@ class _FormState extends State<_Form> {
         ),
         CustomInputField(
             icon: Icons.description,
-            placeholder: 'Breve opinióndel artículo',
+            placeholder: 'Breve descripción del artículo',
+            maxLength: 200,
             maxlines: 3,
             onChanged: (value) => widget.recPost.newPost.descripcion = value),
         SizedBox(

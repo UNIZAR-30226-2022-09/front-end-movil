@@ -174,6 +174,7 @@ class _ProfileFormState extends State<_ProfileForm> {
           CustomInputField(
             icon: Icons.person_outline_rounded,
             placeholder: 'Nombre',
+            maxLength: 30,
             initialValue: userEdit.nombreDeUsuario,
             onChanged: (value) => userEdit.nombreDeUsuario = value,
           ),
@@ -183,6 +184,7 @@ class _ProfileFormState extends State<_ProfileForm> {
           CustomInputField(
             icon: Icons.description_outlined,
             placeholder: 'Descripción',
+            maxLength: 100,
             maxlines: 3,
             initialValue: userEdit.descripcion,
             onChanged: (value) => userEdit.descripcion = value,

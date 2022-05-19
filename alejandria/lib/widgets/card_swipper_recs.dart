@@ -15,26 +15,12 @@ class CardSwiperRecs extends StatelessWidget {
     return Container(
       width: double.infinity,
       child: Swiper(
-        itemCount: 2, //postsService.novedades.length,
+        itemCount: postsService.novedadesR.length,
         layout: SwiperLayout.STACK,
         itemWidth: size.width * 0.95,
-        itemHeight: 250,
+        itemHeight: 280,
         itemBuilder: (_, int index) {
-          return RecommendationPost(
-              post: PostListModel(
-                  tipo: 2,
-                  usuario: 'raul',
-                  fotoDePerfil: 'http://51.255.50.207:5000/display/raul.jpg',
-                  titulo: 'Explorador',
-                  autor: 'funciona?',
-                  descripcion:
-                      'Esto es una prueba muy importante super mega importante ultra mecra macro hiper importante',
-                  link: 'https://www.google.com',
-                  nlikes: 3,
-                  likemio: true,
-                  ncomentarios: 1,
-                  nguardados: 2,
-                  guardadomio: false));
+          return RecommendationPost(post: postsService.novedadesR[index]);
           //ArticleCover2(postsService.novedades[index]);
         },
       ),

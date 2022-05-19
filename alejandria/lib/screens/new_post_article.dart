@@ -201,6 +201,7 @@ class _FormState extends State<_Form> {
         child: CustomInputField(
             icon: Icons.description,
             placeholder: 'Breve descripción del artículo',
+            maxLength: 100,
             maxlines: 3,
             onChanged: (value) => widget.post.descripcion = value));
   }

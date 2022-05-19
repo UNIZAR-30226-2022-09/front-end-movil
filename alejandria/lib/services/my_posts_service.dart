@@ -49,6 +49,18 @@ class MyPostsService extends ChangeNotifier {
   int offsetPopularesR = 1;
   bool finPopularesR = false;
 
+  PostListModel postRT = PostListModel(
+      tipo: 1,
+      usuario: 'user',
+      fotoDePerfil: 'http://51.255.50.207:5000/display/raul.jpg',
+      portada: 'http://51.255.50.207:5000/display/raul.jpg',
+      pdf: 'http://51.255.50.207:5000/display2/43.pdf',
+      nlikes: 0,
+      likemio: false,
+      ncomentarios: 0,
+      nguardados: 0,
+      guardadomio: false);
+
   final storage = new FlutterSecureStorage();
 
   bool isLoadingArticles = true;
@@ -73,6 +85,7 @@ class MyPostsService extends ChangeNotifier {
       },
     );
 
+    if (resp.statusCode > 400) return loadArticles(nick);
     final Map<String, dynamic> articlesMap = json.decode(resp.body);
 
     soyYo ? misArticulos = [] : otrosArticulos = [];
@@ -114,7 +127,7 @@ class MyPostsService extends ChangeNotifier {
         'nick': nick
       },
     );
-
+    if (resp.statusCode > 400) return loadMoreArticles(nick);
     final Map<String, dynamic> articlesMap = json.decode(resp.body);
 
     if (articlesMap.containsKey('fin')) {
@@ -147,6 +160,7 @@ class MyPostsService extends ChangeNotifier {
       'nick': nick
     });
 
+    if (resp.statusCode > 400) return loadRecs(nick);
     final Map<String, dynamic> recMap = json.decode(resp.body);
 
     soyYo ? misRecs = [] : otrasRecs = [];
@@ -182,6 +196,7 @@ class MyPostsService extends ChangeNotifier {
       'nick': nick
     });
 
+    if (resp.statusCode > 400) return loadMoreRecs(nick);
     final Map<String, dynamic> recMap = json.decode(resp.body);
     if (recMap.containsKey('fin')) {
       soyYo ? finRecs = true : finOtrasRecs = true;
@@ -207,6 +222,7 @@ class MyPostsService extends ChangeNotifier {
   }
 
   Future<List<PostListModel>> loadHome() async {
+    postsHome = []; //lo he cambiado
     final url = Uri.http(_baseUrl, '/HomePaginado');
     final resp = await http.get(
       url,
@@ -218,8 +234,8 @@ class MyPostsService extends ChangeNotifier {
       },
     );
 
+    if (resp.statusCode > 400) return loadHome();
     final Map<String, dynamic> postsMap = json.decode(resp.body);
-    postsHome = [];
 
     if (!postsMap.containsKey('fin')) {
       postsMap.forEach((key, value) {
@@ -249,6 +265,7 @@ class MyPostsService extends ChangeNotifier {
       },
     );
 
+    if (resp.statusCode > 400) return loadMoreHome();
     final Map<String, dynamic> postsMap = json.decode(resp.body);
     if (postsMap.containsKey('fin')) {
       finHome = true;
@@ -278,6 +295,7 @@ class MyPostsService extends ChangeNotifier {
       },
     );
 
+    if (resp.statusCode > 400) return loadSavedArticles();
     final Map<String, dynamic> articlesMap = json.decode(resp.body);
 
     if (!articlesMap.containsKey('fin')) {
@@ -305,6 +323,7 @@ class MyPostsService extends ChangeNotifier {
       },
     );
 
+    if (resp.statusCode > 400) return loadMoreSavedArticles();
     final Map<String, dynamic> articlesMap = json.decode(resp.body);
     if (articlesMap.containsKey('fin')) {
       finSavedArticles = true;
@@ -331,6 +350,7 @@ class MyPostsService extends ChangeNotifier {
       'limit': 4.toString()
     });
 
+    if (resp.statusCode > 400) return loadSavedRecs();
     final Map<String, dynamic> recMap = json.decode(resp.body);
 
     if (!recMap.containsKey('fin')) {
@@ -354,6 +374,8 @@ class MyPostsService extends ChangeNotifier {
       'offset': offsetRecsG.toString(),
       'limit': 4.toString()
     });
+
+    if (resp.statusCode > 400) return loadMoreSavedRecs();
     final Map<String, dynamic> recMap = json.decode(resp.body);
     if (recMap.containsKey('fin')) {
       finSavedRecs = true;
@@ -372,8 +394,6 @@ class MyPostsService extends ChangeNotifier {
   Future<void> LoadNovedades(String tematica, String texto) async {
     novedades = [];
     if (texto.length == 0) texto = '';
-    print('tematica: $tematica');
-    print('texto: $texto');
     final url = Uri.http(_baseUrl, '/RecientesArticulos');
     final resp = await http.get(
       url,
@@ -385,15 +405,14 @@ class MyPostsService extends ChangeNotifier {
         'filtrado': texto
       },
     );
-    print('??');
-    print(json.decode(resp.body));
-    print('!!');
+
+    if (resp.statusCode > 400) return LoadNovedades(tematica, texto);
     final Map<String, dynamic> explorerMap = json.decode(resp.body);
     if (explorerMap.containsKey('fin')) return;
     explorerMap.forEach((key, value) {
       final temp = PostListModel.fromMap(value);
       temp.id = key;
-      temp.tipo == 1 ? novedades.add(temp) : null;
+      novedades.add(temp);
     });
     notifyListeners();
   }
@@ -412,12 +431,73 @@ class MyPostsService extends ChangeNotifier {
         'filtrado': texto
       },
     );
+
+    if (resp.statusCode > 400) return LoadPopulares(tematica, texto);
     final Map<String, dynamic> explorerMap = json.decode(resp.body);
     if (explorerMap.containsKey('fin')) return;
     explorerMap.forEach((key, value) {
       final temp = PostListModel.fromMap(value);
       temp.id = key;
       populares.add(temp);
+    });
+    finPopulares = false;
+    offsetPopulares = 1;
+    notifyListeners();
+  }
+
+  Future<void> LoadMorePopulares(String tematica, String texto) async {
+    if (finPopulares) return;
+    final url = Uri.http(_baseUrl, '/PopularesArticulos');
+    final resp = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'token': await storage.read(key: 'token') ?? '',
+        'limit': 9.toString(),
+        'offset': offsetPopulares.toString(),
+        'tematicas': tematica,
+        'filtrado': texto
+      },
+    );
+
+    if (resp.statusCode > 400) return LoadMorePopulares(tematica, texto);
+    final Map<String, dynamic> explorerMap = json.decode(resp.body);
+    if (explorerMap.containsKey('fin')) {
+      finPopulares = true;
+      return;
+    }
+    explorerMap.forEach((key, value) {
+      final temp = PostListModel.fromMap(value);
+      temp.id = key;
+      populares.add(temp);
+    });
+    offsetPopulares += 1;
+    notifyListeners();
+  }
+
+  Future<void> LoadNovedadesR(String tematica, String texto) async {
+    novedadesR = [];
+    if (texto.length == 0) texto = '';
+    final url = Uri.http(_baseUrl, '/RecientesRecomendaciones');
+    final resp = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'token': await storage.read(key: 'token') ?? '',
+        'limit': 20.toString(),
+        'tematicas': tematica,
+        'filtrado': texto
+      },
+    );
+
+    if (resp.statusCode > 400) return LoadNovedadesR(tematica, texto);
+
+    final Map<String, dynamic> explorerMap = json.decode(resp.body);
+    if (explorerMap.containsKey('fin')) return;
+    explorerMap.forEach((key, value) {
+      final temp = PostListModel.fromMap(value);
+      temp.id = key;
+      novedadesR.add(temp);
     });
     notifyListeners();
   }
@@ -437,6 +517,7 @@ class MyPostsService extends ChangeNotifier {
       },
     );
 
+    if (resp.statusCode > 400) return LoadPopularesR(tematica, texto);
     final Map<String, dynamic> explorerMap = json.decode(resp.body);
     if (explorerMap.containsKey('fin')) return;
     explorerMap.forEach((key, value) {
@@ -444,10 +525,42 @@ class MyPostsService extends ChangeNotifier {
       temp.id = key;
       popularesR.add(temp);
     });
+    finPopularesR = false;
+    offsetPopularesR = 1;
     notifyListeners();
   }
 
-  Future<PostListModel> getInfoPost(String id) async {
+  Future<void> LoadMorePopularesR(String tematica, String texto) async {
+    if (finPopularesR) return;
+    final url = Uri.http(_baseUrl, '/PopularesRecomendaciones');
+    final resp = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'token': await storage.read(key: 'token') ?? '',
+        'limit': 4.toString(),
+        'offset': offsetPopularesR.toString(),
+        'tematicas': tematica,
+        'filtrado': texto
+      },
+    );
+
+    if (resp.statusCode > 400) return LoadMorePopularesR(tematica, texto);
+    final Map<String, dynamic> explorerMap = json.decode(resp.body);
+    if (explorerMap.containsKey('fin')) {
+      finPopularesR = true;
+      return;
+    }
+    explorerMap.forEach((key, value) {
+      final temp = PostListModel.fromMap(value);
+      temp.id = key;
+      popularesR.add(temp);
+    });
+    offsetPopularesR += 1;
+    notifyListeners();
+  }
+
+  Future<void> getInfoPost(String id) async {
     final url = Uri.http(_baseUrl, '/infoPost');
     final resp = await http.get(
       url,
@@ -457,10 +570,14 @@ class MyPostsService extends ChangeNotifier {
         'id': id
       },
     );
-    PostListModel post = json.decode(resp.body);
-    post.id = id;
 
-    return post;
+    if (resp.statusCode > 400) return getInfoPost(id);
+    final Map<String, dynamic> postMap = json.decode(resp.body);
+    postMap.forEach((key, value) {
+      postRT = PostListModel.fromMap(value);
+    });
+    postRT.id = id;
+    notifyListeners();
   }
 
   void resetSavedPosts() {

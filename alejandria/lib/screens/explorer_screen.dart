@@ -21,11 +21,40 @@ class ExplorerScreen extends StatefulWidget {
 class _ExplorerScreenState extends State<ExplorerScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final ScrollController _scrollController = ScrollController();
   final TextEditingController _controller = TextEditingController();
+  bool isLoading = false;
+
+  Future<void> _fetchMoreData(bool i) async {
+    if (isLoading) return;
+    isLoading = true;
+    final postService = Provider.of<MyPostsService>(context, listen: false);
+    final tematicas = Provider.of<TematicasProvider>(context, listen: false);
+    if (i) {
+      await postService.LoadMorePopularesR(
+          tematicas.selectedTemaTica, _controller.text);
+    } else {
+      await postService.LoadMorePopularesR(
+          tematicas.selectedTemaTica, _controller.text);
+    }
+
+    await Future.delayed(const Duration(seconds: 3));
+    isLoading = false;
+  }
 
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
+    _scrollController.addListener(() {
+      if ((_scrollController.position.pixels + 500) >=
+          _scrollController.position.maxScrollExtent) {
+        if (_tabController.index == 0) {
+          _fetchMoreData(true);
+        } else {
+          _fetchMoreData(false);
+        }
+      }
+    });
   }
 
   @override
@@ -50,6 +79,7 @@ class _ExplorerScreenState extends State<ExplorerScreen>
         bottom: BottomLineAppBar(), //Color.fromRGBO(68, 114, 88, 1),
       ),
       body: SingleChildScrollView(
+        controller: _scrollController,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -59,7 +89,7 @@ class _ExplorerScreenState extends State<ExplorerScreen>
               height: 0.5,
               color: AppTheme.primary,
             ),
-            TabBarW(_tabController, _controller)
+            TabBarW(_tabController)
           ],
         ),
       ),
@@ -85,7 +115,8 @@ class _HeaderState extends State<_Header> {
       children: [
         Row(
           children: [
-            _ListaTematicas(width: size.width * 0.8),
+            _ListaTematicas(
+                width: size.width * 0.8, controller: widget._contrller),
             SizedBox(
               width: 2,
             ),
@@ -164,12 +195,17 @@ class _FadeInOut extends StatelessWidget {
                 ),
               ),
               onPressed: () async {
-                print(_contrller.text);
                 final tematicas =
                     Provider.of<TematicasProvider>(context, listen: false);
                 final postsService =
                     Provider.of<MyPostsService>(context, listen: false);
                 await postsService.LoadNovedades(
+                    tematicas.selectedTemaTica, _contrller.text);
+                await postsService.LoadNovedadesR(
+                    tematicas.selectedTemaTica, _contrller.text);
+                await postsService.LoadPopulares(
+                    tematicas.selectedTemaTica, _contrller.text);
+                await postsService.LoadPopularesR(
                     tematicas.selectedTemaTica, _contrller.text);
                 FocusManager.instance.primaryFocus?.unfocus();
               },
@@ -181,8 +217,10 @@ class _FadeInOut extends StatelessWidget {
 
 class _ListaTematicas extends StatelessWidget {
   final double width;
+  TextEditingController controller;
 
-  const _ListaTematicas({Key? key, required this.width}) : super(key: key);
+  _ListaTematicas({Key? key, required this.width, required this.controller})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     final tematicas = Provider.of<TematicasProvider>(context).tematicas;
@@ -200,7 +238,7 @@ class _ListaTematicas extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                _TematicaBoton(tematicas[index]),
+                _TematicaBoton(tematicas[index], controller),
                 SizedBox(height: 5),
                 Text(tematicas[index].name)
               ],
@@ -214,8 +252,9 @@ class _ListaTematicas extends StatelessWidget {
 
 class _TematicaBoton extends StatelessWidget {
   final Tematica tematica;
+  TextEditingController controller;
 
-  const _TematicaBoton(this.tematica);
+  _TematicaBoton(this.tematica, this.controller);
 
   @override
   Widget build(BuildContext context) {
@@ -228,7 +267,10 @@ class _TematicaBoton extends StatelessWidget {
         tematicas.selectedTematica = tematica.dbName;
         final postsService =
             Provider.of<MyPostsService>(context, listen: false);
-        await postsService.LoadNovedades(tematica.dbName, "");
+        await postsService.LoadNovedades(tematica.dbName, controller.text);
+        await postsService.LoadNovedadesR(tematica.dbName, controller.text);
+        await postsService.LoadPopulares(tematica.dbName, controller.text);
+        await postsService.LoadPopularesR(tematica.dbName, controller.text);
       },
       child: Container(
         width: 45,
@@ -259,8 +301,7 @@ class _TematicaBoton extends StatelessWidget {
 
 class TabBarW extends StatefulWidget {
   final _tabController;
-  final _textController;
-  TabBarW(this._tabController, this._textController);
+  TabBarW(this._tabController);
 
   @override
   State<TabBarW> createState() => _TabBarWState();
@@ -280,9 +321,12 @@ class _TabBarWState extends State<TabBarW> {
   Future<void> GetPosts() async {
     final tematicas = Provider.of<TematicasProvider>(context, listen: false);
     final postsService = Provider.of<MyPostsService>(context, listen: false);
+
+    await postsService.LoadPopulares(tematicas.selectedTemaTica, '');
+    await postsService.LoadNovedades(tematicas.selectedTemaTica, '');
+
     await postsService.LoadPopularesR(tematicas.selectedTemaTica, '');
-    await postsService.LoadPopulares(tematicas.selectedTemaTica, "");
-    await postsService.LoadNovedades(tematicas.selectedTemaTica, "");
+    await postsService.LoadNovedadesR(tematicas.selectedTemaTica, '');
   }
 
   @override
@@ -380,9 +424,10 @@ class _TabBarWState extends State<TabBarW> {
                     }
                     return Container();
                   })
-              : postsService.popularesR.length != 0
+              : postsService.novedadesR.length != 0
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                           Padding(
                             padding: const EdgeInsets.only(
