@@ -9,6 +9,7 @@ class CheckAuthScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
+    final socketService = Provider.of<SocketService>( context );
     return Scaffold(
         body: Center(
       child: FutureBuilder(
@@ -29,6 +30,7 @@ class CheckAuthScreen extends StatelessWidget {
           //Estoy autentificado
           else {
             Future.microtask(() {
+              socketService.connect();
               Navigator.pushReplacement(
                   context,
                   PageRouteBuilder(

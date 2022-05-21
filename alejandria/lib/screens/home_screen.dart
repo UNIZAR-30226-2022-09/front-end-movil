@@ -61,7 +61,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: AppTheme.primary)),
           actions: [
             IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, 'chatList');
+                },
                 icon: Icon(
                   Icons.chat_bubble_outline_rounded,
                   color: AppTheme.primary,

@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import 'package:alejandria/provider/tematicas_provider.dart';
 import 'package:alejandria/provider/theme_provider.dart';
 import 'package:alejandria/screens/other_user_screen.dart';
@@ -5,7 +7,6 @@ import 'package:alejandria/screens/screens.dart';
 import 'package:alejandria/screens/una_prueba.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
-import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -21,6 +22,8 @@ void main() async {
     ChangeNotifierProvider(
         create: (_) => ThemeProvider(isDarkmode: Preferences.isDarkMode)),
     ChangeNotifierProvider(create: (_) => TematicasProvider()),
+    ChangeNotifierProvider(create: ( _ ) => SocketService()),
+    ChangeNotifierProvider(create: ( _ ) => ChatService()),
   ], child: MyApp()));
 }
 
@@ -50,7 +53,9 @@ class MyApp extends StatelessWidget {
           'pdfScreen': (_) => PDFScreen(),
           'otherUser': (context) => OtherUserScreen(ModalRoute.of(context)!
               .settings
-              .arguments as Map<String, dynamic>)
+              .arguments as Map<String, dynamic>),
+          'chatList': (_) => ChatListScreen(),
+          'chat': (_) => ChatScreen()
         },
         scaffoldMessengerKey: NotificationsService.messengerKey,
         theme: Provider.of<ThemeProvider>(context).currentTheme);

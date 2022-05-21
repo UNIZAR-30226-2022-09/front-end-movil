@@ -1,4 +1,3 @@
-import 'package:alejandria/models/user_model.dart';
 import 'package:alejandria/provider/provider.dart';
 import 'package:alejandria/services/services.dart';
 import 'package:alejandria/share_preferences/preferences.dart';
@@ -78,9 +77,11 @@ class _Form extends StatefulWidget {
 }
 
 class __FormState extends State<_Form> {
+ 
   @override
   Widget build(BuildContext context) {
     final loginForm = Provider.of<LoginFormProvider>(context);
+    final socketService = Provider.of<SocketService>( context );
     return Container(
         margin: const EdgeInsets.only(top: 60),
         padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -156,6 +157,7 @@ class __FormState extends State<_Form> {
                           .validateUser(loginForm.email, loginForm.password);
 
                       if (errorMessage == null) {
+                        socketService.connect();
                         Navigator.pushReplacementNamed(context, 'tabs');
                         final userService =
                             Provider.of<UserService>(context, listen: false);
@@ -217,6 +219,7 @@ class __FormRState extends State<_FormR> {
   @override
   Widget build(BuildContext context) {
     final regsiterForm = Provider.of<LoginFormProvider>(context);
+    final socketService = Provider.of<SocketService>( context );
     return Container(
         margin: const EdgeInsets.only(top: 60),
         padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -318,6 +321,7 @@ class __FormRState extends State<_FormR> {
                             Provider.of<TematicasProvider>(context,
                                 listen: false);
                         tematicasProvider.resetData();
+                        socketService.connect();
                         Navigator.pushReplacementNamed(context, 'editProfile');
                       } else {
                         NotificationsService.showSnackbar(errorMessage);
