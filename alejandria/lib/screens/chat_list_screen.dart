@@ -1,19 +1,40 @@
+import 'dart:convert';
+
+import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-
 import '../models/user_model.dart';
+import '../services/services.dart';
 import '../themes/app_theme.dart';
+import 'package:http/http.dart' as http;
 
-class ChatListScreen extends StatelessWidget{
+
+class ChatListScreen extends StatefulWidget {
+  @override
+  _ChatListScreen createState() => _ChatListScreen();
+}
+
+class _ChatListScreen extends State<ChatListScreen>{
 
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
-  final usuarios = [
+  List<UserModel> usuarios = [];
+
+  /*final usuarios = [
     UserModel(nick: 'pedro', nposts: 0, nseguidores: 0, nsiguiendo: 0, tematicas: []),
     UserModel(nick: 'juan', nposts: 0, nseguidores: 0, nsiguiendo: 0, tematicas: []),
     UserModel(nick: 'luis', nposts: 0, nseguidores: 0, nsiguiendo: 0, tematicas: []),
-  ];
+  ];*/
+
+  @override
+  void initState() {
+    this._cargarChats();
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context){
@@ -67,15 +88,31 @@ class ChatListScreen extends StatelessWidget{
                     ),
         ),
         onTap: (){
-          
-          print(usuario.nick);
-          //Navigator.pushNamed(context, 'chat');
+          /*
+          final chatService = Provider.of<ChatService>(context, listen: false);
+          chatService.usuarioPara = usuario;
+          Navigator.pushNamed(context, 'chat');*/
         },
       );
   }
 
   _cargarChats() async {
-    await Future.delayed(Duration(milliseconds: 1000));
+    usuarios.clear();
+    final userService = new UserService();
+    final chatService = new ChatService();
+
+    var lista = await chatService.getListaChats(Preferences.userNick);
+    print(lista);
+
+    for(var user in lista){
+      UserModel usuario = await userService.loadOtherUser(user);
+      usuarios.add(usuario);
+    }
+
+    setState(() {
+
+    });
+    //await Future.delayed(Duration(milliseconds: 1000));
     _refreshController.refreshCompleted();
   }
 }

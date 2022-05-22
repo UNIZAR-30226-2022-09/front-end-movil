@@ -1,17 +1,21 @@
+import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:alejandria/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../services/auth_service.dart';
 
 class ChatMessage extends StatelessWidget {
 
 
   final String texto;
-  final String uid;
+  final String nick;
   final AnimationController animationController; 
 
   const ChatMessage({
     Key? key, 
     required this.texto, 
-    required this.uid,
+    required this.nick,
     required this.animationController
   }) : super(key: key);
 
@@ -22,7 +26,7 @@ class ChatMessage extends StatelessWidget {
       child: SizeTransition(
         sizeFactor: CurvedAnimation(parent: animationController, curve: Curves.easeOut),
         child: Container(
-          child: this.uid == '123'
+          child: this.nick == Preferences.userNick
           ? _myMessage()
           : _notMyMessage(),
           
@@ -41,9 +45,11 @@ class ChatMessage extends StatelessWidget {
           right: 5,
           left: 50
         ),
-        child: Text(this.texto, style: TextStyle(color: Colors.white),),
+        child: Text(this.texto, style: TextStyle(color: Preferences.isDarkMode
+            ? AppTheme.dark
+            : Colors.black87)),
         decoration: BoxDecoration(
-          color: AppTheme.primary,
+          color: Preferences.isDarkMode ? Colors.white : Color(0xffe4e5e8),
           borderRadius: BorderRadius.circular(20)
         ),
       )
@@ -60,9 +66,9 @@ class ChatMessage extends StatelessWidget {
           right: 50,
           left: 5
         ),
-        child: Text(this.texto, style: TextStyle(color: Colors.black87),),
+        child: Text(this.texto, style: TextStyle(color: Colors.white),),
         decoration: BoxDecoration(
-          color: Color(0xffe4e5e8),
+          color: AppTheme.primary,
           borderRadius: BorderRadius.circular(20)
         ),
       )

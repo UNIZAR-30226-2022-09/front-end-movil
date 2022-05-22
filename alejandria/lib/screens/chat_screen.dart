@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:alejandria/services/chat_service.dart';
 import 'package:alejandria/widgets/widgets.dart';
@@ -102,19 +103,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
                   isDense: true,
                 ),
                 focusNode: _focusNode,
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
               )
             ),
 
             Container(
               margin: EdgeInsets.symmetric(horizontal: 4.0),
-              child: Platform.isIOS 
-              ? CupertinoButton(
-                child: Text('Enviar', style: TextStyle(color: AppTheme.primary)),
-                onPressed: _estaEscribiendo
-                      ? () => _handleSubmit(_textController.text.trim())
-                      : null,
-              )
-              : Container(
+              child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 4.0),
                 child: IconTheme(
                   data: IconThemeData(color: AppTheme.primary),
@@ -144,7 +140,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
 
     final newMessage = new ChatMessage(
       texto: texto, 
-      uid: '123',
+      nick: Preferences.userNick,
       animationController: AnimationController(vsync: this, duration: Duration(milliseconds: 200)),
     );
     _messages.insert(0, newMessage);
@@ -155,9 +151,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
     });
 
     /*
-    this.socketService.emit('mensaje-personal', {
-      'de': this.authService.usuario.uid,
-      'para': this.chatService.usuarioPara.uid,
+    this.socketService.emit('mensaje', {
+      'sala': ,
+      'de': Preferences.userNick,
+      'para': this.chatService.usuarioPara.nick,
       'mensaje': texto
     });*/
 
