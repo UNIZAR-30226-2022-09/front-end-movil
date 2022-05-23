@@ -7,6 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
+import '../models/mensaje_model.dart';
+import '../services/socket_service.dart';
 import '../themes/app_theme.dart';
 
 class ChatScreen extends StatefulWidget{
@@ -16,14 +18,59 @@ class ChatScreen extends StatefulWidget{
 }
 
 class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
-
+  late ChatService chatService;
+  late SocketService socketService;
 
   final _textController = new TextEditingController();
   final _focusNode = new FocusNode();
 
-  List<ChatMessage> _messages = [ ];
+  List<ChatMessage> _messages = [];
 
   bool _estaEscribiendo = false;
+
+  @override
+  void initState() {
+    super.initState();
+    this.chatService = Provider.of<ChatService>(context, listen: false);
+    this.socketService = Provider.of<SocketService>(context, listen: false);
+
+    print(this.chatService.usuarioPara.nick);
+
+    this.socketService.socket.on('response', _escucharMensaje );
+
+    _cargarHistorial( this.chatService.usuarioPara.nick );
+  }
+
+  void _cargarHistorial( String usuarioNick ) async {
+
+    List<Mensaje> chat = await this.chatService.getMensajes(Preferences.userNick, usuarioNick);
+
+    final history = chat.map((m) => new ChatMessage(
+      texto: m.message,
+      nick: m.nick,
+      animationController: new AnimationController(vsync: this, duration: Duration( milliseconds: 0))..forward(),
+    ));
+
+    setState(() {
+      _messages.insertAll(0, history);
+    });
+
+  }
+
+  void _escucharMensaje(dynamic payload){
+    print('mensaje recibido');
+    ChatMessage mensaje = new ChatMessage(
+      texto: payload['message'],
+      nick: payload['nick'],
+      animationController: AnimationController( vsync: this, duration: Duration(milliseconds: 300 )),
+    );
+
+    setState(() {
+      _messages.insert(0, mensaje);
+    });
+
+    mensaje.animationController.forward();
+  }
 
   @override
   Widget build(BuildContext context){
@@ -150,13 +197,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
       _estaEscribiendo = false;
     });
 
-    /*
-    this.socketService.emit('mensaje', {
-      'sala': ,
-      'de': Preferences.userNick,
-      'para': this.chatService.usuarioPara.nick,
-      'mensaje': texto
-    });*/
+    this.socketService.emit('message', {
+      'user': Preferences.userNick,
+      'createdAt': '23/05/2022',
+      'message': texto,
+      'sala' : chatService.sala,
+    });
 
   }
 

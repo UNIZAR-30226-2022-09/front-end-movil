@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+
 
 enum ServerStatus {
   Online,
   Offline,
   Connecting
 }
-
 
 class SocketService with ChangeNotifier {
   
@@ -19,16 +20,20 @@ class SocketService with ChangeNotifier {
   Function get emit => this._socket.emit;
 
   void connect() async {
-
-    //final token = await AuthService.readToken();
-    
+    final storage = new FlutterSecureStorage();
     
     // Dart client
-    this._socket = IO.io("http://51.255.50.207:5001/register");
+    _socket = IO.io("http://51.255.50.207:5000",{
+      'transports': ['websocket'],
+      'withCredentials': true,
+      'autoConnect': true,
+      'forceNew': true,
+      'extraHeaders': {
+        'x-token': await storage.read(key: 'token') ?? '',
+        "my-custom-header": "abcd"
+      }
+    });
 
-    //this.emit('register');
-
-  /*
     this._socket.on('connect', (_) {
       this._serverStatus = ServerStatus.Online;
       notifyListeners();
@@ -37,13 +42,16 @@ class SocketService with ChangeNotifier {
     this._socket.on('disconnect', (_) {
       this._serverStatus = ServerStatus.Offline;
       notifyListeners();
-    });*/
+    });
+
+
 
   }
 
 
   void disconnect() {
-    this._socket.disconnect();
+   this._socket.disconnect();
+   // channel.sink.close();
   }
 
 }

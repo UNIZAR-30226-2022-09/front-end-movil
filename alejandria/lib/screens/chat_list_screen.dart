@@ -72,7 +72,7 @@ class _ChatListScreen extends State<ChatListScreen>{
     return ListTile(
         title: Text(usuario.nick),
         leading: CircleAvatar(
-          backgroundColor: AppTheme.primary,
+          backgroundColor: Colors.transparent,
           child:  usuario.fotoDePerfil == null
                   ? Icon(
                       Icons.person,
@@ -88,10 +88,11 @@ class _ChatListScreen extends State<ChatListScreen>{
                     ),
         ),
         onTap: (){
-          /*
+
           final chatService = Provider.of<ChatService>(context, listen: false);
           chatService.usuarioPara = usuario;
-          Navigator.pushNamed(context, 'chat');*/
+          chatService.sala = '83507';
+          Navigator.pushNamed(context, 'chat');
         },
       );
   }
@@ -102,7 +103,6 @@ class _ChatListScreen extends State<ChatListScreen>{
     final chatService = new ChatService();
 
     var lista = await chatService.getListaChats(Preferences.userNick);
-    print(lista);
 
     for(var user in lista){
       UserModel usuario = await userService.loadOtherUser(user);
@@ -112,7 +112,6 @@ class _ChatListScreen extends State<ChatListScreen>{
     setState(() {
 
     });
-    //await Future.delayed(Duration(milliseconds: 1000));
     _refreshController.refreshCompleted();
   }
 }
