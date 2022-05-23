@@ -34,16 +34,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
     this.chatService = Provider.of<ChatService>(context, listen: false);
     this.socketService = Provider.of<SocketService>(context, listen: false);
 
-    print(this.chatService.usuarioPara.nick);
-
-    this.socketService.socket.on('response', _escucharMensaje );
+    this.socketService.socket.on('message', _escucharMensaje );
 
     _cargarHistorial( this.chatService.usuarioPara.nick );
   }
 
   void _cargarHistorial( String usuarioNick ) async {
 
-    List<Mensaje> chat = await this.chatService.getMensajes(Preferences.userNick, usuarioNick);
+    List<Mensaje> chat = await this.chatService.getMensajes(this.chatService.sala);
 
     final history = chat.map((m) => new ChatMessage(
       texto: m.message,
@@ -53,6 +51,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
 
     setState(() {
       _messages.insertAll(0, history);
+    });
+
+    this.socketService.socket.emit('join', {
+      'room' : this.chatService.sala,
     });
 
   }
@@ -76,9 +78,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
   Widget build(BuildContext context){
     final chatService = Provider.of<ChatService>(context);
     final usuarioPara = chatService.usuarioPara;
-
+    final sala = chatService.sala;
     return Scaffold(
        appBar: AppBar(
+         leading: BackButton(onPressed: _onBackPressed),
         title: Column (
           children: <Widget>[
             CircleAvatar(
@@ -181,7 +184,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
   _handleSubmit(String texto){
     if(texto.length == 0) return;
 
-    print(texto);
     _textController.clear();
     _focusNode.requestFocus();
 
@@ -199,7 +201,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
 
     this.socketService.emit('message', {
       'user': Preferences.userNick,
-      'createdAt': '23/05/2022',
       'message': texto,
       'sala' : chatService.sala,
     });
@@ -215,5 +216,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
     }
     
     super.dispose();
+  }
+
+  void _onBackPressed() {
+    this.socketService.socket.emit('leave',{
+      'room' : this.chatService.sala,
+    });
+    Navigator.maybePop(context);
   }
 }

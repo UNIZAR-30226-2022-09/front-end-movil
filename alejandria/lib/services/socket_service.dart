@@ -51,7 +51,6 @@ class SocketService with ChangeNotifier {
 
   void disconnect() {
    this._socket.disconnect();
-   // channel.sink.close();
   }
 
 }

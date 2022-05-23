@@ -14,11 +14,11 @@ class ChatService with ChangeNotifier {
   final storage = new FlutterSecureStorage();
 
   late UserModel usuarioPara;
-
   late String sala;
-
+  List<String> listaChats = [];
 
   Future <List<String>> getListaChats (String usuario) async{
+    listaChats = [];
     final url = Uri.http(_baseUrl, '/chat');
 
     final resp = await http.get(url, headers: <String, String>{
@@ -27,35 +27,17 @@ class ChatService with ChangeNotifier {
     'current_user': usuario
      });
 
-    List<String> lista = (jsonDecode(resp.body).cast<String>());
-    return lista;
+    listaChats = (jsonDecode(resp.body).cast<String>());
+    return listaChats;
   }
 
 
-  Future <List<Mensaje>> getMensajes (String yo, String otro) async{
-    final url = Uri.http(_baseUrl, '/private/'+ otro);
-    print(otro);
+  Future <List<Mensaje>> getMensajes (String room) async{
+    final url = Uri.http(_baseUrl, '/private/'+ room);
     final resp = await http.get(url, headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'token': await storage.read(key: 'token') ?? '',
-      'userOrigin': yo
     });
-
-  /*
-    final channel = IOWebSocketChannel.connect(
-      Uri.parse('ws://51.255.50.207:5000/private/alvaro'),
-    );
-
-    channel.sink.add('Hola');
-
-    channel.stream.listen((message) {
-      channel.sink.add('received!');
-      print(message);
-      //channel.sink.close(status.goingAway);
-    });
-
-    channel.sink.close();*/
-
 
    List<Mensaje> lista = [];
     var jsonresponse = json.decode(resp.body);
@@ -65,6 +47,26 @@ class ChatService with ChangeNotifier {
 
     return lista;
   }
+
+  Future<String> entrarChat (String yo, String otro) async{
+    final url = Uri.http(_baseUrl, '/new_chat');
+
+    final resp = await http.get(url, headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'token': await storage.read(key: 'token') ?? '',
+      'userOrigin': yo,
+      'userDest': otro,
+
+    });
+
+    print(resp.body);
+
+    return  json.decode(resp.body).toString();
+  }
+
+
+
+
 
 }
 

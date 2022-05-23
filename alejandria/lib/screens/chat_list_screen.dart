@@ -69,6 +69,8 @@ class _ChatListScreen extends State<ChatListScreen>{
   }
 
   ListTile _chatListTitle(UserModel usuario) {
+    final chatService = Provider.of<ChatService>(context, listen: false);
+
     return ListTile(
         title: Text(usuario.nick),
         leading: CircleAvatar(
@@ -87,11 +89,9 @@ class _ChatListScreen extends State<ChatListScreen>{
                           image:  NetworkImage(usuario.fotoDePerfil!)),
                     ),
         ),
-        onTap: (){
-
-          final chatService = Provider.of<ChatService>(context, listen: false);
+        onTap: () async {
           chatService.usuarioPara = usuario;
-          chatService.sala = '83507';
+          chatService.sala = await chatService.entrarChat(Preferences.userNick, usuario.nick);
           Navigator.pushNamed(context, 'chat');
         },
       );

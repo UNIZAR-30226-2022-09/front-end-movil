@@ -255,9 +255,10 @@ class _UpperContentState extends State<_UpperContent> {
                   width: 100,
                   child: Text('Mensaje'),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   final chatService = Provider.of<ChatService>(context, listen: false);
                   chatService.usuarioPara = widget.thisUser;
+                  chatService.sala = await chatService.entrarChat(Preferences.userNick, widget.thisUser.nick);
                   Navigator.pushNamed(context, 'chat');
                 }),
           ],
