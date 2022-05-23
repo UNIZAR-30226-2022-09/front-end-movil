@@ -12,3 +12,4 @@ export 'package:alejandria/widgets/recommendation_post.dart';
 export 'package:alejandria/widgets/post_header.dart';
 export 'package:alejandria/widgets/post_bottom.dart';
 export 'package:alejandria/widgets/chat_message.dart';
+export 'package:alejandria/widgets/no_info.dart';

@@ -31,7 +31,6 @@ class ChatService with ChangeNotifier {
     return listaChats;
   }
 
-
   Future <List<Mensaje>> getMensajes (String room) async{
     final url = Uri.http(_baseUrl, '/private/'+ room);
     final resp = await http.get(url, headers: <String, String>{
@@ -58,15 +57,7 @@ class ChatService with ChangeNotifier {
       'userDest': otro,
 
     });
-
-    print(resp.body);
-
     return  json.decode(resp.body).toString();
   }
-
-
-
-
-
 }
 

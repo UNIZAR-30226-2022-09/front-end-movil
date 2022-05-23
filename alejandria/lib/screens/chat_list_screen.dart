@@ -1,15 +1,13 @@
-import 'dart:convert';
-
-import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import 'package:alejandria/share_preferences/preferences.dart';
 import '../models/user_model.dart';
 import '../services/services.dart';
 import '../themes/app_theme.dart';
-import 'package:http/http.dart' as http;
+import 'package:alejandria/widgets/widgets.dart';
 
 
 class ChatListScreen extends StatefulWidget {
@@ -18,16 +16,9 @@ class ChatListScreen extends StatefulWidget {
 }
 
 class _ChatListScreen extends State<ChatListScreen>{
-
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   List<UserModel> usuarios = [];
-
-  /*final usuarios = [
-    UserModel(nick: 'pedro', nposts: 0, nseguidores: 0, nsiguiendo: 0, tematicas: []),
-    UserModel(nick: 'juan', nposts: 0, nseguidores: 0, nsiguiendo: 0, tematicas: []),
-    UserModel(nick: 'luis', nposts: 0, nseguidores: 0, nsiguiendo: 0, tematicas: []),
-  ];*/
 
   @override
   void initState() {
@@ -54,8 +45,14 @@ class _ChatListScreen extends State<ChatListScreen>{
         header: WaterDropHeader(
           waterDropColor: AppTheme.primary,
         ),
-        child: _listViewChats(),
-      )
+        child: usuarios.length != 0
+              ? _listViewChats()
+              : Center(
+                    child: NoPosts(
+                        'Habla con usuarios para ver los chats',
+                        FontAwesomeIcons.solidMessage),
+                )
+      ),
     );
   }
 
@@ -114,4 +111,5 @@ class _ChatListScreen extends State<ChatListScreen>{
     });
     _refreshController.refreshCompleted();
   }
+
 }

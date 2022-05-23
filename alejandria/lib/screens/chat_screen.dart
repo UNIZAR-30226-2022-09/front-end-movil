@@ -34,7 +34,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
     this.chatService = Provider.of<ChatService>(context, listen: false);
     this.socketService = Provider.of<SocketService>(context, listen: false);
 
+    this.socketService.socket.emit('join', {
+      'room' : this.chatService.sala,
+    });
+
     this.socketService.socket.on('message', _escucharMensaje );
+    //this.socketService.socket.on('message', (data) => print(data));
+    this.socketService.socket.on('join', (data) => print(data));
+    this.socketService.socket.on('leave', (data) => print(data));
 
     _cargarHistorial( this.chatService.usuarioPara.nick );
   }
@@ -53,17 +60,13 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
       _messages.insertAll(0, history);
     });
 
-    this.socketService.socket.emit('join', {
-      'room' : this.chatService.sala,
-    });
-
   }
 
   void _escucharMensaje(dynamic payload){
     print('mensaje recibido');
     ChatMessage mensaje = new ChatMessage(
-      texto: payload['message'],
-      nick: payload['nick'],
+      texto: payload[0],
+      nick: payload[1],
       animationController: AnimationController( vsync: this, duration: Duration(milliseconds: 300 )),
     );
 
@@ -148,13 +151,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
                   });
                 },
                 decoration: InputDecoration(
-                    hintText: 'Enviar mensaje',
-                    contentPadding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
+                  hintText: 'Enviar mensaje',
+                  contentPadding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
                   isDense: true,
+                  counterText: '',
                 ),
                 focusNode: _focusNode,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
+                maxLength: 500,
               )
             ),
 
@@ -209,7 +214,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
 
   @override
   void dispose() {
-    //TODO: off del socket
+    this.socketService.socket.off('message');
 
     for(ChatMessage message in _messages){
       message.animationController.dispose();
@@ -220,8 +225,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
 
   void _onBackPressed() {
     this.socketService.socket.emit('leave',{
-      'room' : this.chatService.sala,
+      'room' : chatService.sala,
     });
+
     Navigator.maybePop(context);
   }
 }
