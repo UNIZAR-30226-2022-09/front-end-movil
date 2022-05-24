@@ -44,18 +44,28 @@ class NotificationsScreen extends StatelessWidget {
                       ]),
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        child: Icon(
-                          Icons.person,
-                          color: Colors.grey,
+                      GestureDetector(
+                        onTap: (){
+                          print('CLick en foto');
+                        },
+                        child: CircleAvatar(
+                          child: Icon(
+                            Icons.person,
+                            color: Colors.grey,
+                          ),
+                          backgroundColor: Colors.grey[300],
                         ),
-                        backgroundColor: Colors.grey[300],
                       ),
                       SizedBox(
                         width: 10,
                       ),
-                      _Message(
-                        message: message,
+                      GestureDetector(
+                        onTap: (){
+                          print('Click en texto');
+                        },
+                        child: _Message(
+                          message: message,
+                        ),
                       )
                     ],
                   ));

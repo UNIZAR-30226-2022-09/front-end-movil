@@ -21,8 +21,7 @@ class SocketService with ChangeNotifier {
 
   void connect() async {
     final storage = new FlutterSecureStorage();
-    
-    // Dart client
+
     _socket = IO.io("http://51.255.50.207:5000",{
       'transports': ['websocket'],
       'withCredentials': true,
@@ -43,9 +42,6 @@ class SocketService with ChangeNotifier {
       this._serverStatus = ServerStatus.Offline;
       notifyListeners();
     });
-
-
-
   }
 
 

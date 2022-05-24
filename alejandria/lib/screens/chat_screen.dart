@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:alejandria/services/chat_service.dart';
@@ -38,10 +37,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
       'room' : this.chatService.sala,
     });
 
-    this.socketService.socket.on('message', _escucharMensaje );
-    //this.socketService.socket.on('message', (data) => print(data));
-    this.socketService.socket.on('join', (data) => print(data));
-    this.socketService.socket.on('leave', (data) => print(data));
+    //this.socketService.socket.on('message', _escucharMensaje );
+    this.socketService.socket.on('message', (data) => print(data));
+    //this.socketService.socket.on('join', (data) => print(data));
+    //this.socketService.socket.on('leave', (data) => print(data));
 
     _cargarHistorial( this.chatService.usuarioPara.nick );
   }
@@ -62,8 +61,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
 
   }
 
-  void _escucharMensaje(dynamic payload){
+  void _escucharMensaje(payload){
     print('mensaje recibido');
+    print('Mensaje: ' + payload);
+    print('Texto: ' + payload[0]);
+    print('Nick: ' + payload[1]);
     ChatMessage mensaje = new ChatMessage(
       texto: payload[0],
       nick: payload[1],
@@ -75,13 +77,13 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
     });
 
     mensaje.animationController.forward();
+
   }
 
   @override
   Widget build(BuildContext context){
     final chatService = Provider.of<ChatService>(context);
     final usuarioPara = chatService.usuarioPara;
-    final sala = chatService.sala;
     return Scaffold(
        appBar: AppBar(
          leading: BackButton(onPressed: _onBackPressed),

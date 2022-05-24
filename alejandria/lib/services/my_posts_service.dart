@@ -246,6 +246,9 @@ class MyPostsService extends ChangeNotifier {
   }
 
   Future<void> loadMoreHome() async {
+    if(finHome){
+      return;
+    }
     final url = Uri.http(_baseUrl, '/HomePaginado');
     final resp = await http.get(
       url,

@@ -1,6 +1,4 @@
 
-import 'dart:convert';
-
 class Mensaje {
   Mensaje({
     required this.nick,
