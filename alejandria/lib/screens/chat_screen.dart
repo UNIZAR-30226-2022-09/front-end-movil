@@ -37,10 +37,25 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
       'room' : this.chatService.sala,
     });
 
-    //this.socketService.socket.on('message', _escucharMensaje );
-    this.socketService.socket.on('message', (data) => print(data));
-    //this.socketService.socket.on('join', (data) => print(data));
-    //this.socketService.socket.on('leave', (data) => print(data));
+    //this.socketService.socket.on('chat', _escucharMensaje );
+    //this.socketService.socket.on('message', (data) => print(data));
+
+    this.socketService.socket.on('message', (data){
+        print(data);
+        if(data[1] == chatService.usuarioPara.nick){
+          ChatMessage mensaje = new ChatMessage(
+          texto: data[0],
+          nick: data[1],
+          animationController: AnimationController( vsync: this, duration: Duration(milliseconds: 300 )),
+          );
+
+          setState(() {
+            _messages.insert(0, mensaje);
+          });
+
+          mensaje.animationController.forward();
+      }
+    });
 
     _cargarHistorial( this.chatService.usuarioPara.nick );
   }
@@ -62,22 +77,20 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
   }
 
   void _escucharMensaje(payload){
-    print('mensaje recibido');
-    print('Mensaje: ' + payload);
-    print('Texto: ' + payload[0]);
-    print('Nick: ' + payload[1]);
-    ChatMessage mensaje = new ChatMessage(
-      texto: payload[0],
-      nick: payload[1],
-      animationController: AnimationController( vsync: this, duration: Duration(milliseconds: 300 )),
-    );
+    //print(payload);
+    if(payload[1] == chatService.usuarioPara.nick){
+      ChatMessage mensaje = new ChatMessage(
+        texto: payload[0],
+        nick: payload[1],
+        animationController: AnimationController( vsync: this, duration: Duration(milliseconds: 300 )),
+      );
 
-    setState(() {
-      _messages.insert(0, mensaje);
-    });
+      setState(() {
+        _messages.insert(0, mensaje);
+      });
 
-    mensaje.animationController.forward();
-
+      mensaje.animationController.forward();
+    }
   }
 
   @override
@@ -216,7 +229,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
 
   @override
   void dispose() {
-    this.socketService.socket.off('message');
+   // this.socketService.socket.off('message');
 
     for(ChatMessage message in _messages){
       message.animationController.dispose();

@@ -20,9 +20,11 @@ class _ChatListScreen extends State<ChatListScreen>{
 
   List<UserModel> usuarios = [];
 
+    Future? myFuture;
+
   @override
   void initState() {
-    this._cargarChats();
+    myFuture = _cargarChats();
     super.initState();
   }
 
@@ -38,20 +40,35 @@ class _ChatListScreen extends State<ChatListScreen>{
                 color: AppTheme.primary)
         ),            
       ),
-      body: SmartRefresher(
-        controller: _refreshController,
-        enablePullDown: true,
-        onRefresh: _cargarChats,
-        header: WaterDropHeader(
-          waterDropColor: AppTheme.primary,
-        ),
-        child: usuarios.length != 0
+      body: FutureBuilder(
+        future: myFuture,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(
+                color: AppTheme.primary,
+              )
+            );
+          } else if (snapshot.connectionState == ConnectionState.done) {
+            return SmartRefresher(
+              controller: _refreshController,
+            enablePullDown: true,
+            onRefresh: _cargarChats,
+            header: WaterDropHeader(
+              waterDropColor: AppTheme.primary,
+            ),
+            child: usuarios.length != 0
               ? _listViewChats()
               : Center(
-                    child: NoPosts(
-                        'Habla con usuarios para ver los chats',
-                        FontAwesomeIcons.solidMessage),
+                  child: NoPosts(
+                    'Habla con usuarios para ver los chats',
+                    FontAwesomeIcons.solidMessage),
                 )
+              );
+          }
+          return Container();
+
+        },
       ),
     );
   }
