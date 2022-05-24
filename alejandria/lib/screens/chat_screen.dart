@@ -40,22 +40,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
     //this.socketService.socket.on('chat', _escucharMensaje );
     //this.socketService.socket.on('message', (data) => print(data));
 
-    this.socketService.socket.on('message', (data){
-        print(data);
-        if(data[1] == chatService.usuarioPara.nick){
-          ChatMessage mensaje = new ChatMessage(
-          texto: data[0],
-          nick: data[1],
-          animationController: AnimationController( vsync: this, duration: Duration(milliseconds: 300 )),
-          );
-
-          setState(() {
-            _messages.insert(0, mensaje);
-          });
-
-          mensaje.animationController.forward();
-      }
-    });
+    socketService.socket.on('message', _escucharMensaje);
 
     _cargarHistorial( this.chatService.usuarioPara.nick );
   }
@@ -77,7 +62,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
   }
 
   void _escucharMensaje(payload){
-    //print(payload);
+    print('Mensaje recibido por ' + Preferences.userNick + ': ' + payload.toString());
     if(payload[1] == chatService.usuarioPara.nick){
       ChatMessage mensaje = new ChatMessage(
         texto: payload[0],
@@ -229,7 +214,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
 
   @override
   void dispose() {
-   // this.socketService.socket.off('message');
+   this.socketService.socket.off('message');
 
     for(ChatMessage message in _messages){
       message.animationController.dispose();
