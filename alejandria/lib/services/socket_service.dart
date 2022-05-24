@@ -20,6 +20,11 @@ class SocketService with ChangeNotifier {
         'x-token': await storage.read(key: 'token') ?? '',
       }
     });
+
+    socket.on('connect', (data) {
+      print(data);
+    });
+
   }
 
 

@@ -6,3 +6,4 @@ export 'package:alejandria/services/my_posts_service.dart';
 export 'package:alejandria/services/comentarios_service.dart';
 export 'package:alejandria/services/socket_service.dart';
 export 'package:alejandria/services/chat_service.dart';
+export 'package:alejandria/services/notificaciones_service.dart';

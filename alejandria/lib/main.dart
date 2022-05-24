@@ -24,6 +24,7 @@ void main() async {
     ChangeNotifierProvider(create: (_) => TematicasProvider()),
     ChangeNotifierProvider(create: ( _ ) => SocketService()),
     ChangeNotifierProvider(create: ( _ ) => ChatService()),
+    ChangeNotifierProvider(create: ( _ ) => NotificacionesService()),
   ], child: MyApp()));
 }
 
