@@ -207,40 +207,65 @@ class _UpperContentState extends State<_UpperContent> {
             )),
       Padding(
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        child: OutlinedButton(
-            style: OutlinedButton.styleFrom(
-                primary: widget.thisUser.siguiendo!
-                    ? Colors.white
-                    : AppTheme.primary,
-                backgroundColor:
-                    widget.thisUser.siguiendo! ? AppTheme.primary : null,
-                side: BorderSide(color: AppTheme.primary)),
-            child: Container(
-              alignment: Alignment.center,
-              width: double.infinity,
-              child: Text(widget.thisUser.siguiendo! ? 'Siguiendo' : 'Seguir'),
-            ),
-            onPressed: () async {
-              final storage = new FlutterSecureStorage();
-              final String _baseUrl = '51.255.50.207:5000';
-              final url = Uri.http(_baseUrl, '/seguirUser');
-              await http.post(url,
-                  headers: <String, String>{
-                    'Content-Type': 'application/json; charset=UTF-8',
-                    'token': await storage.read(key: 'token') ?? '',
-                  },
-                  body: json.encode(<String, dynamic>{
-                    'nick': widget.thisUser.nick,
-                  }));
-              widget.thisUser.siguiendo = !widget.thisUser.siguiendo!;
-              widget.thisUser.nseguidores = widget.thisUser.siguiendo!
-                  ? widget.thisUser.nseguidores + 1
-                  : widget.thisUser.nseguidores - 1;
-              final postsService =
-                  Provider.of<MyPostsService>(context, listen: false);
-              postsService.loadHome();
-              setState(() {});
-            }),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                    primary: widget.thisUser.siguiendo!
+                        ? Colors.white
+                        : AppTheme.primary,
+                    backgroundColor:
+                        widget.thisUser.siguiendo! ? AppTheme.primary : null,
+                    side: BorderSide(color: AppTheme.primary)),
+                child: Container(
+                  alignment: Alignment.center,
+                  width: MediaQuery.of(context).size.width * 0.62,
+                  child:
+                      Text(widget.thisUser.siguiendo! ? 'Siguiendo' : 'Seguir'),
+                ),
+                onPressed: () async {
+                  final storage = new FlutterSecureStorage();
+                  final String _baseUrl = '51.255.50.207:5000';
+                  final url = Uri.http(_baseUrl, '/seguirUser');
+                  await http.post(url,
+                      headers: <String, String>{
+                        'Content-Type': 'application/json; charset=UTF-8',
+                        'token': await storage.read(key: 'token') ?? '',
+                      },
+                      body: json.encode(<String, dynamic>{
+                        'nick': widget.thisUser.nick,
+                      }));
+                  widget.thisUser.siguiendo = !widget.thisUser.siguiendo!;
+                  widget.thisUser.nseguidores = widget.thisUser.siguiendo!
+                      ? widget.thisUser.nseguidores + 1
+                      : widget.thisUser.nseguidores - 1;
+                  final postsService =
+                      Provider.of<MyPostsService>(context, listen: false);
+                  postsService.loadHome();
+                  setState(() {});
+                }),
+            SizedBox(width: 5),
+            OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                    primary: AppTheme.primary,
+                    backgroundColor: null,
+                    side: BorderSide(color: AppTheme.primary)),
+                child: Container(
+                    alignment: Alignment.center,
+                    width: MediaQuery.of(context).size.width * 0.10,
+                    child: Icon(Icons.chat_bubble_outline_rounded,
+                        color: AppTheme.primary)),
+                onPressed: () async {
+                  final chatService =
+                      Provider.of<ChatService>(context, listen: false);
+                  chatService.usuarioPara = widget.thisUser;
+                  chatService.sala = await chatService.entrarChat(
+                      Preferences.userNick, widget.thisUser.nick);
+                  Navigator.pushNamed(context, 'chat');
+                }),
+          ],
+        ),
       )
     ]);
   }

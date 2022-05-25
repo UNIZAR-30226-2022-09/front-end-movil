@@ -104,6 +104,7 @@ class _MyDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final socketService = Provider.of<SocketService>( context );
     return Drawer(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
@@ -142,6 +143,7 @@ class _MyDrawer extends StatelessWidget {
                 final authService =
                     Provider.of<AuthService>(context, listen: false);
                 authService.logOut();
+                socketService.disconnect();
                 Navigator.pushReplacementNamed(context, 'login');
               },
               child: Container(
