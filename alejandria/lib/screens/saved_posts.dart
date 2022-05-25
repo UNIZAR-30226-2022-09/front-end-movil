@@ -28,8 +28,6 @@ class _SavedPostsScreenState extends State<SavedPostsScreen>
     final ssService = Provider.of<MyPostsService>(context, listen: false);
     await ssService.loadSavedArticles();
     await ssService.loadSavedRecs();
-    final m = Provider.of<NotificacionesService>(context, listen: false);
-    m.loadNotificaciones();
   }
 
   Future<void> _fetchMore(bool isArticle) async {
