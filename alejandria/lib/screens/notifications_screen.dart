@@ -205,7 +205,7 @@ class _Message extends StatelessWidget {
         message = ' le ha dado me gusta a tu publicación.';
         break;
       case 2:
-        message = 'ha comentado en tu publicación.';
+        message = ' ha comentado en tu publicación.';
         break;
       case 3:
         message = ' ha comenzado a seguirte.';

@@ -61,7 +61,6 @@ class NotificacionesService extends ChangeNotifier {
     );
     if (resp.statusCode > 400) return loadNotificaciones();
     final Map<String, dynamic> notMap = json.decode(resp.body);
-    print(json.decode(resp.body));
     if (notMap.containsKey('fin')) {
       notifyListeners();
       return;
