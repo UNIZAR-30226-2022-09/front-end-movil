@@ -12,7 +12,7 @@ class SocketService with ChangeNotifier {
   void connect() async{
     final storage = new FlutterSecureStorage();
 
-    _socket = IO.io("http://51.255.50.207:5000",{
+    _socket = IO.io("http://51.255.50.207:4000",{
       'transports': ['websocket'],
       'autoConnect': true,
       'forceNew': true,
@@ -21,12 +21,15 @@ class SocketService with ChangeNotifier {
       }
     });
 
-    socket.on('connect', (data) {
-      print(data);
+    socket.onConnect((_) {
+      print('Conectado al socket');
+    });
+
+    socket.onDisconnect((_) {
+      print('Desconectado del socket');
     });
 
   }
-
 
   void disconnect() {
    this._socket.disconnect();

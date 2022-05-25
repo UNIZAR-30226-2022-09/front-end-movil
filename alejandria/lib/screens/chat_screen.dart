@@ -2,7 +2,6 @@ import 'package:alejandria/share_preferences/preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:alejandria/services/chat_service.dart';
 import 'package:alejandria/widgets/widgets.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
@@ -37,9 +36,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
       'room' : this.chatService.sala,
     });
 
-    //this.socketService.socket.on('chat', _escucharMensaje );
-    //this.socketService.socket.on('message', (data) => print(data));
-
     socketService.socket.on('message', _escucharMensaje);
 
     _cargarHistorial( this.chatService.usuarioPara.nick );
@@ -61,8 +57,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin{
 
   }
 
-  void _escucharMensaje(payload){
-    print('Mensaje recibido por ' + Preferences.userNick + ': ' + payload.toString());
+  void _escucharMensaje(dynamic payload){
     if(payload[1] == chatService.usuarioPara.nick){
       ChatMessage mensaje = new ChatMessage(
         texto: payload[0],
