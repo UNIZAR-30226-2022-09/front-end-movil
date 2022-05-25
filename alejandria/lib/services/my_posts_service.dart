@@ -246,7 +246,7 @@ class MyPostsService extends ChangeNotifier {
   }
 
   Future<void> loadMoreHome() async {
-    if(finHome){
+    if (finHome) {
       return;
     }
     final url = Uri.http(_baseUrl, '/HomePaginado');
@@ -403,7 +403,10 @@ class MyPostsService extends ChangeNotifier {
 
     if (resp.statusCode > 400) return LoadNovedades(tematica, texto);
     final Map<String, dynamic> explorerMap = json.decode(resp.body);
-    if (explorerMap.containsKey('fin')) return;
+    if (explorerMap.containsKey('fin')) {
+      notifyListeners();
+      return;
+    }
     explorerMap.forEach((key, value) {
       final temp = PostListModel.fromMap(value);
       temp.id = key;
@@ -429,7 +432,10 @@ class MyPostsService extends ChangeNotifier {
 
     if (resp.statusCode > 400) return LoadPopulares(tematica, texto);
     final Map<String, dynamic> explorerMap = json.decode(resp.body);
-    if (explorerMap.containsKey('fin')) return;
+    if (explorerMap.containsKey('fin')) {
+      notifyListeners();
+      return;
+    }
     explorerMap.forEach((key, value) {
       final temp = PostListModel.fromMap(value);
       temp.id = key;
@@ -488,7 +494,10 @@ class MyPostsService extends ChangeNotifier {
     if (resp.statusCode > 400) return LoadNovedadesR(tematica, texto);
 
     final Map<String, dynamic> explorerMap = json.decode(resp.body);
-    if (explorerMap.containsKey('fin')) return;
+    if (explorerMap.containsKey('fin')) {
+      notifyListeners();
+      return;
+    }
     explorerMap.forEach((key, value) {
       final temp = PostListModel.fromMap(value);
       temp.id = key;
@@ -514,7 +523,10 @@ class MyPostsService extends ChangeNotifier {
 
     if (resp.statusCode > 400) return LoadPopularesR(tematica, texto);
     final Map<String, dynamic> explorerMap = json.decode(resp.body);
-    if (explorerMap.containsKey('fin')) return;
+    if (explorerMap.containsKey('fin')) {
+      notifyListeners();
+      return;
+    }
     explorerMap.forEach((key, value) {
       final temp = PostListModel.fromMap(value);
       temp.id = key;

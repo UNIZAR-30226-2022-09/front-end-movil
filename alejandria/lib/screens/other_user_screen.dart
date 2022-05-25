@@ -220,8 +220,9 @@ class _UpperContentState extends State<_UpperContent> {
                     side: BorderSide(color: AppTheme.primary)),
                 child: Container(
                   alignment: Alignment.center,
-                  width: 180,
-                  child: Text(widget.thisUser.siguiendo! ? 'Siguiendo' : 'Seguir'),
+                  width: MediaQuery.of(context).size.width * 0.62,
+                  child:
+                      Text(widget.thisUser.siguiendo! ? 'Siguiendo' : 'Seguir'),
                 ),
                 onPressed: () async {
                   final storage = new FlutterSecureStorage();
@@ -247,18 +248,20 @@ class _UpperContentState extends State<_UpperContent> {
             SizedBox(width: 5),
             OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                    primary:AppTheme.primary,
+                    primary: AppTheme.primary,
                     backgroundColor: null,
                     side: BorderSide(color: AppTheme.primary)),
                 child: Container(
-                  alignment: Alignment.center,
-                  width: 100,
-                  child: Text('Mensaje'),
-                ),
+                    alignment: Alignment.center,
+                    width: MediaQuery.of(context).size.width * 0.10,
+                    child: Icon(Icons.chat_bubble_outline_rounded,
+                        color: AppTheme.primary)),
                 onPressed: () async {
-                  final chatService = Provider.of<ChatService>(context, listen: false);
+                  final chatService =
+                      Provider.of<ChatService>(context, listen: false);
                   chatService.usuarioPara = widget.thisUser;
-                  chatService.sala = await chatService.entrarChat(Preferences.userNick, widget.thisUser.nick);
+                  chatService.sala = await chatService.entrarChat(
+                      Preferences.userNick, widget.thisUser.nick);
                   Navigator.pushNamed(context, 'chat');
                 }),
           ],

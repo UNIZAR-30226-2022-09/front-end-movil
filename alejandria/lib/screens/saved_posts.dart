@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '../services/notificaciones_service.dart';
+
 class SavedPostsScreen extends StatefulWidget {
   const SavedPostsScreen({Key? key}) : super(key: key);
 
@@ -26,6 +28,8 @@ class _SavedPostsScreenState extends State<SavedPostsScreen>
     final ssService = Provider.of<MyPostsService>(context, listen: false);
     await ssService.loadSavedArticles();
     await ssService.loadSavedRecs();
+    final m = Provider.of<NotificacionesService>(context, listen: false);
+    m.loadNotificaciones();
   }
 
   Future<void> _fetchMore(bool isArticle) async {
