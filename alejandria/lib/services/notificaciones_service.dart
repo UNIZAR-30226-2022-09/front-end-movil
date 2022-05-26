@@ -15,40 +15,9 @@ class NotificacionesService extends ChangeNotifier {
   int offsetNotificaciones = 1;
   bool finNotificaciones = false;
 
-  // Future<List<NotificacionesModel>> loadNotificaciones() async {
-  //   misNotificaciones = [];
-  //   final url = Uri.http(_baseUrl, '/notificaciones');
-  //   final resp = await http.get(
-  //     url,
-  //     headers: <String, String>{
-  //       'Content-Type': 'application/json; charset=UTF-8',
-  //       'token': await storage.read(key: 'token') ?? '',
-  //       'offset': 0.toString(),
-  //       'limit': 10.toString()
-  //     },
-  //   );
-
-  //   if (resp.statusCode > 400) return loadNotificaciones();
-  //   final Map<String, dynamic> notificacionesMap = json.decode(resp.body);
-  //   print('aqui');
-
-  //   if (!notificacionesMap.containsKey('fin')) {
-  //     notificacionesMap.forEach((key, value) {
-  //       final notificacionTemp = NotificacionesModel.fromMap(value);
-  //       misNotificaciones.add(notificacionTemp);
-  //     });
-  //     finNotificaciones = false;
-  //     offsetNotificaciones = 1;
-  //   }
-  //   print('ahi');
-
-  //   print(misNotificaciones.length);
-
-  //   return misNotificaciones;
-  // }
-
   Future<void> loadNotificaciones() async {
     misNotificaciones = [];
+    offsetNotificaciones = 1;
     final url = Uri.http(_baseUrl, '/notificaciones');
     final resp = await http.get(
       url,
@@ -70,7 +39,6 @@ class NotificacionesService extends ChangeNotifier {
       misNotificaciones.add(Notificaciones.fromMap(value));
     });
     finNotificaciones = false;
-    offsetNotificaciones = 1;
     notifyListeners();
   }
 

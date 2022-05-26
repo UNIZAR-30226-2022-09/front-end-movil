@@ -73,117 +73,110 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                   color: AppTheme.primary,
                 ));
               } else if (snapshot.connectionState == ConnectionState.done) {
-                return SingleChildScrollView(
-                  controller: _scrollController,
-                  child: notificacionesService.misNotificaciones.length == 0
-                      ? Center(
-                          child: NoPosts('No tienes notificaciones',
-                              FontAwesomeIcons.bellSlash),
-                        )
-                      : ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemCount:
-                              notificacionesService.misNotificaciones.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                                margin:
-                                    EdgeInsets.only(top: 8, left: 8, right: 8),
-                                padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: AppTheme.primary),
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: Preferences.isDarkMode
-                                        ? Colors.black54
-                                        : Colors.white,
-                                    boxShadow: [
-                                      BoxShadow(
-                                          color:
-                                              AppTheme.primary.withOpacity(0.1),
-                                          offset: Offset(0, 5),
-                                          blurRadius: 7)
-                                    ]),
-                                child: Row(
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
+                return notificacionesService.misNotificaciones.length == 0
+                    ? Center(
+                        child: NoPosts('No tienes notificaciones',
+                            FontAwesomeIcons.bellSlash),
+                      )
+                    : ListView.builder(
+                        controller: _scrollController,
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount:
+                            notificacionesService.misNotificaciones.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(
+                              margin:
+                                  EdgeInsets.only(top: 8, left: 8, right: 8),
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: AppTheme.primary),
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Preferences.isDarkMode
+                                      ? Colors.black54
+                                      : Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color:
+                                            AppTheme.primary.withOpacity(0.1),
+                                        offset: Offset(0, 5),
+                                        blurRadius: 7)
+                                  ]),
+                              child: Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.pushNamed(context, 'otherUser',
+                                          arguments: {
+                                            'nick': notificacionesService
+                                                .misNotificaciones[index]
+                                                .nickEmisor
+                                          });
+                                    },
+                                    child: CircleAvatar(
+                                        child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                            child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(50),
+                                                child: Container(
+                                                    width: 50,
+                                                    height: 50,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(50)),
+                                                    child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(50),
+                                                        child: FadeInImage(
+                                                          fit: BoxFit.cover,
+                                                          placeholder: AssetImage(
+                                                              'assets/icon.png'),
+                                                          image: NetworkImage(
+                                                              notificacionesService
+                                                                  .misNotificaciones[
+                                                                      index]
+                                                                  .fotoDePerfil),
+                                                        )))))),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      if (notificacionesService
+                                              .misNotificaciones[index].tipo ==
+                                          3) {
                                         Navigator.pushNamed(
                                             context, 'otherUser', arguments: {
                                           'nick': notificacionesService
                                               .misNotificaciones[index]
                                               .nickEmisor
                                         });
-                                      },
-                                      child: CircleAvatar(
-                                          child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(50),
-                                              child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(50),
-                                                  child: Container(
-                                                      width: 50,
-                                                      height: 50,
-                                                      decoration: BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      50)),
-                                                      child: ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(50),
-                                                          child: FadeInImage(
-                                                            fit: BoxFit.cover,
-                                                            placeholder: AssetImage(
-                                                                'assets/icon.png'),
-                                                            image: NetworkImage(
-                                                                notificacionesService
-                                                                    .misNotificaciones[
-                                                                        index]
-                                                                    .fotoDePerfil),
-                                                          )))))),
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        print(notificacionesService
-                                            .misNotificaciones[index].tipo);
-                                        if (notificacionesService
+                                      } else {
+                                        final postService =
+                                            Provider.of<MyPostsService>(context,
+                                                listen: false);
+                                        await postService.getInfoPost(
+                                            notificacionesService
                                                 .misNotificaciones[index]
-                                                .tipo ==
-                                            3) {
-                                          Navigator.pushNamed(
-                                              context, 'otherUser', arguments: {
-                                            'nick': notificacionesService
-                                                .misNotificaciones[index]
-                                                .nickEmisor
-                                          });
-                                        } else {
-                                          final postService =
-                                              Provider.of<MyPostsService>(
-                                                  context,
-                                                  listen: false);
-                                          await postService.getInfoPost(
-                                              notificacionesService
-                                                  .misNotificaciones[index]
-                                                  .idPubli!);
-                                          Navigator.pushNamed(
-                                              context, 'onePost', arguments: {
-                                            'post': postService.postRT
-                                          });
-                                        }
-                                      },
-                                      child: _Message(
-                                          notificacion: notificacionesService
-                                              .misNotificaciones[index]),
-                                    )
-                                  ],
-                                ));
-                          }),
-                );
+                                                .idPubli!);
+                                        Navigator.pushNamed(context, 'onePost',
+                                            arguments: {
+                                              'post': postService.postRT
+                                            });
+                                      }
+                                    },
+                                    child: _Message(
+                                        notificacion: notificacionesService
+                                            .misNotificaciones[index]),
+                                  )
+                                ],
+                              ));
+                        });
               }
               return Container();
             }));
